@@ -198,7 +198,7 @@ const Index = () => {
           </Badge>
 
           {isMaster && (
-            <button onClick={handleSaveFile} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Sauvegarder">
+            <button onClick={handleSaveScreenshot} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Capture d'écran">
               <Save className="w-3.5 h-3.5" />
             </button>
           )}
