@@ -19,14 +19,14 @@ const Index = () => {
   const handleReset = () => setStates(Array(BUTTON_COUNT).fill(0));
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-        <h1 className="text-lg font-bold text-foreground tracking-tight">Grid Controller</h1>
+      <header className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-card shrink-0">
+        <h1 className="text-sm font-bold text-foreground tracking-tight">Grid Controller</h1>
         <div className="flex items-center gap-2">
           <Badge
             variant={isMaster ? "default" : "secondary"}
-            className="cursor-pointer select-none"
+            className="cursor-pointer select-none text-[10px] px-2 py-0.5"
             onClick={() => setIsMaster(!isMaster)}
           >
             {isMaster ? "Master" : "Viewer"}
@@ -34,7 +34,7 @@ const Index = () => {
           {isMaster && (
             <button
               onClick={handleReset}
-              className="text-xs px-3 py-1 rounded-md bg-destructive text-destructive-foreground font-medium"
+              className="text-[10px] px-2 py-0.5 rounded-md bg-destructive text-destructive-foreground font-medium"
             >
               Reset
             </button>
@@ -43,22 +43,17 @@ const Index = () => {
       </header>
 
       {/* Legend */}
-      <div className="flex gap-3 px-4 py-2 text-xs items-center justify-center bg-muted/50">
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-state-idle inline-block" /> Idle</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-state-warning inline-block" /> Warning</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-state-active inline-block" /> Active</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-state-alert inline-block" /> Alert</span>
+      <div className="flex gap-3 px-3 py-1 text-[10px] items-center justify-center bg-muted/50 shrink-0">
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" /> Idle</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-warning inline-block" /> Warning</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-active inline-block" /> Active</span>
+        <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-alert inline-block" /> Alert</span>
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-auto py-2">
+      <div className="flex-1 overflow-auto p-1">
         <ButtonGrid isMaster={isMaster} states={states} onToggle={handleToggle} />
       </div>
-
-      {/* Footer */}
-      <footer className="text-center text-xs text-muted-foreground py-2 border-t border-border">
-        {isMaster ? "Tap a button to cycle states" : "View only — waiting for master"}
-      </footer>
     </div>
   );
 };

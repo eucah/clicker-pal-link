@@ -12,16 +12,11 @@ interface ButtonGridProps {
 }
 
 const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
-  // Side 1: indices 0-74 (labels 1-75), 5 rows x 15 cols
-  // Side 2: indices 75-149 (labels 101-175), 5 rows x 15 cols, mirrored (reversed per row)
-  const side1 = states.slice(0, 75);
-  const side2 = states.slice(75, 150);
-
   const renderButton = (stateIndex: number, label: number) => (
     <button
       key={label}
       onClick={() => isMaster && onToggle(stateIndex)}
-      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[8px] font-bold text-foreground/70 ${
+      className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[7px] font-bold text-foreground/70 ${
         isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"
       }`}
     >
@@ -40,7 +35,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
         cols.push(renderButton(idx, label));
       }
       rows.push(
-        <div key={r} className="flex gap-1.5 justify-center">
+        <div key={r} className="grid grid-cols-15 gap-[2px]">
           {cols}
         </div>
       );
@@ -49,18 +44,18 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-3 p-2 w-full">
+    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-2 p-1 w-full h-full">
       {/* Side 1: 1-75 */}
-      <div className="flex flex-col gap-1 w-full">
-        <div className="text-xs font-semibold text-muted-foreground text-center mb-1">Side A (1–75)</div>
+      <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
+        <div className="text-[10px] font-semibold text-muted-foreground text-center">Side A (1–75)</div>
         {renderSide(0, 1, false)}
       </div>
 
-      <div className="w-full border-t border-border" />
+      <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
 
       {/* Side 2: 101-175, mirrored */}
-      <div className="flex flex-col gap-1 w-full">
-        <div className="text-xs font-semibold text-muted-foreground text-center mb-1">Side B (101–175) — Mirror</div>
+      <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
+        <div className="text-[10px] font-semibold text-muted-foreground text-center">Side B (101–175) — Mirror</div>
         {renderSide(75, 101, true)}
       </div>
     </div>
