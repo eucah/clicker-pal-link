@@ -254,7 +254,7 @@ const Index = () => {
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-auto p-1">
+      <div className="flex-1 overflow-auto p-1" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
