@@ -21,7 +21,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
     <button
       key={label}
       onClick={() => isMaster && onToggle(stateIndex)}
-      className={`w-9 h-9 rounded-full flex items-center justify-center ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[7px] font-bold text-foreground/70 ${
+      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[8px] font-bold text-foreground/70 ${
         isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"
       }`}
     >
@@ -40,7 +40,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
         cols.push(renderButton(idx, label));
       }
       rows.push(
-        <div key={r} className="flex gap-1">
+        <div key={r} className="flex gap-1.5 justify-center">
           {cols}
         </div>
       );
@@ -49,7 +49,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-3 w-full max-w-4xl mx-auto">
+    <div className="flex flex-col items-center gap-3 p-2 w-full">
       {/* Side 1: 1-75 */}
       <div className="flex flex-col gap-1 w-full">
         <div className="text-xs font-semibold text-muted-foreground text-center mb-1">Side A (1–75)</div>
