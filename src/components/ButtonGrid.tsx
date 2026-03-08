@@ -5,24 +5,49 @@ const STATE_COLORS = [
   "bg-state-alert",
 ] as const;
 
+export interface ButtonInfo {
+  fils: string;
+  bornier: string;
+  locked: boolean;
+}
+
 interface ButtonGridProps {
   isMaster: boolean;
   states: number[];
+  buttonInfos: ButtonInfo[];
+  selectedIndex: number | null;
   onToggle: (index: number) => void;
+  onSelect: (index: number) => void;
 }
 
-const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
-  const renderButton = (stateIndex: number, label: number) => (
-    <button
-      key={label}
-      onClick={() => isMaster && onToggle(stateIndex)}
-      className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[7px] font-bold text-foreground/70 ${
-        isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"
-      }`}
-    >
-      {label}
-    </button>
-  );
+const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
+  const handleClick = (stateIndex: number) => {
+    if (buttonInfos[stateIndex]?.locked) return;
+    if (isMaster) {
+      onToggle(stateIndex);
+    }
+    onSelect(stateIndex);
+  };
+
+  const renderButton = (stateIndex: number, label: number) => {
+    const info = buttonInfos[stateIndex];
+    const isLocked = info?.locked;
+    const isSelected = selectedIndex === stateIndex;
+
+    return (
+      <button
+        key={label}
+        onClick={() => handleClick(stateIndex)}
+        className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150 text-[7px] font-bold ${
+          isLocked
+            ? "bg-state-locked text-foreground/30 cursor-not-allowed"
+            : `${STATE_COLORS[states[stateIndex]]} text-foreground/70 ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"}`
+        } ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
+      >
+        {label}
+      </button>
+    );
+  };
 
   const renderSide = (offset: number, labelOffset: number, mirror: boolean) => {
     const rows = [];
@@ -45,15 +70,11 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
 
   return (
     <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-2 p-1 w-full h-full">
-      {/* Side 1: 1-75 */}
       <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-[10px] font-semibold text-muted-foreground text-center">Side A (1–75)</div>
         {renderSide(0, 1, false)}
       </div>
-
       <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
-
-      {/* Side 2: 101-175, mirrored */}
       <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-[10px] font-semibold text-muted-foreground text-center">Side B (101–175) — Mirror</div>
         {renderSide(75, 101, true)}

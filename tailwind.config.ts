@@ -55,6 +55,7 @@ export default {
         "state-warning": "hsl(var(--state-warning))",
         "state-active": "hsl(var(--state-active))",
         "state-alert": "hsl(var(--state-alert))",
+        "state-locked": "hsl(var(--state-locked))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
