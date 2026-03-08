@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Pencil, ArrowLeft, Save, Bluetooth, BluetoothOff, Lock, Unlock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
+import html2canvas from "html2canvas";
 
 type Screen = "home" | "editor" | "grid";
 
