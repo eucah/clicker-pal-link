@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import ButtonGrid from "@/components/ButtonGrid";
 import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Pencil, ArrowLeft, Save, Bluetooth, BluetoothOff, Lock, Unlock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
+import html2canvas from "html2canvas";
 
 type Screen = "home" | "editor" | "grid";
 
@@ -27,6 +28,7 @@ const Index = () => {
 
   const isMaster = role === "master";
   const ble = useBle(role);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Auto-scan when viewer enters grid
   useEffect(() => {
@@ -103,16 +105,13 @@ const Index = () => {
     });
   };
 
-  const handleSaveFile = () => {
-    if (!project) return;
-    const data: ProjectData = { name: project.name, states, buttonInfos };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${project.name}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleSaveScreenshot = async () => {
+    if (!gridRef.current || !project) return;
+    const canvas = await html2canvas(gridRef.current, { backgroundColor: null });
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.download = `${project.name}.jpeg`;
+    link.click();
   };
 
   const handleShareBle = async () => {
@@ -199,7 +198,7 @@ const Index = () => {
           </Badge>
 
           {isMaster && (
-            <button onClick={handleSaveFile} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Sauvegarder">
+            <button onClick={handleSaveScreenshot} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Capture d'écran">
               <Save className="w-3.5 h-3.5" />
             </button>
           )}
@@ -255,7 +254,7 @@ const Index = () => {
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-auto p-1">
+      <div className="flex-1 overflow-auto p-1" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
