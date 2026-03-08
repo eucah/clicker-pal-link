@@ -47,6 +47,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "state-idle": "hsl(var(--state-idle))",
+        "state-warning": "hsl(var(--state-warning))",
+        "state-active": "hsl(var(--state-active))",
+        "state-alert": "hsl(var(--state-alert))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
