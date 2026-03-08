@@ -6,8 +6,7 @@ import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Pencil, ArrowLeft, Save, Bluetooth, BluetoothOff, Lock, Unlock } from "lucide-react";
+import { ArrowLeft, Save, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
 import html2canvas from "html2canvas";
@@ -22,9 +21,6 @@ const Index = () => {
   const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editFils, setEditFils] = useState("");
-  const [editBornier, setEditBornier] = useState("");
 
   const isMaster = role === "master";
   const ble = useBle(role);
@@ -76,33 +72,6 @@ const Index = () => {
 
   const handleSelect = (index: number) => {
     setSelectedIndex((prev) => (prev === index ? null : index));
-  };
-
-  const handleEditOpen = () => {
-    if (selectedIndex === null) return;
-    const info = buttonInfos[selectedIndex];
-    setEditFils(info.fils);
-    setEditBornier(info.bornier);
-    setEditDialogOpen(true);
-  };
-
-  const handleEditSave = () => {
-    if (selectedIndex === null) return;
-    setButtonInfos((prev) => {
-      const next = [...prev];
-      next[selectedIndex] = { ...next[selectedIndex], fils: editFils, bornier: editBornier };
-      return next;
-    });
-    setEditDialogOpen(false);
-  };
-
-  const handleToggleLock = () => {
-    if (selectedIndex === null) return;
-    setButtonInfos((prev) => {
-      const next = [...prev];
-      next[selectedIndex] = { ...next[selectedIndex], locked: !next[selectedIndex].locked };
-      return next;
-    });
   };
 
   const handleSaveScreenshot = async () => {
@@ -228,16 +197,6 @@ const Index = () => {
                 <Lock className="w-2.5 h-2.5 mr-0.5" /> Non Testé
               </Badge>
             )}
-            {isMaster && (
-              <div className="flex items-center gap-1 ml-auto">
-                <button onClick={handleEditOpen} className="p-1 rounded bg-primary text-primary-foreground" title="Modifier">
-                  <Pencil className="w-3 h-3" />
-                </button>
-                <button onClick={handleToggleLock} className="p-1 rounded bg-secondary text-secondary-foreground" title={selectedInfo.locked ? "Débloquer" : "Non Testé"}>
-                  {selectedInfo.locked ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                </button>
-              </div>
-            )}
           </>
         ) : (
           <span className="text-[10px] text-muted-foreground">Appuyez sur un bouton pour voir ses infos</span>
@@ -266,26 +225,7 @@ const Index = () => {
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-xs">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Modifier Bouton #{selectedLabel}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-3">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Fils</label>
-              <Input value={editFils} onChange={(e) => setEditFils(e.target.value)} className="h-8 text-sm" placeholder="Entrer fils..." />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Bornier</label>
-              <Input value={editBornier} onChange={(e) => setEditBornier(e.target.value)} className="h-8 text-sm" placeholder="Entrer bornier..." />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button size="sm" onClick={handleEditSave}>Sauvegarder</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Removed: Edit functionality is only available in the ProjectEditor */}
     </div>
   );
 };
