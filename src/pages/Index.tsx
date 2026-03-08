@@ -22,9 +22,6 @@ const Index = () => {
   const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editFils, setEditFils] = useState("");
-  const [editBornier, setEditBornier] = useState("");
 
   const isMaster = role === "master";
   const ble = useBle(role);
