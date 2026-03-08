@@ -28,6 +28,7 @@ const Index = () => {
 
   const isMaster = role === "master";
   const ble = useBle(role);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   // Auto-scan when viewer enters grid
   useEffect(() => {
