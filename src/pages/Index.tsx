@@ -1,21 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ButtonGrid from "@/components/ButtonGrid";
-import ProjectHome from "@/components/ProjectHome";
+import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
+import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Lock, Unlock, Pencil, ArrowLeft, Save } from "lucide-react";
+import { Pencil, ArrowLeft, Save, Bluetooth, BluetoothOff, Lock, Unlock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
+import { useBle } from "@/hooks/use-ble";
 
 type Screen = "home" | "editor" | "grid";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
   const [project, setProject] = useState<ProjectData | null>(null);
+  const [role, setRole] = useState<AppRole>("master");
 
-  const [isMaster, setIsMaster] = useState(true);
   const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -23,11 +25,41 @@ const Index = () => {
   const [editFils, setEditFils] = useState("");
   const [editBornier, setEditBornier] = useState("");
 
-  const loadProject = (p: ProjectData) => {
+  const isMaster = role === "master";
+  const ble = useBle(role);
+
+  // Auto-scan when viewer enters grid
+  useEffect(() => {
+    if (screen === "grid" && role === "viewer") {
+      ble.scan();
+    }
+    return () => {
+      if (role === "viewer") {
+        ble.stopScan();
+      }
+    };
+  }, [screen, role]);
+
+  // Receive states from master via BLE
+  useEffect(() => {
+    if (ble.receivedStates && role === "viewer") {
+      setStates(ble.receivedStates);
+    }
+  }, [ble.receivedStates, role]);
+
+  // Send state updates via BLE when master changes states
+  const sendBleUpdate = useCallback((newStates: number[]) => {
+    if (isMaster && ble.status === "connected") {
+      ble.sendUpdate(newStates);
+    }
+  }, [isMaster, ble.status]);
+
+  const loadProject = (p: ProjectData, selectedRole?: AppRole) => {
     setProject(p);
     setStates(p.states);
     setButtonInfos(p.buttonInfos);
     setSelectedIndex(null);
+    if (selectedRole) setRole(selectedRole);
     setScreen("grid");
   };
 
@@ -35,6 +67,7 @@ const Index = () => {
     setStates((prev) => {
       const next = [...prev];
       next[index] = (next[index] + 1) % 4;
+      sendBleUpdate(next);
       return next;
     });
   };
@@ -82,11 +115,32 @@ const Index = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleShareBle = async () => {
+    if (ble.status === "disconnected" || ble.status === "advertising") {
+      if (ble.status === "disconnected") {
+        await ble.share(states);
+      } else {
+        await ble.stopSharing();
+      }
+    } else if (ble.status === "connected") {
+      await ble.stopSharing();
+    }
+  };
+
+  const handleGoHome = async () => {
+    if (isMaster) {
+      await ble.stopSharing();
+    } else {
+      await ble.stopScan();
+    }
+    setScreen("home");
+  };
+
   if (screen === "home") {
     return (
       <ProjectHome
         onLoadProject={loadProject}
-        onCreateProject={() => setScreen("editor")}
+        onCreateProject={() => { setRole("master"); setScreen("editor"); }}
       />
     );
   }
@@ -94,7 +148,7 @@ const Index = () => {
   if (screen === "editor") {
     return (
       <ProjectEditor
-        onSave={loadProject}
+        onSave={(p) => loadProject(p, "master")}
         onCancel={() => setScreen("home")}
       />
     );
@@ -105,22 +159,45 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
-      {/* Header with project name */}
+      {/* Header */}
       <header className="flex items-center justify-between px-3 py-1 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2">
-          <button onClick={() => setScreen("home")} className="p-1 rounded-md bg-secondary text-secondary-foreground">
+          <button onClick={handleGoHome} className="p-1 rounded-md bg-secondary text-secondary-foreground">
             <ArrowLeft className="w-3.5 h-3.5" />
           </button>
           <h1 className="text-sm font-bold text-foreground tracking-tight">{project?.name}</h1>
         </div>
         <div className="flex items-center gap-1.5">
+          {/* BLE Share button (Master) or status (Viewer) */}
+          {isMaster ? (
+            <button
+              onClick={handleShareBle}
+              className={`p-1 rounded-md transition-colors ${
+                ble.status === "connected"
+                  ? "bg-primary text-primary-foreground"
+                  : ble.status === "advertising"
+                  ? "bg-secondary text-secondary-foreground animate-pulse"
+                  : "bg-secondary text-secondary-foreground"
+              }`}
+              title={ble.status === "disconnected" ? "Partager via Bluetooth" : "Arrêter le partage"}
+            >
+              {ble.status === "disconnected" ? (
+                <Bluetooth className="w-3.5 h-3.5" />
+              ) : (
+                <BluetoothOff className="w-3.5 h-3.5" />
+              )}
+            </button>
+          ) : null}
+
+          <BleStatusBadge status={ble.status} />
+
           <Badge
             variant={isMaster ? "default" : "secondary"}
-            className="cursor-pointer select-none text-[10px] px-2 py-0.5"
-            onClick={() => setIsMaster(!isMaster)}
+            className="text-[10px] px-2 py-0.5 select-none"
           >
             {isMaster ? "Master" : "Viewer"}
           </Badge>
+
           {isMaster && (
             <button onClick={handleSaveFile} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Sauvegarder">
               <Save className="w-3.5 h-3.5" />
@@ -128,6 +205,13 @@ const Index = () => {
           )}
         </div>
       </header>
+
+      {/* BLE error banner */}
+      {ble.error && (
+        <div className="px-3 py-1 bg-destructive/10 text-destructive text-[10px] text-center shrink-0">
+          {ble.error}
+        </div>
+      )}
 
       {/* Selected button info bar */}
       <div className="flex items-center gap-2 px-3 py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">

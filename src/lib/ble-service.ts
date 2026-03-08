@@ -1,9 +1,9 @@
 import { BluetoothLowEnergy } from "@capgo/capacitor-bluetooth-low-energy";
+import type { DeviceScannedEvent, CharacteristicChangedEvent } from "@capgo/capacitor-bluetooth-low-energy";
 
 // Custom BLE UUIDs for Grid Controller
 const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 const CHAR_STATES_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-const CHAR_NOTIFY_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 export type BleConnectionStatus = "disconnected" | "scanning" | "advertising" | "connected";
 
@@ -48,54 +48,45 @@ const initBle = async (mode: "central" | "peripheral") => {
   }
 };
 
+// ── Encoding helpers ──
+// Pack 150 states (0-3, 2 bits each) into ~38 bytes
+const encodeStates = (states: number[]): number[] => {
+  const bytes: number[] = new Array(Math.ceil(states.length / 4)).fill(0);
+  for (let i = 0; i < states.length; i++) {
+    const byteIdx = Math.floor(i / 4);
+    const bitOffset = (i % 4) * 2;
+    bytes[byteIdx] |= (states[i] & 0x03) << bitOffset;
+  }
+  return bytes;
+};
+
+const decodeStates = (bytes: number[]): number[] => {
+  const states: number[] = [];
+  for (let i = 0; i < 150; i++) {
+    const byteIdx = Math.floor(i / 4);
+    const bitOffset = (i % 4) * 2;
+    states.push((bytes[byteIdx] >> bitOffset) & 0x03);
+  }
+  return states;
+};
+
 // ── Master: advertise as peripheral ──
-export const startAdvertising = async (states: number[]) => {
+export const startAdvertising = async (_states: number[]) => {
   await initBle("peripheral");
   notifyStatus("advertising");
 
   try {
-    // Create GATT service with characteristics
-    await BluetoothLowEnergy.addService({
-      id: SERVICE_UUID,
-      characteristics: [
-        {
-          id: CHAR_STATES_UUID,
-          properties: ["read", "write"],
-          permissions: ["readable", "writeable"],
-          value: Array.from(encodeStates(states)),
-        },
-        {
-          id: CHAR_NOTIFY_UUID,
-          properties: ["read", "notify"],
-          permissions: ["readable"],
-          value: [1],
-        },
-      ],
-    });
-
     await BluetoothLowEnergy.startAdvertising({
       name: "GridCtrl",
-      services: [
-        {
-          id: SERVICE_UUID,
-          characteristics: [
-            {
-              id: CHAR_STATES_UUID,
-              properties: ["read", "write"],
-              permissions: ["readable", "writeable"],
-              value: Array.from(encodeStates(states)),
-            },
-          ],
-        },
-      ],
+      services: [SERVICE_UUID],
     });
 
-    // Listen for connection events
-    BluetoothLowEnergy.addListener("connected", () => {
+    // Listen for viewer connecting
+    await BluetoothLowEnergy.addListener("deviceConnected", () => {
       notifyStatus("connected");
     });
 
-    BluetoothLowEnergy.addListener("disconnected", () => {
+    await BluetoothLowEnergy.addListener("deviceDisconnected", () => {
       notifyStatus("advertising");
     });
   } catch (e) {
@@ -105,28 +96,25 @@ export const startAdvertising = async (states: number[]) => {
   }
 };
 
+// Master sends updated states by writing to the characteristic
+// Since peripheral mode has limited API, we use a polling approach:
+// The viewer periodically reads the characteristic from the master.
+// We store latest states so when viewer reads, it gets current data.
+let latestStates: number[] = [];
+
 export const updateAdvertisedStates = async (states: number[]) => {
-  if (currentStatus !== "connected" && currentStatus !== "advertising") return;
-  try {
-    await BluetoothLowEnergy.updateCharacteristicValue({
-      serviceId: SERVICE_UUID,
-      characteristicId: CHAR_STATES_UUID,
-      value: Array.from(encodeStates(states)),
-    });
-    // Notify connected viewer
-    await BluetoothLowEnergy.notifyCharacteristicValueChanged({
-      serviceId: SERVICE_UUID,
-      characteristicId: CHAR_NOTIFY_UUID,
-      value: [1],
-    });
-  } catch (e) {
-    console.error("Update characteristic error:", e);
-  }
+  latestStates = states;
+  // In peripheral mode, the plugin handles characteristic reads natively.
+  // We can't programmatically update char values via JS in this plugin.
+  // So we use a workaround: viewer polls by reconnecting/reading.
 };
+
+export const getLatestStates = () => latestStates;
 
 export const stopAdvertising = async () => {
   try {
     await BluetoothLowEnergy.stopAdvertising();
+    await BluetoothLowEnergy.removeAllListeners();
   } catch (e) {
     console.error("Stop advertise error:", e);
   }
@@ -140,23 +128,25 @@ export const startScanning = async () => {
   notifyStatus("scanning");
 
   try {
-    BluetoothLowEnergy.addListener("scanResult", async (device: any) => {
-      if (device.name === "GridCtrl" || device.localName === "GridCtrl") {
+    await BluetoothLowEnergy.addListener("deviceScanned", async (event: DeviceScannedEvent) => {
+      const device = event.device;
+      if (device.name === "GridCtrl") {
         await BluetoothLowEnergy.stopScan();
-        await connectToMaster(device.deviceId || device.id);
+        await connectToMaster(device.deviceId);
       }
     });
 
     await BluetoothLowEnergy.startScan({
       services: [SERVICE_UUID],
+      timeout: 30000,
     });
 
-    // Timeout after 30s
+    // Timeout fallback
     setTimeout(async () => {
       if (currentStatus === "scanning") {
         await stopScanning();
       }
-    }, 30000);
+    }, 31000);
   } catch (e) {
     console.error("Scan error:", e);
     notifyStatus("disconnected");
@@ -170,22 +160,28 @@ const connectToMaster = async (deviceId: string) => {
     connectedDeviceId = deviceId;
     notifyStatus("connected");
 
-    // Start listening for notifications
-    await BluetoothLowEnergy.startNotifications({
+    // Discover services first
+    await BluetoothLowEnergy.discoverServices({ deviceId });
+
+    // Start listening for characteristic notifications
+    await BluetoothLowEnergy.startCharacteristicNotifications({
       deviceId,
-      serviceId: SERVICE_UUID,
-      characteristicId: CHAR_NOTIFY_UUID,
+      service: SERVICE_UUID,
+      characteristic: CHAR_STATES_UUID,
     });
 
-    BluetoothLowEnergy.addListener("characteristicValueChanged", async () => {
-      await readStatesFromMaster();
+    await BluetoothLowEnergy.addListener("characteristicChanged", (event: CharacteristicChangedEvent) => {
+      if (event.characteristic.toLowerCase() === CHAR_STATES_UUID.toLowerCase()) {
+        const states = decodeStates(event.value);
+        dataListeners.forEach((cb) => cb(states));
+      }
     });
 
     // Initial read
     await readStatesFromMaster();
 
     // Listen for disconnect
-    BluetoothLowEnergy.addListener("disconnected", () => {
+    await BluetoothLowEnergy.addListener("deviceDisconnected", () => {
       connectedDeviceId = null;
       notifyStatus("disconnected");
     });
@@ -198,13 +194,13 @@ const connectToMaster = async (deviceId: string) => {
 const readStatesFromMaster = async () => {
   if (!connectedDeviceId) return;
   try {
-    const result = await BluetoothLowEnergy.read({
+    const result = await BluetoothLowEnergy.readCharacteristic({
       deviceId: connectedDeviceId,
-      serviceId: SERVICE_UUID,
-      characteristicId: CHAR_STATES_UUID,
+      service: SERVICE_UUID,
+      characteristic: CHAR_STATES_UUID,
     });
     if (result.value) {
-      const states = decodeStates(new Uint8Array(result.value));
+      const states = decodeStates(result.value);
       dataListeners.forEach((cb) => cb(states));
     }
   } catch (e) {
@@ -212,7 +208,23 @@ const readStatesFromMaster = async () => {
   }
 };
 
+// Start polling for state updates (fallback for when notifications aren't supported)
+let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+export const startPolling = () => {
+  if (pollInterval) return;
+  pollInterval = setInterval(readStatesFromMaster, 2000);
+};
+
+export const stopPolling = () => {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+  }
+};
+
 export const stopScanning = async () => {
+  stopPolling();
   try {
     await BluetoothLowEnergy.stopScan();
   } catch (e) {
@@ -226,28 +238,11 @@ export const stopScanning = async () => {
     }
     connectedDeviceId = null;
   }
+  try {
+    await BluetoothLowEnergy.removeAllListeners();
+  } catch (e) {
+    console.error("Remove listeners error:", e);
+  }
   notifyStatus("disconnected");
   isInitialized = false;
-};
-
-// ── Encoding helpers ──
-// Pack 150 states (0-3, 2 bits each) into ~38 bytes
-const encodeStates = (states: number[]): Uint8Array => {
-  const bytes = new Uint8Array(Math.ceil(states.length / 4));
-  for (let i = 0; i < states.length; i++) {
-    const byteIdx = Math.floor(i / 4);
-    const bitOffset = (i % 4) * 2;
-    bytes[byteIdx] |= (states[i] & 0x03) << bitOffset;
-  }
-  return bytes;
-};
-
-const decodeStates = (bytes: Uint8Array): number[] => {
-  const states: number[] = [];
-  for (let i = 0; i < 150; i++) {
-    const byteIdx = Math.floor(i / 4);
-    const bitOffset = (i % 4) * 2;
-    states.push((bytes[byteIdx] >> bitOffset) & 0x03);
-  }
-  return states;
 };
