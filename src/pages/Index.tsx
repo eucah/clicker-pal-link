@@ -105,16 +105,13 @@ const Index = () => {
     });
   };
 
-  const handleSaveFile = () => {
-    if (!project) return;
-    const data: ProjectData = { name: project.name, states, buttonInfos };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${project.name}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleSaveScreenshot = async () => {
+    if (!gridRef.current || !project) return;
+    const canvas = await html2canvas(gridRef.current, { backgroundColor: null });
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.download = `${project.name}.jpeg`;
+    link.click();
   };
 
   const handleShareBle = async () => {
