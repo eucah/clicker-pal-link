@@ -1,15 +1,11 @@
+import { ButtonInfo } from "@/types/project";
+
 const STATE_COLORS = [
   "bg-state-idle",
   "bg-state-warning",
   "bg-state-active",
   "bg-state-alert",
 ] as const;
-
-export interface ButtonInfo {
-  fils: string;
-  bornier: string;
-  locked: boolean;
-}
 
 interface ButtonGridProps {
   isMaster: boolean;
@@ -83,4 +79,5 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
   );
 };
 
+export { type ButtonInfo };
 export default ButtonGrid;
