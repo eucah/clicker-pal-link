@@ -226,26 +226,7 @@ const Index = () => {
       </div>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-xs">
-          <DialogHeader>
-            <DialogTitle className="text-sm">Modifier Bouton #{selectedLabel}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-3">
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Fils</label>
-              <Input value={editFils} onChange={(e) => setEditFils(e.target.value)} className="h-8 text-sm" placeholder="Entrer fils..." />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-muted-foreground">Bornier</label>
-              <Input value={editBornier} onChange={(e) => setEditBornier(e.target.value)} className="h-8 text-sm" placeholder="Entrer bornier..." />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button size="sm" onClick={handleEditSave}>Sauvegarder</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Removed: Edit functionality is only available in the ProjectEditor */}
     </div>
   );
 };
