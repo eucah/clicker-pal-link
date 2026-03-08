@@ -5,7 +5,6 @@ import ProjectEditor from "@/components/ProjectEditor";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ArrowLeft, Save, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
@@ -26,30 +25,23 @@ const Index = () => {
   const ble = useBle(role);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scan when viewer enters grid
   useEffect(() => {
     if (screen === "grid" && role === "viewer") {
       ble.scan();
     }
     return () => {
-      if (role === "viewer") {
-        ble.stopScan();
-      }
+      if (role === "viewer") ble.stopScan();
     };
   }, [screen, role]);
 
-  // Receive states from master via BLE
   useEffect(() => {
     if (ble.receivedStates && role === "viewer") {
       setStates(ble.receivedStates);
     }
   }, [ble.receivedStates, role]);
 
-  // Send state updates via BLE when master changes states
   const sendBleUpdate = useCallback((newStates: number[]) => {
-    if (isMaster && ble.status === "connected") {
-      ble.sendUpdate(newStates);
-    }
+    if (isMaster && ble.status === "connected") ble.sendUpdate(newStates);
   }, [isMaster, ble.status]);
 
   const loadProject = (p: ProjectData, selectedRole?: AppRole) => {
@@ -96,11 +88,8 @@ const Index = () => {
   };
 
   const handleGoHome = async () => {
-    if (isMaster) {
-      await ble.stopSharing();
-    } else {
-      await ble.stopScan();
-    }
+    if (isMaster) await ble.stopSharing();
+    else await ble.stopScan();
     setScreen("home");
   };
 
@@ -127,17 +116,16 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
-      {/* Header */}
-      <header className="flex items-center justify-between px-3 py-1 border-b border-border bg-card shrink-0">
-        <div className="flex items-center gap-2">
-          <button onClick={handleGoHome} className="p-1 rounded-md bg-secondary text-secondary-foreground">
-            <ArrowLeft className="w-3.5 h-3.5" />
-          </button>
-          <h1 className="text-sm font-bold text-foreground tracking-tight">{project?.name}</h1>
-        </div>
+      {/* Header - compact */}
+      <header className="flex items-center justify-between px-2 py-0.5 landscape:py-0.5 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-1.5">
-          {/* BLE Share button (Master) or status (Viewer) */}
-          {isMaster ? (
+          <button onClick={handleGoHome} className="p-1 rounded-md bg-secondary text-secondary-foreground">
+            <ArrowLeft className="w-3 h-3" />
+          </button>
+          <h1 className="text-xs font-bold text-foreground tracking-tight">{project?.name}</h1>
+        </div>
+        <div className="flex items-center gap-1">
+          {isMaster && (
             <button
               onClick={handleShareBle}
               className={`p-1 rounded-md transition-colors ${
@@ -150,70 +138,76 @@ const Index = () => {
               title={ble.status === "disconnected" ? "Partager via Bluetooth" : "Arrêter le partage"}
             >
               {ble.status === "disconnected" ? (
-                <Bluetooth className="w-3.5 h-3.5" />
+                <Bluetooth className="w-3 h-3" />
               ) : (
-                <BluetoothOff className="w-3.5 h-3.5" />
+                <BluetoothOff className="w-3 h-3" />
               )}
             </button>
-          ) : null}
-
+          )}
           <BleStatusBadge status={ble.status} />
-
           <Badge
             variant={isMaster ? "default" : "secondary"}
-            className="text-[10px] px-2 py-0.5 select-none"
+            className="text-[9px] px-1.5 py-0 select-none"
           >
             {isMaster ? "Master" : "Viewer"}
           </Badge>
-
           {isMaster && (
             <button onClick={handleSaveScreenshot} className="p-1 rounded-md bg-secondary text-secondary-foreground" title="Capture d'écran">
-              <Save className="w-3.5 h-3.5" />
+              <Save className="w-3 h-3" />
             </button>
           )}
         </div>
       </header>
 
-      {/* BLE error banner */}
+      {/* BLE error */}
       {ble.error && (
-        <div className="px-3 py-1 bg-destructive/10 text-destructive text-[10px] text-center shrink-0">
+        <div className="px-2 py-0.5 bg-destructive/10 text-destructive text-[9px] text-center shrink-0">
           {ble.error}
         </div>
       )}
 
-      {/* Selected button info bar */}
-      <div className="flex items-center gap-2 px-3 py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
+      {/* Info bar + Legend combined in landscape for space efficiency */}
+      <div className="flex items-center gap-2 px-2 py-0.5 bg-muted/50 border-b border-border shrink-0 min-h-[24px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
-            <span className="text-[10px] font-bold text-foreground">#{selectedLabel}</span>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[9px] font-bold text-foreground">#{selectedLabel}</span>
+            <span className="text-[9px] text-muted-foreground">
               Fils: <span className="text-foreground font-medium">{selectedInfo.fils || "—"}</span>
             </span>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[9px] text-muted-foreground">
               Bornier: <span className="text-foreground font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
             {selectedInfo.locked && (
-              <Badge variant="outline" className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground">
-                <Lock className="w-2.5 h-2.5 mr-0.5" /> Non Testé
+              <Badge variant="outline" className="text-[8px] px-1 py-0 border-state-locked text-muted-foreground">
+                <Lock className="w-2 h-2 mr-0.5" /> Non Testé
               </Badge>
             )}
           </>
         ) : (
-          <span className="text-[10px] text-muted-foreground">Appuyez sur un bouton pour voir ses infos</span>
+          <span className="text-[9px] text-muted-foreground">Appuyez sur un bouton pour voir ses infos</span>
         )}
+
+        {/* Legend inline in landscape */}
+        <div className="hidden landscape:flex items-center gap-2 ml-auto text-[8px]">
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-state-idle inline-block" /> Attente</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-state-warning inline-block" /> En cours</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-state-active inline-block" /> Validé</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-state-alert inline-block" /> Défaut</span>
+          <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-sm bg-state-locked inline-block" /> Non Testé</span>
+        </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex gap-3 px-3 py-0.5 text-[9px] items-center justify-center bg-muted/30 shrink-0">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-state-idle inline-block" /> En attente</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-state-warning inline-block" /> En cours</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-state-active inline-block" /> Validé</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-state-alert inline-block" /> Défaut</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-state-locked inline-block" /> Non Testé</span>
+      {/* Legend - portrait only */}
+      <div className="flex landscape:hidden gap-3 px-2 py-0.5 text-[8px] items-center justify-center bg-muted/30 shrink-0">
+        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-sm bg-state-idle inline-block" /> Attente</span>
+        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-sm bg-state-warning inline-block" /> En cours</span>
+        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-sm bg-state-active inline-block" /> Validé</span>
+        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-sm bg-state-alert inline-block" /> Défaut</span>
+        <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-sm bg-state-locked inline-block" /> Non Testé</span>
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-auto p-1" ref={gridRef}>
+      <div className="flex-1 overflow-auto p-0.5" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
@@ -223,9 +217,6 @@ const Index = () => {
           onSelect={handleSelect}
         />
       </div>
-
-      {/* Edit Dialog */}
-      {/* Removed: Edit functionality is only available in the ProjectEditor */}
     </div>
   );
 };
