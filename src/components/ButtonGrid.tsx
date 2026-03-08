@@ -49,7 +49,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-3 w-full max-w-4xl mx-auto">
+    <div className="flex flex-col items-center gap-3 p-2 w-full">
       {/* Side 1: 1-75 */}
       <div className="flex flex-col gap-1 w-full">
         <div className="text-xs font-semibold text-muted-foreground text-center mb-1">Side A (1–75)</div>
