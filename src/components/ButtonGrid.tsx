@@ -67,12 +67,12 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
   return (
     <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-2 p-1 w-full h-full">
       <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
-        <div className="text-[10px] font-semibold text-muted-foreground text-center">Side A (1–75)</div>
+        <div className="text-[10px] font-semibold text-muted-foreground text-center">GAUCHE</div>
         {renderSide(0, 1, false)}
       </div>
       <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
       <div className="flex flex-col gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
-        <div className="text-[10px] font-semibold text-muted-foreground text-center">Side B (101–175) — Mirror</div>
+        <div className="text-[10px] font-semibold text-muted-foreground text-center">DROITE</div>
         {renderSide(75, 101, true)}
       </div>
     </div>
