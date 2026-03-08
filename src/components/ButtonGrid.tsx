@@ -40,7 +40,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
         cols.push(renderButton(idx, label));
       }
       rows.push(
-        <div key={r} className="flex gap-1">
+        <div key={r} className="flex gap-1.5 justify-center">
           {cols}
         </div>
       );
