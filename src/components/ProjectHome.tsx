@@ -39,7 +39,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center gap-6 px-4">
-      <h1 className="text-xl font-bold text-foreground tracking-tight">Grid Controller</h1>
+      <h1 className="text-xl font-bold text-foreground tracking-tight">ESSAIS DE CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center">Sélectionnez votre rôle et chargez un projet</p>
 
       {/* Master section */}
