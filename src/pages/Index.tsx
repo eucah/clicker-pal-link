@@ -75,33 +75,6 @@ const Index = () => {
     setSelectedIndex((prev) => (prev === index ? null : index));
   };
 
-  const handleEditOpen = () => {
-    if (selectedIndex === null) return;
-    const info = buttonInfos[selectedIndex];
-    setEditFils(info.fils);
-    setEditBornier(info.bornier);
-    setEditDialogOpen(true);
-  };
-
-  const handleEditSave = () => {
-    if (selectedIndex === null) return;
-    setButtonInfos((prev) => {
-      const next = [...prev];
-      next[selectedIndex] = { ...next[selectedIndex], fils: editFils, bornier: editBornier };
-      return next;
-    });
-    setEditDialogOpen(false);
-  };
-
-  const handleToggleLock = () => {
-    if (selectedIndex === null) return;
-    setButtonInfos((prev) => {
-      const next = [...prev];
-      next[selectedIndex] = { ...next[selectedIndex], locked: !next[selectedIndex].locked };
-      return next;
-    });
-  };
-
   const handleSaveScreenshot = async () => {
     if (!gridRef.current || !project) return;
     const canvas = await html2canvas(gridRef.current, { backgroundColor: null });
