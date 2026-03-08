@@ -21,7 +21,7 @@ const ButtonGrid = ({ isMaster, states, onToggle }: ButtonGridProps) => {
     <button
       key={label}
       onClick={() => isMaster && onToggle(stateIndex)}
-      className={`w-9 h-9 rounded-full flex items-center justify-center ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[7px] font-bold text-foreground/70 ${
+      className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${STATE_COLORS[states[stateIndex]]} transition-colors duration-150 text-[8px] font-bold text-foreground/70 ${
         isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"
       }`}
     >
