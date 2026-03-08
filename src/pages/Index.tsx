@@ -198,16 +198,6 @@ const Index = () => {
                 <Lock className="w-2.5 h-2.5 mr-0.5" /> Non Testé
               </Badge>
             )}
-            {isMaster && (
-              <div className="flex items-center gap-1 ml-auto">
-                <button onClick={handleEditOpen} className="p-1 rounded bg-primary text-primary-foreground" title="Modifier">
-                  <Pencil className="w-3 h-3" />
-                </button>
-                <button onClick={handleToggleLock} className="p-1 rounded bg-secondary text-secondary-foreground" title={selectedInfo.locked ? "Débloquer" : "Non Testé"}>
-                  {selectedInfo.locked ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                </button>
-              </div>
-            )}
           </>
         ) : (
           <span className="text-[10px] text-muted-foreground">Appuyez sur un bouton pour voir ses infos</span>
