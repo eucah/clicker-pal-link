@@ -95,5 +95,10 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    plugin(function ({ addVariant }) {
+      addVariant("landscape", "@media (orientation: landscape)");
+    }),
+  ],
 } satisfies Config;
