@@ -2,14 +2,13 @@ name: Build Android APK
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -20,16 +19,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build web app
-        run: npm run build
-
       - name: Install Capacitor Android
-        run: |
-          npm install @capacitor/android
-          npx cap add android
+        run: npm install @capacitor/android
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+      - name: Create Android project
+        run: npx cap add android
+
+      - name: Sync project
+        run: npx cap sync
 
       - name: Build APK
         run: |
