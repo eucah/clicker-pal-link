@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build": "npm run build:web"
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
