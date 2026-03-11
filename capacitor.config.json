@@ -1,9 +1,4 @@
 {
-  "appId": "app.lovable.02b01b2778dc49cbbecef3b26cfab0c0",
+  "appId": "app.sylvain.feche",
   "appName": "ESSAIS DE CONTINUITÉ",
-  "webDir": "dist",
-  "server": {
-    "url": "https://02b01b27-78dc-49cb-bece-f3b26cfab0c0.lovableproject.com?forceHideBadge=true",
-    "cleartext": true
-  }
 }
