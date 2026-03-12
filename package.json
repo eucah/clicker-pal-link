@@ -4,12 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm run build:web",
-    "dev": "vite",
     "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
   },
