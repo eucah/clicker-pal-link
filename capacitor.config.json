@@ -1,4 +1,6 @@
 {
-  "appId": "com.SYLFEC.clickerpal"
-  "appName": "ESSAIS DE CONTINUITÉ",
+  "appId": "com.eucah.clickerpal",
+  "appName": "Essais Continuité",
+  "webDir": "dist",
+  "bundledWebRuntime": false
 }
