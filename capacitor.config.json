@@ -1,5 +1,5 @@
 {
-  "appId": "app.eucah.clickerpal",
+  "appId": "com.eucah.clickerpal",
   "appName": "Essais Continuite",
   "webDir": "dist",
   "bundledWebRuntime": false
