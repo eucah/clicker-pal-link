@@ -28,11 +28,12 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
     const states = buttonInfos.map(() => 0);
     const project: ProjectData = { name: projectName.trim(), states, buttonInfos };
 
-    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
+    // Save as .txt file with JSON content
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${projectName.trim()}.json`;
+    a.download = `${projectName.trim()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -40,14 +41,12 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
-      {/* Header - compact in landscape */}
+    <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-all">
       <header className="flex items-center gap-2 px-3 py-1.5 landscape:py-1 border-b border-border bg-card shrink-0">
         <button onClick={onCancel} className="p-1 rounded-md bg-secondary text-secondary-foreground">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h1 className="text-sm font-bold text-foreground">Nouveau projet</h1>
-        {/* Save button in header for landscape */}
         <div className="hidden landscape:flex ml-auto">
           <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2" size="sm">
             <Save className="w-3.5 h-3.5" /> Enregistrer
@@ -55,7 +54,6 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
         </div>
       </header>
 
-      {/* Project name + table in landscape: side by side name/save top, table fills rest */}
       <div className="px-3 py-1.5 landscape:py-1 border-b border-border shrink-0">
         <label className="text-xs font-medium text-muted-foreground">Nom du projet</label>
         <Input
@@ -110,7 +108,6 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
         </div>
       </ScrollArea>
 
-      {/* Footer save - portrait only */}
       <div className="px-3 py-2 border-t border-border shrink-0 landscape:hidden">
         <Button onClick={handleSave} disabled={!projectName.trim()} className="w-full gap-2" size="sm">
           <Save className="w-3.5 h-3.5" /> Enregistrer le projet

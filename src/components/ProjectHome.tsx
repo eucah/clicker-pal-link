@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Plus, Crown, Eye } from "lucide-react";
+import { FolderOpen, Plus, Crown, Eye, Bluetooth } from "lucide-react";
 import { ProjectData } from "@/types/project";
 
 export type AppRole = "master" | "viewer";
@@ -8,11 +8,11 @@ export type AppRole = "master" | "viewer";
 interface ProjectHomeProps {
   onLoadProject: (project: ProjectData, role: AppRole) => void;
   onCreateProject: () => void;
+  onViewerScan: () => void;
 }
 
-const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
+const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const pendingRoleRef = useRef<AppRole>("master");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -20,9 +20,10 @@ const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const data = JSON.parse(ev.target?.result as string) as ProjectData;
+        const raw = ev.target?.result as string;
+        const data = JSON.parse(raw) as ProjectData;
         if (data.name && data.states && data.buttonInfos) {
-          onLoadProject(data, pendingRoleRef.current);
+          onLoadProject(data, "master");
         }
       } catch {
         console.error("Invalid file format");
@@ -32,19 +33,13 @@ const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
     e.target.value = "";
   };
 
-  const openFileAs = (role: AppRole) => {
-    pendingRoleRef.current = role;
-    fileInputRef.current?.click();
-  };
-
   return (
-    <div className="h-screen bg-background flex flex-col items-center justify-center px-4">
+    <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
       <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS DE CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
         Sélectionnez votre rôle et chargez un projet
       </p>
 
-      {/* Landscape: side by side / Portrait: stacked */}
       <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
         {/* Master section */}
         <div className="w-full landscape:w-1/2 space-y-2">
@@ -56,8 +51,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
             <Button onClick={onCreateProject} className="w-full gap-2" size="sm">
               <Plus className="w-4 h-4" /> Nouveau projet
             </Button>
-            <Button variant="secondary" onClick={() => openFileAs("master")} className="w-full gap-2" size="sm">
-              <FolderOpen className="w-4 h-4" /> Ouvrir en Master
+            <Button variant="secondary" onClick={() => fileInputRef.current?.click()} className="w-full gap-2" size="sm">
+              <FolderOpen className="w-4 h-4" /> Ouvrir un projet
             </Button>
           </div>
         </div>
@@ -75,16 +70,16 @@ const ProjectHome = ({ onLoadProject, onCreateProject }: ProjectHomeProps) => {
             <Eye className="w-4 h-4 text-muted-foreground" />
             <span>Viewer</span>
           </div>
-          <Button variant="outline" onClick={() => openFileAs("viewer")} className="w-full gap-2" size="sm">
-            <FolderOpen className="w-4 h-4" /> Ouvrir en Viewer
+          <Button variant="outline" onClick={onViewerScan} className="w-full gap-2" size="sm">
+            <Bluetooth className="w-4 h-4" /> Rechercher un Master
           </Button>
           <p className="text-[10px] text-muted-foreground text-center">
-            En mode Viewer, la recherche Bluetooth démarre automatiquement
+            Recherche Bluetooth d'une session partagée par un Master
           </p>
         </div>
       </div>
 
-      <input ref={fileInputRef} type="file" accept=".json" className="hidden" onChange={handleFileChange} />
+      <input ref={fileInputRef} type="file" accept=".json,.txt" className="hidden" onChange={handleFileChange} />
     </div>
   );
 };
