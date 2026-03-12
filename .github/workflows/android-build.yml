@@ -30,6 +30,9 @@ jobs:
       - name: Install Capacitor Android
         run: npm install @capacitor/android
 
+      - name: Init Capacitor
+        run: npx cap init "Clicker Pal" com.eucah.clickerpal
+
       - name: Create Android project
         run: npx cap add android
 
