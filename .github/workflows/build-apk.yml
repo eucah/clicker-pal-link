@@ -1,9 +1,6 @@
 name: Build APK
 
 on:
-  pu
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
