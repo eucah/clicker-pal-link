@@ -40,6 +40,12 @@ export const getConnectionStatus = () => currentStatus;
 const initBle = async (mode: "central" | "peripheral") => {
   if (isInitialized) return;
   try {
+    // Request permissions first (Android 12+)
+    try {
+      await BluetoothLowEnergy.requestPermissions();
+    } catch (e) {
+      console.warn("BLE requestPermissions:", e);
+    }
     await BluetoothLowEnergy.initialize({ mode });
     isInitialized = true;
   } catch (e) {
