@@ -164,11 +164,6 @@ const Index = () => {
           >
             {isMaster ? "Master" : "Viewer"}
           </Badge>
-          {isMaster && (
-            <button onClick={handleSaveProject} className="p-1.5 rounded-md bg-secondary text-secondary-foreground" title="Sauvegarder le projet">
-              <Save className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </header>
 
