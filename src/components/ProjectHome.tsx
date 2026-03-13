@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Plus, Crown, Eye, Bluetooth } from "lucide-react";
 import { ProjectData } from "@/types/project";
+import { parseProjectFile } from "@/lib/file-utils";
+import { checkAndRequestPermissions } from "@/lib/permissions";
 
 export type AppRole = "master" | "viewer";
 
@@ -14,6 +16,10 @@ interface ProjectHomeProps {
 const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    checkAndRequestPermissions();
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -21,12 +27,14 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
     reader.onload = (ev) => {
       try {
         const raw = ev.target?.result as string;
-        const data = JSON.parse(raw) as ProjectData;
-        if (data.name && data.states && data.buttonInfos) {
+        const data = parseProjectFile(raw);
+        if (data) {
           onLoadProject(data, "master");
+        } else {
+          alert("Format de fichier invalide");
         }
       } catch {
-        console.error("Invalid file format");
+        alert("Erreur lors de la lecture du fichier");
       }
     };
     reader.readAsText(file);
@@ -35,7 +43,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
-      <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS DE CONTINUITÉ</h1>
+      <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
         Sélectionnez votre rôle
       </p>
