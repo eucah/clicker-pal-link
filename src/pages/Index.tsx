@@ -4,10 +4,10 @@ import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Bluetooth, BluetoothOff, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
-import { saveProjectFile } from "@/lib/file-utils";
+
 
 type Screen = "home" | "editor" | "grid";
 
@@ -76,11 +76,7 @@ const Index = () => {
     setSelectedIndex((prev) => (prev === index ? null : index));
   };
 
-  const handleSaveProject = () => {
-    if (!project) return;
-    const saveData: ProjectData = { name: project.name, states, buttonInfos };
-    saveProjectFile(saveData);
-  };
+
 
   const handleShareBle = async () => {
     if (ble.status === "disconnected") {
@@ -164,11 +160,6 @@ const Index = () => {
           >
             {isMaster ? "Master" : "Viewer"}
           </Badge>
-          {isMaster && (
-            <button onClick={handleSaveProject} className="p-1.5 rounded-md bg-secondary text-secondary-foreground" title="Sauvegarder le projet">
-              <Save className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </header>
 

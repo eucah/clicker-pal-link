@@ -6,22 +6,20 @@ export const checkAndRequestPermissions = async () => {
   if (!(window as any).Capacitor?.isNativePlatform()) return;
 
   try {
-    // Check Bluetooth is enabled
     const { BluetoothLowEnergy } = await import("@capgo/capacitor-bluetooth-low-energy");
-    
+
+    // Request runtime permissions (BLUETOOTH_SCAN, BLUETOOTH_CONNECT, BLUETOOTH_ADVERTISE)
+    try {
+      await BluetoothLowEnergy.requestPermissions();
+    } catch (e) {
+      console.warn("BLE requestPermissions:", e);
+    }
+
+    // Check Bluetooth is enabled
     try {
       await BluetoothLowEnergy.isEnabled();
     } catch {
-      // Bluetooth not enabled - alert user
       alert("Veuillez activer le Bluetooth pour utiliser cette application.");
-    }
-
-    // Request permissions via the Capacitor Permissions API
-    try {
-      await BluetoothLowEnergy.initialize({ mode: "central" });
-      // This triggers the Android permission dialogs for BLE
-    } catch (e) {
-      console.warn("BLE permission request:", e);
     }
   } catch (e) {
     console.warn("Permission check error:", e);
