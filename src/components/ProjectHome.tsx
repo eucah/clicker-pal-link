@@ -37,7 +37,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
       <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS DE CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
-        Sélectionnez votre rôle et chargez un projet
+        Sélectionnez votre rôle
       </p>
 
       <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
@@ -71,10 +71,10 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
             <span>Viewer</span>
           </div>
           <Button variant="outline" onClick={onViewerScan} className="w-full gap-2" size="sm">
-            <Bluetooth className="w-4 h-4" /> Rechercher un Master
+            <Bluetooth className="w-4 h-4" /> Rechercher projet partagé
           </Button>
           <p className="text-[10px] text-muted-foreground text-center">
-            Recherche Bluetooth d'une session partagée par un Master
+            Recherche d'une session partagée par un Master en Bluetooth
           </p>
         </div>
       </div>
