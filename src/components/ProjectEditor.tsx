@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Play } from "lucide-react";
 import { ButtonInfo, ProjectData, BUTTON_COUNT, createDefaultInfos, getButtonLabel } from "@/types/project";
+import { saveProjectFile } from "@/lib/file-utils";
 
 interface ProjectEditorProps {
   onSave: (project: ProjectData) => void;
+  onAccess: (project: ProjectData) => void;
   onCancel: () => void;
 }
 
-const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
+const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   const [projectName, setProjectName] = useState("");
   const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
 
@@ -23,21 +25,23 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
     });
   };
 
-  const handleSave = () => {
-    if (!projectName.trim()) return;
+  const buildProject = (): ProjectData | null => {
+    if (!projectName.trim()) return null;
     const states = buttonInfos.map(() => 0);
-    const project: ProjectData = { name: projectName.trim(), states, buttonInfos };
+    return { name: projectName.trim(), states, buttonInfos };
+  };
 
-    // Save as .txt file with JSON content
-    const blob = new Blob([JSON.stringify(project, null, 2)], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${projectName.trim()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-
+  const handleSave = () => {
+    const project = buildProject();
+    if (!project) return;
+    saveProjectFile(project);
     onSave(project);
+  };
+
+  const handleAccess = () => {
+    const project = buildProject();
+    if (!project) return;
+    onAccess(project);
   };
 
   return (
@@ -47,7 +51,10 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h1 className="text-sm font-bold text-foreground">Nouveau projet</h1>
-        <div className="hidden landscape:flex ml-auto">
+        <div className="flex ml-auto gap-2">
+          <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2" size="sm">
+            <Play className="w-3.5 h-3.5" /> Accéder
+          </Button>
           <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2" size="sm">
             <Save className="w-3.5 h-3.5" /> Enregistrer
           </Button>
@@ -107,12 +114,6 @@ const ProjectEditor = ({ onSave, onCancel }: ProjectEditorProps) => {
           </table>
         </div>
       </ScrollArea>
-
-      <div className="px-3 py-2 border-t border-border shrink-0 landscape:hidden">
-        <Button onClick={handleSave} disabled={!projectName.trim()} className="w-full gap-2" size="sm">
-          <Save className="w-3.5 h-3.5" /> Enregistrer le projet
-        </Button>
-      </div>
     </div>
   );
 };

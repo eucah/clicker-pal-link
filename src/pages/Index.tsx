@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Save, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
-import html2canvas from "html2canvas";
+import { saveProjectFile } from "@/lib/file-utils";
 
 type Screen = "home" | "editor" | "grid";
 
@@ -24,6 +24,7 @@ const Index = () => {
   const ble = useBle(role);
   const gridRef = useRef<HTMLDivElement>(null);
 
+  // Viewer: scan when entering grid
   useEffect(() => {
     if (screen === "grid" && role === "viewer") {
       ble.scan();
@@ -33,6 +34,7 @@ const Index = () => {
     };
   }, [screen, role]);
 
+  // Viewer: receive states from master
   useEffect(() => {
     if (ble.receivedStates && role === "viewer") {
       setStates(ble.receivedStates);
@@ -59,7 +61,6 @@ const Index = () => {
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("grid");
-    // BLE scan will start automatically via the useEffect above
   };
 
   const handleToggle = (index: number) => {
@@ -78,23 +79,13 @@ const Index = () => {
   const handleSaveProject = () => {
     if (!project) return;
     const saveData: ProjectData = { name: project.name, states, buttonInfos };
-    const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${project.name}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+    saveProjectFile(saveData);
   };
 
   const handleShareBle = async () => {
-    if (ble.status === "disconnected" || ble.status === "advertising") {
-      if (ble.status === "disconnected") {
-        await ble.share(states);
-      } else {
-        await ble.stopSharing();
-      }
-    } else if (ble.status === "connected") {
+    if (ble.status === "disconnected") {
+      await ble.share(states);
+    } else {
       await ble.stopSharing();
     }
   };
@@ -127,6 +118,7 @@ const Index = () => {
     return (
       <ProjectEditor
         onSave={(p) => loadProject(p, "master")}
+        onAccess={(p) => loadProject(p, "master")}
         onCancel={() => setScreen("home")}
       />
     );
