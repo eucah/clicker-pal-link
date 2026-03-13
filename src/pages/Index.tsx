@@ -76,11 +76,7 @@ const Index = () => {
     setSelectedIndex((prev) => (prev === index ? null : index));
   };
 
-  const handleSaveProject = () => {
-    if (!project) return;
-    const saveData: ProjectData = { name: project.name, states, buttonInfos };
-    saveProjectFile(saveData);
-  };
+
 
   const handleShareBle = async () => {
     if (ble.status === "disconnected") {
