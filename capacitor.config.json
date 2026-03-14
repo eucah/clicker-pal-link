@@ -2,5 +2,13 @@
   "appId": "com.eucah.clickerpal",
   "appName": "Essais Continuité",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "BluetoothLowEnergy": {
+      "displayStrings": {
+        "bluetoothPermission": "Cette application nécessite le Bluetooth pour synchroniser les données.",
+        "locationPermission": "Cette application nécessite la localisation pour le Bluetooth."
+      }
+    }
+  }
 }

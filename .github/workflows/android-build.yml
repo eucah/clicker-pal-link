@@ -31,10 +31,20 @@ jobs:
         run: npm install @capacitor/android
 
       - name: Init Capacitor
-        run: npx cap init "Clicker Pal" com.eucah.clickerpal
+        run: npx cap init "Essais Continuité" com.eucah.clickerpal
 
       - name: Create Android project
         run: npx cap add android
+
+      - name: Add permissions to AndroidManifest
+        run: |
+          # Add BLE and storage permissions for Android 16
+          sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\n    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\n    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\n    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\n    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
+
+      - name: Update app label
+        run: |
+          sed -i 's|android:label="@string/app_name"|android:label="Essais Continuité"|' android/app/src/main/AndroidManifest.xml
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Essais Continuité</string>|' android/app/src/main/res/values/strings.xml
 
       - name: Sync Capacitor
         run: npx cap sync
@@ -48,5 +58,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: clicker-pal-apk
+          name: essais-continuite-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk

@@ -8,7 +8,6 @@ import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
 
-
 type Screen = "home" | "editor" | "grid";
 
 const Index = () => {
@@ -66,7 +65,19 @@ const Index = () => {
   const handleToggle = (index: number) => {
     setStates((prev) => {
       const next = [...prev];
-      next[index] = (next[index] + 1) % 4;
+      const currentState = next[index];
+      const newState = (currentState + 1) % 4;
+
+      // "En cours" (state 1) exclusivity: only one button can be "en cours" at a time
+      if (newState === 1) {
+        for (let i = 0; i < next.length; i++) {
+          if (next[i] === 1) {
+            next[i] = 0; // Reset other "en cours" to "attente"
+          }
+        }
+      }
+
+      next[index] = newState;
       sendBleUpdate(next);
       return next;
     });
@@ -75,8 +86,6 @@ const Index = () => {
   const handleSelect = (index: number) => {
     setSelectedIndex((prev) => (prev === index ? null : index));
   };
-
-
 
   const handleShareBle = async () => {
     if (ble.status === "disconnected") {
