@@ -41,10 +41,16 @@ jobs:
           # Add BLE and storage permissions for Android 16
           sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\n    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\n    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\n    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\n    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
 
-      - name: Update app label
+      - name: Update app label and icon
         run: |
           sed -i 's|android:label="@string/app_name"|android:label="Essais Continuité"|' android/app/src/main/AndroidManifest.xml
           sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Essais Continuité</string>|' android/app/src/main/res/values/strings.xml
+          # Copy app icon to all Android drawable densities
+          for dir in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher.png"
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_round.png"
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_foreground.png" 2>/dev/null || true
+          done
 
       - name: Sync Capacitor
         run: npx cap sync
