@@ -1,5 +1,6 @@
 import { BluetoothLowEnergy } from "@capgo/capacitor-bluetooth-low-energy";
 import type { DeviceScannedEvent, CharacteristicChangedEvent } from "@capgo/capacitor-bluetooth-low-energy";
+import { ensureBluetoothEnabled } from "@/lib/permissions";
 
 // Custom BLE UUIDs for Grid Controller
 const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -7,12 +8,19 @@ const CHAR_STATES_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 
 export type BleConnectionStatus = "disconnected" | "scanning" | "advertising" | "connected";
 
+export interface DiscoveredDevice {
+  deviceId: string;
+  name: string;
+}
+
 type StatusCallback = (status: BleConnectionStatus) => void;
 type DataCallback = (states: number[]) => void;
+type DeviceDiscoveredCallback = (device: DiscoveredDevice) => void;
 
 let currentStatus: BleConnectionStatus = "disconnected";
 let statusListeners: StatusCallback[] = [];
 let dataListeners: DataCallback[] = [];
+let deviceDiscoveredListeners: DeviceDiscoveredCallback[] = [];
 let connectedDeviceId: string | null = null;
 let isInitialized = false;
 
@@ -35,12 +43,25 @@ export const onDataReceived = (cb: DataCallback) => {
   };
 };
 
+export const onDeviceDiscovered = (cb: DeviceDiscoveredCallback) => {
+  deviceDiscoveredListeners.push(cb);
+  return () => {
+    deviceDiscoveredListeners = deviceDiscoveredListeners.filter((l) => l !== cb);
+  };
+};
+
 export const getConnectionStatus = () => currentStatus;
 
 const initBle = async (mode: "central" | "peripheral") => {
   if (isInitialized) return;
+
+  // Ensure Bluetooth is enabled before init
+  const enabled = await ensureBluetoothEnabled();
+  if (!enabled) {
+    throw new Error("Bluetooth non activé");
+  }
+
   try {
-    // Request permissions first (Android 12+)
     try {
       await BluetoothLowEnergy.requestPermissions();
     } catch (e) {
@@ -55,7 +76,6 @@ const initBle = async (mode: "central" | "peripheral") => {
 };
 
 // ── Encoding helpers ──
-// Pack 150 states (0-3, 2 bits each) into ~38 bytes
 const encodeStates = (states: number[]): number[] => {
   const bytes: number[] = new Array(Math.ceil(states.length / 4)).fill(0);
   for (let i = 0; i < states.length; i++) {
@@ -87,7 +107,6 @@ export const startAdvertising = async (_states: number[]) => {
       services: [SERVICE_UUID],
     });
 
-    // Listen for viewer connecting
     await BluetoothLowEnergy.addListener("deviceConnected", () => {
       notifyStatus("connected");
     });
@@ -102,17 +121,10 @@ export const startAdvertising = async (_states: number[]) => {
   }
 };
 
-// Master sends updated states by writing to the characteristic
-// Since peripheral mode has limited API, we use a polling approach:
-// The viewer periodically reads the characteristic from the master.
-// We store latest states so when viewer reads, it gets current data.
 let latestStates: number[] = [];
 
 export const updateAdvertisedStates = async (states: number[]) => {
   latestStates = states;
-  // In peripheral mode, the plugin handles characteristic reads natively.
-  // We can't programmatically update char values via JS in this plugin.
-  // So we use a workaround: viewer polls by reconnecting/reading.
 };
 
 export const getLatestStates = () => latestStates;
@@ -128,17 +140,23 @@ export const stopAdvertising = async () => {
   isInitialized = false;
 };
 
-// ── Viewer: scan and connect as central ──
-export const startScanning = async () => {
+// ── Viewer: scan for available sessions ──
+export const startScanningForDevices = async () => {
   await initBle("central");
   notifyStatus("scanning");
 
   try {
-    await BluetoothLowEnergy.addListener("deviceScanned", async (event: DeviceScannedEvent) => {
+    const discoveredIds = new Set<string>();
+
+    await BluetoothLowEnergy.addListener("deviceScanned", (event: DeviceScannedEvent) => {
       const device = event.device;
-      if (device.name === "GridCtrl") {
-        await BluetoothLowEnergy.stopScan();
-        await connectToMaster(device.deviceId);
+      if (device.name && device.name.startsWith("GridCtrl") && !discoveredIds.has(device.deviceId)) {
+        discoveredIds.add(device.deviceId);
+        const discovered: DiscoveredDevice = {
+          deviceId: device.deviceId,
+          name: device.name,
+        };
+        deviceDiscoveredListeners.forEach((cb) => cb(discovered));
       }
     });
 
@@ -147,10 +165,12 @@ export const startScanning = async () => {
       timeout: 30000,
     });
 
-    // Timeout fallback
     setTimeout(async () => {
       if (currentStatus === "scanning") {
-        await stopScanning();
+        try {
+          await BluetoothLowEnergy.stopScan();
+        } catch {}
+        notifyStatus("disconnected");
       }
     }, 31000);
   } catch (e) {
@@ -160,16 +180,20 @@ export const startScanning = async () => {
   }
 };
 
-const connectToMaster = async (deviceId: string) => {
+// ── Viewer: connect to a specific master ──
+export const connectToDevice = async (deviceId: string) => {
   try {
+    // Stop scanning first
+    try {
+      await BluetoothLowEnergy.stopScan();
+    } catch {}
+
     await BluetoothLowEnergy.connect({ deviceId });
     connectedDeviceId = deviceId;
     notifyStatus("connected");
 
-    // Discover services first
     await BluetoothLowEnergy.discoverServices({ deviceId });
 
-    // Start listening for characteristic notifications
     await BluetoothLowEnergy.startCharacteristicNotifications({
       deviceId,
       service: SERVICE_UUID,
@@ -186,7 +210,6 @@ const connectToMaster = async (deviceId: string) => {
     // Initial read
     await readStatesFromMaster();
 
-    // Listen for disconnect
     await BluetoothLowEnergy.addListener("deviceDisconnected", () => {
       connectedDeviceId = null;
       notifyStatus("disconnected");
@@ -194,8 +217,12 @@ const connectToMaster = async (deviceId: string) => {
   } catch (e) {
     console.error("Connect error:", e);
     notifyStatus("disconnected");
+    throw e;
   }
 };
+
+// Keep legacy startScanning for backward compat
+export const startScanning = startScanningForDevices;
 
 const readStatesFromMaster = async () => {
   if (!connectedDeviceId) return;
@@ -214,7 +241,6 @@ const readStatesFromMaster = async () => {
   }
 };
 
-// Start polling for state updates (fallback for when notifications aren't supported)
 let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 export const startPolling = () => {
