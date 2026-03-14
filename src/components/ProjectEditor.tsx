@@ -31,11 +31,13 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
     return { name: projectName.trim(), states, buttonInfos };
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const project = buildProject();
     if (!project) return;
-    saveProjectFile(project);
-    onSave(project);
+    const saved = await saveProjectFile(project);
+    if (saved) {
+      onSave(project);
+    }
   };
 
   const handleAccess = () => {

@@ -65,39 +65,66 @@ export const parseProjectFile = (content: string): ProjectData | null => {
   return null;
 };
 
-// Save file - triggers download with file picker on supported browsers
-export const saveProjectFile = (project: ProjectData) => {
+// Save file - uses Capacitor Filesystem on native, File System Access API on web
+export const saveProjectFile = async (project: ProjectData): Promise<boolean> => {
   const content = formatProjectAsTable(project);
-  const blob = new Blob([content], { type: "text/plain" });
 
-  // Try File System Access API (shows "Save As" dialog)
-  if ("showSaveFilePicker" in window) {
-    (window as any).showSaveFilePicker({
-      suggestedName: `${project.name}.txt`,
-      types: [{
-        description: "Fichier texte",
-        accept: { "text/plain": [".txt"] },
-      }],
-    }).then(async (handle: any) => {
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    }).catch((e: any) => {
-      // User cancelled or API not fully supported - fallback
-      if (e.name !== "AbortError") {
-        downloadFallback(blob, `${project.name}.txt`);
+  // Try Capacitor Filesystem (native Android/iOS)
+  if ((window as any).Capacitor?.isNativePlatform()) {
+    try {
+      const { Filesystem, Directory, Encoding } = await import("@capacitor/filesystem");
+
+      // Request permissions
+      try {
+        await Filesystem.requestPermissions();
+      } catch (e) {
+        console.warn("Filesystem permissions:", e);
       }
-    });
-  } else {
-    downloadFallback(blob, `${project.name}.txt`);
-  }
-};
 
-const downloadFallback = (blob: Blob, filename: string) => {
+      // Save to Documents folder
+      const fileName = `${project.name}.txt`;
+      await Filesystem.writeFile({
+        path: `EssaisContinuite/${fileName}`,
+        data: content,
+        directory: Directory.Documents,
+        encoding: Encoding.UTF8,
+        recursive: true,
+      });
+
+      alert(`Projet enregistré dans Documents/EssaisContinuite/${fileName}`);
+      return true;
+    } catch (e: any) {
+      console.error("Native save error:", e);
+      // Fall through to web fallback
+    }
+  }
+
+  // Web: Try File System Access API (shows "Save As" dialog)
+  if ("showSaveFilePicker" in window) {
+    try {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: `${project.name}.txt`,
+        types: [{
+          description: "Fichier texte",
+          accept: { "text/plain": [".txt"] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return true;
+    } catch (e: any) {
+      if (e.name === "AbortError") return false;
+    }
+  }
+
+  // Final fallback: download
+  const blob = new Blob([content], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = filename;
+  a.download = `${project.name}.txt`;
   a.click();
   URL.revokeObjectURL(url);
+  return true;
 };
