@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import ButtonGrid from "@/components/ButtonGrid";
 import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
+import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
 import { useBle } from "@/hooks/use-ble";
 
-type Screen = "home" | "editor" | "grid";
+type Screen = "home" | "editor" | "grid" | "viewer-scan";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
@@ -22,16 +23,6 @@ const Index = () => {
   const isMaster = role === "master";
   const ble = useBle(role);
   const gridRef = useRef<HTMLDivElement>(null);
-
-  // Viewer: scan when entering grid
-  useEffect(() => {
-    if (screen === "grid" && role === "viewer") {
-      ble.scan();
-    }
-    return () => {
-      if (role === "viewer") ble.stopScan();
-    };
-  }, [screen, role]);
 
   // Viewer: receive states from master
   useEffect(() => {
@@ -55,6 +46,11 @@ const Index = () => {
 
   const handleViewerScan = () => {
     setRole("viewer");
+    setScreen("viewer-scan");
+  };
+
+  const handleViewerConnected = () => {
+    // Once connected to a master session, go to grid
     setProject({ name: "Session Viewer", states: Array(BUTTON_COUNT).fill(0), buttonInfos: createDefaultInfos() });
     setStates(Array(BUTTON_COUNT).fill(0));
     setButtonInfos(createDefaultInfos());
@@ -68,11 +64,11 @@ const Index = () => {
       const currentState = next[index];
       const newState = (currentState + 1) % 4;
 
-      // "En cours" (state 1) exclusivity: only one button can be "en cours" at a time
+      // "En cours" (state 1) exclusivity
       if (newState === 1) {
         for (let i = 0; i < next.length; i++) {
           if (next[i] === 1) {
-            next[i] = 0; // Reset other "en cours" to "attente"
+            next[i] = 0;
           }
         }
       }
@@ -124,6 +120,15 @@ const Index = () => {
       <ProjectEditor
         onSave={(p) => loadProject(p, "master")}
         onAccess={(p) => loadProject(p, "master")}
+        onCancel={() => setScreen("home")}
+      />
+    );
+  }
+
+  if (screen === "viewer-scan") {
+    return (
+      <ViewerSessionList
+        onConnected={handleViewerConnected}
         onCancel={() => setScreen("home")}
       />
     );
@@ -200,7 +205,6 @@ const Index = () => {
           <span className="text-[11px] text-muted-foreground">Appuyez sur un bouton pour voir ses infos</span>
         )}
 
-        {/* Legend inline in landscape */}
         <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" /> Attente</span>
           <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-state-warning inline-block" /> En cours</span>

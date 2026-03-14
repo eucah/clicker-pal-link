@@ -23,15 +23,7 @@ export const checkAndRequestPermissions = async () => {
         const userConfirmed = confirm(
           "Le Bluetooth est désactivé. Veuillez l'activer dans les paramètres pour utiliser cette application."
         );
-        if (userConfirmed) {
-          // Try to open Bluetooth settings on Android
-          try {
-            const { App: CapApp } = await import("@capacitor/app");
-            // Fallback: just alert again
-          } catch {
-            // ignore
-          }
-        }
+        // User acknowledged, they need to enable BT manually
       }
     } catch {
       alert("Veuillez activer le Bluetooth pour utiliser cette application.");
