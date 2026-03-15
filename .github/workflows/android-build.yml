@@ -25,14 +25,12 @@ jobs:
         # Changed from --force to --legacy-peer-deps
         run: npm install --legacy-peer-deps
 
+      - name: Install Capacitor
+        run: npm install @capacitor/core @capacitor/android
+
       - name: Build web
         run: npm run build
 
-      - name: Install Capacitor Android
-        run: npm install @capacitor/android
-
-      # Note: 'cap add android' fails if the folder exists. 
-      # 'cap sync' is better if you already have the android folder in your repo.
       - name: Sync Capacitor
         run: npx cap sync android
 
