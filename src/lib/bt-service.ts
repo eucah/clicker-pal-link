@@ -228,7 +228,7 @@ export const stopScanning = async () => {
   try {
     const BT = await getBtPlugin();
     await BT.disconnect();
-    await BT.removeAllListeners();
+    try { await (BT as any).removeAllListeners(); } catch {}
   } catch (e) {
     console.error("Disconnect error:", e);
   }
