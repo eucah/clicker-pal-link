@@ -60,7 +60,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
   }, []);
 
   const handleCancel = useCallback(async () => {
-    await stopScanning();
+    try { await stopScanning(); } catch (e) { console.error("Stop scan error:", e); }
     onCancel();
   }, [onCancel]);
 
