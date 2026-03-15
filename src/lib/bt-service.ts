@@ -70,7 +70,10 @@ const decodeStates = (data: string): number[] | null => {
   return states;
 };
 
+const isNative = () => !!(window as any).Capacitor?.isNativePlatform();
+
 const getBtPlugin = async () => {
+  if (!isNative()) throw new Error("Bluetooth non disponible sur le web");
   const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
   return BluetoothCommunication;
 };
