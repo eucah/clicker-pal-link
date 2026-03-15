@@ -25,6 +25,9 @@ jobs:
         # Changed from --force to --legacy-peer-deps
         run: npm install --legacy-peer-deps
 
+      - name: Install Bun
+        run: curl -fsSL https://bun.sh/install | bash
+
       - name: Update Browserslist
         # This fixes the "browsers data is old" warning in your logs
         run: npx update-browserslist-db@latest
