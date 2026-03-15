@@ -2,41 +2,26 @@
 // Uses Capacitor native APIs when available
 
 export const checkAndRequestPermissions = async () => {
+  // Only run on native Android
   if (!(window as any).Capacitor?.isNativePlatform()) return;
 
-  // Request Bluetooth permissions and enable
   try {
-    const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
-    await BluetoothCommunication.initialize();
-    await BluetoothCommunication.enableBluetooth();
-  } catch (e) {
-    console.warn("BT permission/enable error:", e);
-    alert("Veuillez activer le Bluetooth pour utiliser cette application.");
-  }
+    const { BluetoothLowEnergy } = await import("@capgo/capacitor-bluetooth-low-energy");
 
-  // Request Filesystem permissions
-  try {
-    const { Filesystem } = await import("@capacitor/filesystem");
+    // Request runtime permissions (BLUETOOTH_SCAN, BLUETOOTH_CONNECT, BLUETOOTH_ADVERTISE)
     try {
-      await Filesystem.requestPermissions();
+      await BluetoothLowEnergy.requestPermissions();
     } catch (e) {
-      console.warn("Filesystem requestPermissions:", e);
+      console.warn("BLE requestPermissions:", e);
+    }
+
+    // Check Bluetooth is enabled
+    try {
+      await BluetoothLowEnergy.isEnabled();
+    } catch {
+      alert("Veuillez activer le Bluetooth pour utiliser cette application.");
     }
   } catch (e) {
-    console.warn("Filesystem permission check error:", e);
-  }
-};
-
-export const ensureBluetoothEnabled = async (): Promise<boolean> => {
-  if (!(window as any).Capacitor?.isNativePlatform()) return true;
-
-  try {
-    const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
-    await BluetoothCommunication.initialize();
-    await BluetoothCommunication.enableBluetooth();
-    return true;
-  } catch {
-    alert("Veuillez activer le Bluetooth dans les paramètres de votre téléphone, puis réessayez.");
-    return false;
+    console.warn("Permission check error:", e);
   }
 };

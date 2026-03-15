@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  BtConnectionStatus,
+  BleConnectionStatus,
   onStatusChange,
   onDataReceived,
   getConnectionStatus,
@@ -9,12 +9,10 @@ import {
   updateAdvertisedStates,
   startScanning,
   stopScanning,
-} from "@/lib/bt-service";
-
-export type { BtConnectionStatus as BleConnectionStatus };
+} from "@/lib/ble-service";
 
 export const useBle = (role: "master" | "viewer") => {
-  const [status, setStatus] = useState<BtConnectionStatus>(getConnectionStatus());
+  const [status, setStatus] = useState<BleConnectionStatus>(getConnectionStatus());
   const [receivedStates, setReceivedStates] = useState<number[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
