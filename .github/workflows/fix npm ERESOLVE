@@ -1,0 +1,146 @@
+ 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Updated GitHub Actions Workflow (Fix npm ERESOLVE)</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#0f172a;
+      --ink:#e7eefc;
+      --muted:#9bb0d1;
+      --line:rgba(255,255,255,.12);
+      --accent:#7c3aed;
+      --accent2:#22c55e;
+      --warn:#f59e0b;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+    body{margin:0;background:radial-gradient(900px 500px at 15% 0%, rgba(124,58,237,.22), transparent 60%),
+                       radial-gradient(800px 500px at 90% 10%, rgba(34,197,94,.14), transparent 55%),
+                       var(--bg);
+         color:var(--ink);font-family:var(--sans);line-height:1.45}
+    main{max-width:980px;margin:0 auto;padding:40px 18px 60px}
+    header{padding:18px 0 22px;border-bottom:1px solid var(--line)}
+    h1{margin:0 0 10px;font-size:clamp(22px,3.6vw,34px);letter-spacing:-.02em}
+    p{margin:0;color:var(--muted)}
+    .panel{margin-top:22px;background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+           border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;
+         padding:14px 16px;border-bottom:1px solid var(--line);background:rgba(0,0,0,.15)}
+    .badge{font:600 12px/1 var(--sans);padding:7px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+    .badge.good{border-color:rgba(34,197,94,.35);color:#bff3d1;background:rgba(34,197,94,.10)}
+    .badge.warn{border-color:rgba(245,158,11,.35);color:#ffe6b0;background:rgba(245,158,11,.10)}
+    pre{margin:0;padding:16px;background:transparent;overflow:auto;font-family:var(--mono);font-size:13px}
+    code{font-family:var(--mono)}
+    .hint{padding:14px 16px;border-top:1px solid var(--line);color:var(--muted)}
+    .hint strong{color:var(--ink)}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Updated workflow.yml (fix npm <code>ERESOLVE</code>)</h1>
+    <p>Your failure is caused by a Capacitor peer-dependency conflict; this update makes installs succeed in CI by using <code>--legacy-peer-deps</code> and avoids re-initializing Capacitor each run.</p>
+  </header>
+
+  <section class="panel" aria-label="Updated workflow YAML">
+    <div class="bar">
+      <span class="badge good">Recommended CI fix</span>
+      <span class="badge warn">Note: you should still upgrade/replace the conflicting plugin long-term</span>
+    </div>
+
+<pre><code>name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      # FIX: npm peer-dependency conflict (Capacitor 8 vs plugin expecting Capacitor 6)
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build web
+        run: npm run build
+
+      # If your repo already has Capacitor configured, do NOT run cap init in CI.
+      # cap init overwrites/creates capacitor.config.* and can cause drift.
+      #
+      # If you do NOT commit android/ to the repo, we will generate it here.
+      - name: Ensure Capacitor Android platform is installed
+        run: npm i -D @capacitor/android --legacy-peer-deps
+
+      - name: Create Android project (if missing)
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          else
+            echo "android/ already exists — skipping cap add"
+          fi
+
+      - name: Add permissions to AndroidManifest
+        run: |
+          # Add BLE and storage permissions
+          sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\n    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\n    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\n    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
+
+      - name: Update app label and icon
+        run: |
+          sed -i 's|android:label="@string/app_name"|android:label="Essais Continuité"|' android/app/src/main/AndroidManifest.xml
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Essais Continuité</string>|' android/app/src/main/res/values/strings.xml
+          # Copy app icon to all Android drawable densities
+          for dir in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher.png"
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_round.png"
+            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_foreground.png" 2>/dev/null || true
+          done
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: essais-continuite-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+</code></pre>
+
+    <div class="hint">
+      <strong>What changed?</strong>
+      <ul>
+        <li>Replaced <code>npm install</code> with <code>npm ci --legacy-peer-deps</code> to bypass the peer conflict in CI.</li>
+        <li>Added npm cache and Gradle cache for faster builds.</li>
+        <li>Removed <code>npx cap init</code> (should be done once locally and committed; running in CI can cause config drift).</li>
+        <li>Only runs <code>cap add android</code> if <code>android/</code> doesn’t already exist.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+</body>
+</html>
