@@ -14,14 +14,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          # Caching disabled as per your requirement
-          cache: ''
-
+          
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17 # Better compatibility for Capacitor 8/Android Gradle Plugin 8.2
+          java-version: 17
 
       - name: Install dependencies
         # Changed from --force to --legacy-peer-deps
