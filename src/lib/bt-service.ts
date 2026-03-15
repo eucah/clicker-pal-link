@@ -143,7 +143,7 @@ export const stopAdvertising = async () => {
   try {
     const BT = await getBtPlugin();
     await BT.stopServer();
-    await BT.removeAllListeners();
+    try { await (BT as any).removeAllListeners(); } catch {}
   } catch (e) {
     console.error("Stop server error:", e);
   }
