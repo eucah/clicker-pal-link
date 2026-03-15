@@ -9,7 +9,7 @@ import {
   connectToDevice,
   stopScanning,
   getConnectionStatus,
-} from "@/lib/ble-service";
+} from "@/lib/bt-service";
 
 interface ViewerSessionListProps {
   onConnected: () => void;
@@ -31,7 +31,6 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       });
     });
 
-    // Start scanning
     startScanningForDevices().catch((e) => {
       setError(e.message || "Erreur Bluetooth");
     });
@@ -42,7 +41,6 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
     };
   }, []);
 
-  // When connected, notify parent
   useEffect(() => {
     if (status === "connected" && connecting) {
       setConnecting(null);
@@ -87,11 +85,10 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
           <h1 className="text-lg font-bold text-foreground">Sessions disponibles</h1>
         </div>
 
-        {/* Scanning indicator */}
         {status === "scanning" && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3 animate-pulse">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Recherche de sessions Master...
+            Recherche d'appareils Bluetooth...
           </div>
         )}
 
@@ -101,11 +98,10 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
           </div>
         )}
 
-        {/* Device list */}
         <div className="space-y-2 mb-4">
           {devices.length === 0 && status !== "scanning" && (
             <p className="text-sm text-muted-foreground text-center py-6">
-              Aucune session trouvée
+              Aucun appareil trouvé. Assurez-vous que le Master a démarré le serveur Bluetooth.
             </p>
           )}
           {devices.length === 0 && status === "scanning" && (
@@ -136,7 +132,6 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
           ))}
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleRescan} className="flex-1 gap-2" size="sm">
             <Bluetooth className="w-4 h-4" /> Relancer

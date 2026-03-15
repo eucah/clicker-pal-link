@@ -2,34 +2,16 @@
 // Uses Capacitor native APIs when available
 
 export const checkAndRequestPermissions = async () => {
-  // Only run on native Android
   if (!(window as any).Capacitor?.isNativePlatform()) return;
 
-  // Request Bluetooth permissions
+  // Request Bluetooth permissions and enable
   try {
-    const { BluetoothLowEnergy } = await import("@capgo/capacitor-bluetooth-low-energy");
-
-    try {
-      await BluetoothLowEnergy.requestPermissions();
-    } catch (e) {
-      console.warn("BLE requestPermissions:", e);
-    }
-
-    // Check Bluetooth is enabled and prompt user to activate
-    try {
-      const result = await BluetoothLowEnergy.isEnabled();
-      if (!result.enabled) {
-        // Prompt user to enable Bluetooth
-        const userConfirmed = confirm(
-          "Le Bluetooth est désactivé. Veuillez l'activer dans les paramètres pour utiliser cette application."
-        );
-        // User acknowledged, they need to enable BT manually
-      }
-    } catch {
-      alert("Veuillez activer le Bluetooth pour utiliser cette application.");
-    }
+    const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
+    await BluetoothCommunication.initialize();
+    await BluetoothCommunication.enableBluetooth();
   } catch (e) {
-    console.warn("BLE permission check error:", e);
+    console.warn("BT permission/enable error:", e);
+    alert("Veuillez activer le Bluetooth pour utiliser cette application.");
   }
 
   // Request Filesystem permissions
@@ -49,22 +31,12 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   if (!(window as any).Capacitor?.isNativePlatform()) return true;
 
   try {
-    const { BluetoothLowEnergy } = await import("@capgo/capacitor-bluetooth-low-energy");
-    
-    try {
-      await BluetoothLowEnergy.requestPermissions();
-    } catch (e) {
-      console.warn("BLE requestPermissions:", e);
-    }
-
-    const result = await BluetoothLowEnergy.isEnabled();
-    if (!result.enabled) {
-      alert("Veuillez activer le Bluetooth dans les paramètres de votre téléphone, puis réessayez.");
-      return false;
-    }
+    const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
+    await BluetoothCommunication.initialize();
+    await BluetoothCommunication.enableBluetooth();
     return true;
   } catch {
-    alert("Bluetooth non disponible sur cet appareil.");
+    alert("Veuillez activer le Bluetooth dans les paramètres de votre téléphone, puis réessayez.");
     return false;
   }
 };

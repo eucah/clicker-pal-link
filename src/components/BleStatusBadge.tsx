@@ -1,4 +1,4 @@
-import { BleConnectionStatus } from "@/lib/ble-service";
+import { BtConnectionStatus as BleConnectionStatus } from "@/lib/bt-service";
 import { Bluetooth, BluetoothOff, BluetoothSearching, BluetoothConnected } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 

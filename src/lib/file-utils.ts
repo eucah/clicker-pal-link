@@ -1,6 +1,8 @@
 import { ButtonInfo, ProjectData, BUTTON_COUNT, getButtonLabel } from "@/types/project";
 
-// Format project data as a readable table in text format
+const STATE_NAMES = ["Attente", "En cours", "Validé", "Défaut"] as const;
+
+// Format project data as a readable table in text format (no JSON)
 export const formatProjectAsTable = (project: ProjectData): string => {
   const lines: string[] = [];
   lines.push(`Projet: ${project.name}`);
@@ -16,12 +18,10 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   );
   lines.push("-".repeat(70));
 
-  const stateNames = ["Attente", "En cours", "Validé", "Défaut"];
-
   for (let i = 0; i < BUTTON_COUNT; i++) {
     const label = String(getButtonLabel(i));
     const info = project.buttonInfos[i];
-    const state = stateNames[project.states[i]] || "Attente";
+    const state = STATE_NAMES[project.states[i]] || "Attente";
     const locked = info.locked ? "Oui" : "Non";
     lines.push(
       padRight(label, 6) +
@@ -33,10 +33,6 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   }
 
   lines.push("=".repeat(70));
-  lines.push("");
-  lines.push("--- JSON (ne pas modifier ci-dessous) ---");
-  lines.push(JSON.stringify(project));
-
   return lines.join("\n");
 };
 
@@ -44,10 +40,10 @@ function padRight(str: string, len: number): string {
   return str.length >= len ? str.substring(0, len) : str + " ".repeat(len - str.length);
 }
 
-// Parse a project file - supports both table format and plain JSON
+// Parse a project file from table format
 export const parseProjectFile = (content: string): ProjectData | null => {
   try {
-    // Try to find JSON after the marker
+    // Try legacy JSON marker first (backward compat)
     const jsonMarker = "--- JSON (ne pas modifier ci-dessous) ---";
     const markerIndex = content.indexOf(jsonMarker);
     if (markerIndex !== -1) {
@@ -56,13 +52,62 @@ export const parseProjectFile = (content: string): ProjectData | null => {
       if (data.name && data.states && data.buttonInfos) return data;
     }
 
-    // Fallback: try parsing the whole content as JSON
-    const data = JSON.parse(content) as ProjectData;
-    if (data.name && data.states && data.buttonInfos) return data;
+    // Try parsing as plain JSON (backward compat)
+    try {
+      const data = JSON.parse(content) as ProjectData;
+      if (data.name && data.states && data.buttonInfos) return data;
+    } catch { /* not JSON, parse table */ }
+
+    // Parse table format
+    const lines = content.split("\n").map((l) => l.trimEnd());
+
+    // Extract project name
+    const nameLine = lines.find((l) => l.startsWith("Projet:"));
+    if (!nameLine) return null;
+    const name = nameLine.replace("Projet:", "").trim();
+    if (!name) return null;
+
+    // Find the data rows (after the dashed separator)
+    const dashIndex = lines.findIndex((l) => /^-{10,}/.test(l));
+    if (dashIndex === -1) return null;
+
+    const states: number[] = [];
+    const buttonInfos: ButtonInfo[] = [];
+
+    const stateMap: Record<string, number> = {
+      "Attente": 0,
+      "En cours": 1,
+      "Validé": 2,
+      "Défaut": 3,
+    };
+
+    for (let i = dashIndex + 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line || /^={10,}/.test(line)) break;
+
+      // Parse fixed-width columns: N°(6) Fils(20) Bornier(20) État(12) NonTesté(10)
+      const num = line.substring(0, 6).trim();
+      if (!num || isNaN(Number(num))) continue;
+
+      const fils = line.substring(6, 26).trim();
+      const bornier = line.substring(26, 46).trim();
+      const etat = line.substring(46, 58).trim();
+      const nonTeste = line.substring(58).trim();
+
+      states.push(stateMap[etat] ?? 0);
+      buttonInfos.push({
+        fils: fils === "-" ? "" : fils,
+        bornier: bornier === "-" ? "" : bornier,
+        locked: nonTeste === "Oui",
+      });
+    }
+
+    if (states.length !== BUTTON_COUNT) return null;
+
+    return { name, states, buttonInfos };
   } catch {
-    // ignore
+    return null;
   }
-  return null;
 };
 
 // Save file - uses Capacitor Filesystem on native, File System Access API on web
@@ -74,14 +119,12 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
     try {
       const { Filesystem, Directory, Encoding } = await import("@capacitor/filesystem");
 
-      // Request permissions
       try {
         await Filesystem.requestPermissions();
       } catch (e) {
         console.warn("Filesystem permissions:", e);
       }
 
-      // Save to Documents folder
       const fileName = `${project.name}.txt`;
       await Filesystem.writeFile({
         path: `EssaisContinuite/${fileName}`,
@@ -95,11 +138,10 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
       return true;
     } catch (e: any) {
       console.error("Native save error:", e);
-      // Fall through to web fallback
     }
   }
 
-  // Web: Try File System Access API (shows "Save As" dialog)
+  // Web: Try File System Access API
   if ("showSaveFilePicker" in window) {
     try {
       const handle = await (window as any).showSaveFilePicker({
