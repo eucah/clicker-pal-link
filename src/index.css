@@ -124,3 +124,12 @@
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }
+
+/* Slow pulsing animation for "En cours" state buttons */
+@keyframes pulse-intensity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+.animate-pulse-slow {
+  animation: pulse-intensity 2s ease-in-out infinite;
+}
