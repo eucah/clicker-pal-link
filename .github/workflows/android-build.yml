@@ -38,8 +38,16 @@ jobs:
 
       - name: Add permissions to AndroidManifest
         run: |
-          # Add BLE and storage permissions for Android 16
-          sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\n    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\n    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\n    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
+          sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\
+</manifest>|' android/app/src/main/AndroidManifest.xml
 
       - name: Update app label and icon
         run: |
@@ -65,4 +73,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: essais-continuite-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/EssaisContinuité.apk
