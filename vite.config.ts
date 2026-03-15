@@ -7,18 +7,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // FORCE Vite to find the correct Capacitor Core
+      // This line is the fix for the Rollup/Vite error
       "@capacitor/core": path.resolve(__dirname, "node_modules/@capacitor/core"),
     },
   },
   optimizeDeps: {
-    // Force Vite to pre-bundle these to resolve version conflicts
+    // This ensures the plugin is pre-bundled correctly
     include: ["@yesprasoon/capacitor-bluetooth-communication", "@capacitor/core"],
-  },
-  build: {
-    commonjsOptions: {
-      include: [/node_modules/],
-      transformMixedEsModules: true,
-    },
   },
 });
