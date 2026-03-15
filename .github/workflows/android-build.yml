@@ -14,15 +14,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          # Caching disabled as per your requirement
+          cache: ''
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 17 # Better compatibility for Capacitor 8/Android Gradle Plugin 8.2
 
       - name: Install dependencies
-        run: npm install
+        # Use --legacy-peer-deps to fix the Capacitor 6 vs 8 conflict for the Bluetooth plugin
+        run: npm install --legacy-peer-deps
 
       - name: Build web
         run: npm run build
@@ -30,47 +33,26 @@ jobs:
       - name: Install Capacitor Android
         run: npm install @capacitor/android
 
-      - name: Init Capacitor
-        run: npx cap init "Essais Continuité" com.eucah.clickerpal
-
-      - name: Create Android project
-        run: npx cap add android
+      # Note: 'cap add android' fails if the folder exists. 
+      # 'cap sync' is better if you already have the android folder in your repo.
+      - name: Sync Capacitor
+        run: npx cap sync android
 
       - name: Add permissions to AndroidManifest
         run: |
-          sed -i 's|</manifest>|    <uses-permission android:name="android.permission.BLUETOOTH" />\
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />\
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />\
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />\
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />\
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />\
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />\
-</manifest>|' android/app/src/main/AndroidManifest.xml
-
-      - name: Update app label and icon
-        run: |
-          sed -i 's|android:label="@string/app_name"|android:label="Essais Continuité"|' android/app/src/main/AndroidManifest.xml
-          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">Essais Continuité</string>|' android/app/src/main/res/values/strings.xml
-          # Copy app icon to all Android drawable densities
-          for dir in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
-            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher.png"
-            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_round.png"
-            cp public/app-icon.png "android/app/src/main/res/mipmap-${dir}/ic_launcher_foreground.png" 2>/dev/null || true
-          done
-
-      - name: Sync Capacitor
-        run: npx cap sync
+          # Ensuring permissions are added before the closing manifest tag
+          sed -i '/<\/manifest>/i \    <uses-permission android:name="android.permission.BLUETOOTH" />\n    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />\n    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />\n    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' android/app/src/main/AndroidManifest.xml
 
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
+          # This builds the debug APK
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: essais-continuite-apk
-          path: android/app/build/outputs/apk/debug/EssaisContinuité.apk
+          name: clicker-pal-apk
+          # The default output name is usually app-debug.apk unless you renamed the project in build.gradle
+          path: android/app/build/outputs/apk/debug/app-debug.apk
