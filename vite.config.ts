@@ -7,14 +7,18 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    commonjsOptions: {
-      transformMixedEsModules: true, // Helps with older plugins
+      // FORCE Vite to find the correct Capacitor Core
+      "@capacitor/core": path.resolve(__dirname, "node_modules/@capacitor/core"),
     },
   },
   optimizeDeps: {
+    // Force Vite to pre-bundle these to resolve version conflicts
     include: ["@yesprasoon/capacitor-bluetooth-communication", "@capacitor/core"],
+  },
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
   },
 });
