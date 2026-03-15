@@ -24,8 +24,12 @@ jobs:
           java-version: 17 # Better compatibility for Capacitor 8/Android Gradle Plugin 8.2
 
       - name: Install dependencies
-        # Use --legacy-peer-deps to fix the Capacitor 6 vs 8 conflict for the Bluetooth plugin
+        # Changed from --force to --legacy-peer-deps
         run: npm install --legacy-peer-deps
+
+      - name: Update Browserslist
+        # This fixes the "browsers data is old" warning in your logs
+        run: npx update-browserslist-db@latest
 
       - name: Build web
         run: npm run build
