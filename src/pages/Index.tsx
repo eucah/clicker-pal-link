@@ -193,6 +193,9 @@ const Index = () => {
               Fils: <span className="text-foreground font-medium">{selectedInfo.fils || "—"}</span>
             </span>
             <span className="text-[11px] text-muted-foreground">
+              Borne: <span className="text-foreground font-medium">{selectedInfo.borne || "—"}</span>
+            </span>
+            <span className="text-[11px] text-muted-foreground">
               Bornier: <span className="text-foreground font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
             {selectedInfo.locked && (

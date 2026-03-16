@@ -234,13 +234,14 @@ export const stopPolling = () => {
 
 export const stopScanning = async () => {
   stopPolling();
+  notifyStatus("disconnected");
+  isInitialized = false;
+
   try {
     const BT = await getBtPlugin();
     await BT.disconnect();
-    try { await (BT as any).removeAllListeners(); } catch {}
+    try { await (BT as any).removeAllListeners?.(); } catch {}
   } catch (e) {
     console.error("Disconnect error:", e);
   }
-  notifyStatus("disconnected");
-  isInitialized = false;
 };
