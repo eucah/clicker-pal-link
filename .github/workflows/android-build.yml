@@ -19,22 +19,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Set up JDK 25
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Verify Java version
-        run: |
-          java -version
-          echo "JAVA_HOME=$JAVA_HOME"
-
-      - name: Build and cache dependencies
-        run: |
-          mvn dependency:go-offline -B
-          mvn compile -DskipTests -B
+          distribution: temurin
+          java-version: 21
           
       - name: Install dependencies
         run: npm install --legacy-peer-deps
