@@ -1,0 +1,29 @@
+# npm audit report
+
+tmp  <=0.2.3
+tmp allows arbitrary temporary file / directory write via symbolic link `dir` parameter - https://github.com/advisories/GHSA-52f5-9888-hmc6
+fix available via `npm audit fix --force`
+Will install @capacitor/cli@8.2.0, which is a breaking change
+node_modules/tmp
+  external-editor  >=1.1.1
+  Depends on vulnerable versions of tmp
+  node_modules/external-editor
+    inquirer  3.0.0 - 8.2.6 || 9.0.0 - 9.3.7
+    Depends on vulnerable versions of external-editor
+    node_modules/inquirer
+      @capacitor/cli  <=4.7.3 || 5.0.0-alpha.1 - 5.0.0-rc.3
+      Depends on vulnerable versions of inquirer
+      Depends on vulnerable versions of xml2js
+      node_modules/@capacitor/cli
+
+xml2js  <0.5.0
+Severity: moderate
+xml2js is vulnerable to prototype pollution - https://github.com/advisories/GHSA-776f-qx25-q3cc
+fix available via `npm audit fix --force`
+Will install @capacitor/cli@8.2.0, which is a breaking change
+node_modules/xml2js
+
+5 vulnerabilities (3 low, 2 moderate)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
