@@ -28,6 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Generate Android Icons
+        run: |
+          # On installe l'outil de génération s'il n'est pas déjà dans vos devDependencies
+          npx @capacitor/assets generate --android --iconSource app-icon.png
+
       - name: Build web app
         run: npm run build
 
