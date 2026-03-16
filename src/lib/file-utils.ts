@@ -8,15 +8,16 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   lines.push(`Projet: ${project.name}`);
   lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
   lines.push("");
-  lines.push("=".repeat(70));
+  lines.push("=".repeat(90));
   lines.push(
     padRight("N°", 6) +
     padRight("Fils", 20) +
+    padRight("Borne", 14) +
     padRight("Bornier", 20) +
     padRight("État", 12) +
     padRight("Non Testé", 10)
   );
-  lines.push("-".repeat(70));
+  lines.push("-".repeat(90));
 
   for (let i = 0; i < BUTTON_COUNT; i++) {
     const label = String(getButtonLabel(i));
@@ -26,13 +27,14 @@ export const formatProjectAsTable = (project: ProjectData): string => {
     lines.push(
       padRight(label, 6) +
       padRight(info.fils || "-", 20) +
+      padRight(info.borne || "-", 14) +
       padRight(info.bornier || "-", 20) +
       padRight(state, 12) +
       padRight(locked, 10)
     );
   }
 
-  lines.push("=".repeat(70));
+  lines.push("=".repeat(90));
   return lines.join("\n");
 };
 

@@ -4,6 +4,7 @@ import { FolderOpen, Plus, Crown, Eye, Bluetooth } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
+import { stopScanning } from "@/lib/bt-service";
 
 export type AppRole = "master" | "viewer";
 
