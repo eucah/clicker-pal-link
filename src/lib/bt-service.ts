@@ -130,8 +130,9 @@ export const startAdvertising = async (states: number[]) => {
 
   try {
     const BT = await getBtPlugin();
+    await removeServerListener();
 
-    await BT.addListener("dataReceived", async (event: any) => {
+    serverDataListener = await BT.addListener("dataReceived", async (event: any) => {
       const data = event?.data ?? event;
       if (data === "HELLO") {
         try {
