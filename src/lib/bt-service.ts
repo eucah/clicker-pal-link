@@ -256,11 +256,11 @@ export const stopScanning = async () => {
   stopPolling();
   notifyStatus("disconnected");
   isInitialized = false;
+  await removeClientListener();
 
   try {
     const BT = await getBtPlugin();
     await BT.disconnect();
-    try { await (BT as any).removeAllListeners?.(); } catch {}
   } catch (e) {
     console.error("Disconnect error:", e);
   }
