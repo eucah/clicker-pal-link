@@ -148,15 +148,16 @@ export const updateAdvertisedStates = async (states: number[]) => {
 export const getLatestStates = () => latestStates;
 
 export const stopAdvertising = async () => {
+  notifyStatus("disconnected");
+  isInitialized = false;
+
   try {
     const BT = await getBtPlugin();
     await BT.stopServer();
-    try { await (BT as any).removeAllListeners(); } catch {}
+    try { await (BT as any).removeAllListeners?.(); } catch {}
   } catch (e) {
     console.error("Stop server error:", e);
   }
-  notifyStatus("disconnected");
-  isInitialized = false;
 };
 
 // ── Viewer: scan for devices ──
