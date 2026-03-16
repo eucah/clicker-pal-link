@@ -1,5 +1,6 @@
 export interface ButtonInfo {
   fils: string;
+  borne: string;
   bornier: string;
   locked: boolean;
 }
@@ -20,7 +21,7 @@ export const STATE_LABELS = [
 ] as const;
 
 export const createDefaultInfos = (): ButtonInfo[] =>
-  Array.from({ length: BUTTON_COUNT }, () => ({ fils: "", bornier: "", locked: false }));
+  Array.from({ length: BUTTON_COUNT }, () => ({ fils: "", borne: "", bornier: "", locked: false }));
 
 export const getButtonLabel = (index: number): number =>
   index < 75 ? index + 1 : index - 75 + 101;

@@ -4,6 +4,7 @@ import { FolderOpen, Plus, Crown, Eye, Bluetooth } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
+import { stopScanning } from "@/lib/bt-service";
 
 export type AppRole = "master" | "viewer";
 
@@ -78,7 +79,15 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
             <Eye className="w-4 h-4 text-muted-foreground" />
             <span>Viewer</span>
           </div>
-          <Button variant="outline" onClick={onViewerScan} className="w-full gap-2" size="sm">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try { await stopScanning(); } catch {}
+              onViewerScan();
+            }}
+            className="w-full gap-2"
+            size="sm"
+          >
             <Bluetooth className="w-4 h-4" /> Rechercher projet partagé
           </Button>
           <p className="text-[10px] text-muted-foreground text-center">

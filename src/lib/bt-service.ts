@@ -18,6 +18,8 @@ let dataListeners: DataCallback[] = [];
 let deviceDiscoveredListeners: DeviceDiscoveredCallback[] = [];
 let isInitialized = false;
 let pollInterval: ReturnType<typeof setInterval> | null = null;
+let serverDataListener: { remove: () => Promise<void> } | null = null;
+let clientDataListener: { remove: () => Promise<void> } | null = null;
 
 const notifyStatus = (status: BtConnectionStatus) => {
   currentStatus = status;
@@ -99,6 +101,22 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   }
 };
 
+const removeServerListener = async () => {
+  if (!serverDataListener) return;
+  try {
+    await serverDataListener.remove();
+  } catch {}
+  serverDataListener = null;
+};
+
+const removeClientListener = async () => {
+  if (!clientDataListener) return;
+  try {
+    await clientDataListener.remove();
+  } catch {}
+  clientDataListener = null;
+};
+
 // ── Master: start as server ──
 let latestStates: number[] = [];
 
@@ -112,13 +130,19 @@ export const startAdvertising = async (states: number[]) => {
 
   try {
     const BT = await getBtPlugin();
+    await removeServerListener();
 
-    // Listen for incoming data from viewer (not expected, but handle gracefully)
-    await BT.addListener("dataReceived", (event: any) => {
-      console.log("Server received:", event.data);
+    serverDataListener = await BT.addListener("dataReceived", async (event: any) => {
+      const data = event?.data ?? event;
+      if (data === "HELLO") {
+        try {
+          await BT.sendData({ data: encodeStates(latestStates) });
+        } catch (sendError) {
+          console.warn("Initial states send error:", sendError);
+        }
+      }
     });
 
-    // Start RFCOMM server
     await BT.startServer();
     notifyStatus("connected");
   } catch (e) {
@@ -143,15 +167,16 @@ export const updateAdvertisedStates = async (states: number[]) => {
 export const getLatestStates = () => latestStates;
 
 export const stopAdvertising = async () => {
+  notifyStatus("disconnected");
+  isInitialized = false;
+  await removeServerListener();
+
   try {
     const BT = await getBtPlugin();
     await BT.stopServer();
-    try { await (BT as any).removeAllListeners(); } catch {}
   } catch (e) {
     console.error("Stop server error:", e);
   }
-  notifyStatus("disconnected");
-  isInitialized = false;
 };
 
 // ── Viewer: scan for devices ──
@@ -192,10 +217,10 @@ export const startScanningForDevices = async () => {
 export const connectToDevice = async (deviceId: string) => {
   try {
     const BT = await getBtPlugin();
+    await removeClientListener();
 
-    // Listen for data from master
-    await BT.addListener("dataReceived", (event: any) => {
-      const data = event.data || event;
+    clientDataListener = await BT.addListener("dataReceived", (event: any) => {
+      const data = event?.data ?? event;
       if (typeof data === "string") {
         const states = decodeStates(data);
         if (states) {
@@ -205,6 +230,7 @@ export const connectToDevice = async (deviceId: string) => {
     });
 
     await BT.connect({ address: deviceId });
+    await BT.sendData({ data: "HELLO" });
     notifyStatus("connected");
   } catch (e) {
     console.error("Connect error:", e);
@@ -228,13 +254,14 @@ export const stopPolling = () => {
 
 export const stopScanning = async () => {
   stopPolling();
+  notifyStatus("disconnected");
+  isInitialized = false;
+  await removeClientListener();
+
   try {
     const BT = await getBtPlugin();
     await BT.disconnect();
-    try { await (BT as any).removeAllListeners(); } catch {}
   } catch (e) {
     console.error("Disconnect error:", e);
   }
-  notifyStatus("disconnected");
-  isInitialized = false;
 };

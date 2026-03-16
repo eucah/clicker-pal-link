@@ -91,18 +91,17 @@ const Index = () => {
     }
   };
 
-  const handleGoHome = async () => {
-    try {
-      if (isMaster) await ble.stopSharing();
-      else await ble.stopScan();
-    } catch (e) {
-      console.error("Error stopping BLE:", e);
-    }
+  const handleGoHome = () => {
     setProject(null);
     setStates(Array(BUTTON_COUNT).fill(0));
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("home");
+
+    const stopPromise = isMaster ? ble.stopSharing() : ble.stopScan();
+    void stopPromise.catch((e) => {
+      console.error("Error stopping Bluetooth:", e);
+    });
   };
 
   if (screen === "home") {
@@ -191,6 +190,9 @@ const Index = () => {
             <span className="text-[11px] font-bold text-foreground">#{selectedLabel}</span>
             <span className="text-[11px] text-muted-foreground">
               Fils: <span className="text-foreground font-medium">{selectedInfo.fils || "—"}</span>
+            </span>
+            <span className="text-[11px] text-muted-foreground">
+              Borne: <span className="text-foreground font-medium">{selectedInfo.borne || "—"}</span>
             </span>
             <span className="text-[11px] text-muted-foreground">
               Bornier: <span className="text-foreground font-medium">{selectedInfo.bornier || "—"}</span>

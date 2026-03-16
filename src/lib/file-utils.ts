@@ -8,15 +8,16 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   lines.push(`Projet: ${project.name}`);
   lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
   lines.push("");
-  lines.push("=".repeat(70));
+  lines.push("=".repeat(90));
   lines.push(
     padRight("N°", 6) +
     padRight("Fils", 20) +
+    padRight("Borne", 14) +
     padRight("Bornier", 20) +
     padRight("État", 12) +
     padRight("Non Testé", 10)
   );
-  lines.push("-".repeat(70));
+  lines.push("-".repeat(90));
 
   for (let i = 0; i < BUTTON_COUNT; i++) {
     const label = String(getButtonLabel(i));
@@ -26,13 +27,14 @@ export const formatProjectAsTable = (project: ProjectData): string => {
     lines.push(
       padRight(label, 6) +
       padRight(info.fils || "-", 20) +
+      padRight(info.borne || "-", 14) +
       padRight(info.bornier || "-", 20) +
       padRight(state, 12) +
       padRight(locked, 10)
     );
   }
 
-  lines.push("=".repeat(70));
+  lines.push("=".repeat(90));
   return lines.join("\n");
 };
 
@@ -85,18 +87,20 @@ export const parseProjectFile = (content: string): ProjectData | null => {
       const line = lines[i];
       if (!line || /^={10,}/.test(line)) break;
 
-      // Parse fixed-width columns: N°(6) Fils(20) Bornier(20) État(12) NonTesté(10)
       const num = line.substring(0, 6).trim();
       if (!num || isNaN(Number(num))) continue;
 
+      const isNewFormat = line.length >= 70;
       const fils = line.substring(6, 26).trim();
-      const bornier = line.substring(26, 46).trim();
-      const etat = line.substring(46, 58).trim();
-      const nonTeste = line.substring(58).trim();
+      const borne = isNewFormat ? line.substring(26, 40).trim() : "";
+      const bornier = isNewFormat ? line.substring(40, 60).trim() : line.substring(26, 46).trim();
+      const etat = isNewFormat ? line.substring(60, 72).trim() : line.substring(46, 58).trim();
+      const nonTeste = isNewFormat ? line.substring(72).trim() : line.substring(58).trim();
 
       states.push(stateMap[etat] ?? 0);
       buttonInfos.push({
         fils: fils === "-" ? "" : fils,
+        borne: borne === "-" ? "" : borne,
         bornier: bornier === "-" ? "" : bornier,
         locked: nonTeste === "Oui",
       });
