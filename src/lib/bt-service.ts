@@ -169,11 +169,11 @@ export const getLatestStates = () => latestStates;
 export const stopAdvertising = async () => {
   notifyStatus("disconnected");
   isInitialized = false;
+  await removeServerListener();
 
   try {
     const BT = await getBtPlugin();
     await BT.stopServer();
-    try { await (BT as any).removeAllListeners?.(); } catch {}
   } catch (e) {
     console.error("Stop server error:", e);
   }
