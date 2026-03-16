@@ -18,6 +18,8 @@ let dataListeners: DataCallback[] = [];
 let deviceDiscoveredListeners: DeviceDiscoveredCallback[] = [];
 let isInitialized = false;
 let pollInterval: ReturnType<typeof setInterval> | null = null;
+let serverDataListener: { remove: () => Promise<void> } | null = null;
+let clientDataListener: { remove: () => Promise<void> } | null = null;
 
 const notifyStatus = (status: BtConnectionStatus) => {
   currentStatus = status;
