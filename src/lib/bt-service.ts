@@ -101,6 +101,22 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   }
 };
 
+const removeServerListener = async () => {
+  if (!serverDataListener) return;
+  try {
+    await serverDataListener.remove();
+  } catch {}
+  serverDataListener = null;
+};
+
+const removeClientListener = async () => {
+  if (!clientDataListener) return;
+  try {
+    await clientDataListener.remove();
+  } catch {}
+  clientDataListener = null;
+};
+
 // ── Master: start as server ──
 let latestStates: number[] = [];
 
