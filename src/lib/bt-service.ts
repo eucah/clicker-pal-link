@@ -217,8 +217,9 @@ export const startScanningForDevices = async () => {
 export const connectToDevice = async (deviceId: string) => {
   try {
     const BT = await getBtPlugin();
+    await removeClientListener();
 
-    await BT.addListener("dataReceived", (event: any) => {
+    clientDataListener = await BT.addListener("dataReceived", (event: any) => {
       const data = event?.data ?? event;
       if (typeof data === "string") {
         const states = decodeStates(data);
