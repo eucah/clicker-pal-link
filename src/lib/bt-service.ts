@@ -113,12 +113,17 @@ export const startAdvertising = async (states: number[]) => {
   try {
     const BT = await getBtPlugin();
 
-    // Listen for incoming data from viewer (not expected, but handle gracefully)
-    await BT.addListener("dataReceived", (event: any) => {
-      console.log("Server received:", event.data);
+    await BT.addListener("dataReceived", async (event: any) => {
+      const data = event?.data ?? event;
+      if (data === "HELLO") {
+        try {
+          await BT.sendData({ data: encodeStates(latestStates) });
+        } catch (sendError) {
+          console.warn("Initial states send error:", sendError);
+        }
+      }
     });
 
-    // Start RFCOMM server
     await BT.startServer();
     notifyStatus("connected");
   } catch (e) {

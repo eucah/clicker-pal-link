@@ -1,5 +1,6 @@
 export interface ButtonInfo {
   fils: string;
+  borne: string;
   bornier: string;
   locked: boolean;
 }
