@@ -79,7 +79,15 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
             <Eye className="w-4 h-4 text-muted-foreground" />
             <span>Viewer</span>
           </div>
-          <Button variant="outline" onClick={onViewerScan} className="w-full gap-2" size="sm">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              try { await stopScanning(); } catch {}
+              onViewerScan();
+            }}
+            className="w-full gap-2"
+            size="sm"
+          >
             <Bluetooth className="w-4 h-4" /> Rechercher projet partagé
           </Button>
           <p className="text-[10px] text-muted-foreground text-center">

@@ -80,6 +80,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
               <tr className="border-b border-border text-muted-foreground">
                 <th className="py-1 text-left w-12">#</th>
                 <th className="py-1 text-left">Fils</th>
+                <th className="py-1 text-left">Borne</th>
                 <th className="py-1 text-left">Bornier</th>
                 <th className="py-1 text-center w-20">Non Testé</th>
               </tr>
@@ -94,6 +95,14 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                       onChange={(e) => updateButton(i, "fils", e.target.value)}
                       className="h-6 text-xs"
                       placeholder="Fils..."
+                    />
+                  </td>
+                  <td className="py-0.5 pr-1">
+                    <Input
+                      value={buttonInfos[i].borne ?? ""}
+                      onChange={(e) => updateButton(i, "borne", e.target.value)}
+                      className="h-6 text-xs"
+                      placeholder="Borne..."
                     />
                   </td>
                   <td className="py-0.5 pr-1">
