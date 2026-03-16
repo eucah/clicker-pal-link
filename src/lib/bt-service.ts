@@ -198,9 +198,8 @@ export const connectToDevice = async (deviceId: string) => {
   try {
     const BT = await getBtPlugin();
 
-    // Listen for data from master
     await BT.addListener("dataReceived", (event: any) => {
-      const data = event.data || event;
+      const data = event?.data ?? event;
       if (typeof data === "string") {
         const states = decodeStates(data);
         if (states) {
@@ -210,6 +209,7 @@ export const connectToDevice = async (deviceId: string) => {
     });
 
     await BT.connect({ address: deviceId });
+    await BT.sendData({ data: "HELLO" });
     notifyStatus("connected");
   } catch (e) {
     console.error("Connect error:", e);
