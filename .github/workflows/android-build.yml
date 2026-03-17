@@ -24,13 +24,14 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-
+          
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
       - name: Generate Android Icons
-        run: npx @capacitor/assets generate --android --iconSource app-icon.png
-
+        # Changed: Removed --iconSource and used the correct command for v3
+        run: npx @capacitor/assets generate --android --assetPath app-icon.png
+        
       - name: Build web app
         run: npm run build
 
