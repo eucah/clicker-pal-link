@@ -25,6 +25,10 @@
     --state-alert: 0 80% 55%;
     --state-locked: 0 0% 15%;
 
+    --field-fils: 210 80% 50%;
+    --field-borne: 150 60% 30%;
+    --field-bornier: 0 75% 45%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 

@@ -150,19 +150,24 @@ const Index = () => {
           {isMaster && (
             <button
               onClick={handleShareBle}
-              className={`p-1.5 rounded-md transition-colors ${
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                 ble.status === "connected"
                   ? "bg-primary text-primary-foreground"
                   : ble.status === "advertising"
                   ? "bg-secondary text-secondary-foreground animate-pulse"
                   : "bg-secondary text-secondary-foreground"
               }`}
-              title={ble.status === "disconnected" ? "Partager via Bluetooth" : "Arrêter le partage"}
             >
               {ble.status === "disconnected" ? (
-                <Bluetooth className="w-4 h-4" />
+                <>
+                  <Bluetooth className="w-3.5 h-3.5" />
+                  Partager projet
+                </>
               ) : (
-                <BluetoothOff className="w-4 h-4" />
+                <>
+                  <BluetoothOff className="w-3.5 h-3.5" />
+                  Arrêter
+                </>
               )}
             </button>
           )}
