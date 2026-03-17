@@ -85,6 +85,9 @@ const Index = () => {
 
   const handleShareBle = async () => {
     if (ble.status === "disconnected") {
+      const { ensureBluetoothEnabled } = await import("@/lib/bt-service");
+      const enabled = await ensureBluetoothEnabled();
+      if (!enabled) return;
       await ble.share(states);
     } else {
       await ble.stopSharing();
