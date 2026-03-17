@@ -188,14 +188,14 @@ const Index = () => {
         {selectedIndex !== null && selectedInfo ? (
           <>
             <span className="text-[11px] font-bold text-foreground">#{selectedLabel}</span>
-            <span className="text-[11px] text-muted-foreground">
-              Fils: <span className="text-foreground font-medium">{selectedInfo.fils || "—"}</span>
+            <span className="text-[11px] text-field-fils font-semibold">
+              Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
             </span>
-            <span className="text-[11px] text-muted-foreground">
-              Borne: <span className="text-foreground font-medium">{selectedInfo.borne || "—"}</span>
+            <span className="text-[11px] text-field-borne font-semibold">
+              Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
             </span>
-            <span className="text-[11px] text-muted-foreground">
-              Bornier: <span className="text-foreground font-medium">{selectedInfo.bornier || "—"}</span>
+            <span className="text-[11px] text-field-bornier font-semibold">
+              Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
             {selectedInfo.locked && (
               <Badge variant="outline" className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground">
