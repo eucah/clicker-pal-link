@@ -56,6 +56,9 @@ export default {
         "state-active": "hsl(var(--state-active))",
         "state-alert": "hsl(var(--state-alert))",
         "state-locked": "hsl(var(--state-locked))",
+        "field-fils": "hsl(var(--field-fils))",
+        "field-borne": "hsl(var(--field-borne))",
+        "field-bornier": "hsl(var(--field-bornier))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
