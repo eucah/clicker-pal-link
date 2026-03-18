@@ -4,11 +4,10 @@ import {
   onStatusChange,
   onDataReceived,
   getConnectionStatus,
-  startAdvertising,
-  stopAdvertising,
-  updateAdvertisedStates,
-  startScanning,
-  stopScanning,
+  scanDevices,
+  connectToDevice,
+  sendMessage,
+  disconnect,
 } from "@/lib/bt-service";
 
 export const useBle = (role: "master" | "viewer") => {
@@ -16,46 +15,67 @@ export const useBle = (role: "master" | "viewer") => {
   const [receivedStates, setReceivedStates] = useState<number[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // STATUS
   useEffect(() => {
-    const unsub = onStatusChange(setStatus);
-    return unsub;
+    onStatusChange(setStatus);
   }, []);
 
+  // DATA RECEPTION (viewer)
   useEffect(() => {
     if (role === "viewer") {
-      const unsub = onDataReceived(setReceivedStates);
-      return unsub;
+      onDataReceived((data: string) => {
+        try {
+          const parsed = JSON.parse(data);
+          setReceivedStates(parsed);
+        } catch {
+          console.warn("Invalid data:", data);
+        }
+      });
     }
   }, [role]);
 
+  // MASTER → envoie état
   const share = useCallback(async (states: number[]) => {
-    setError(null);
     try {
-      await startAdvertising(states);
+      sendMessage(JSON.stringify(states));
     } catch (e: any) {
-      setError(e.message || "Erreur Bluetooth");
+      setError(e.message || "Erreur envoi");
     }
   }, []);
 
+  // STOP (disconnect)
   const stopSharing = useCallback(async () => {
-    try { await stopAdvertising(); } catch {}
+    await disconnect();
   }, []);
 
+  // SCAN (viewer)
   const scan = useCallback(async () => {
     setError(null);
     try {
-      await startScanning();
+      await scanDevices();
     } catch (e: any) {
-      setError(e.message || "Erreur Bluetooth");
+      setError(e.message || "Erreur scan");
     }
   }, []);
 
   const stopScan = useCallback(async () => {
-    try { await stopScanning(); } catch {}
+    // pas nécessaire en classic → no-op
   }, []);
 
+  // CONNECT (viewer)
+  const connect = useCallback(async (deviceId: string) => {
+    try {
+      await connectToDevice(deviceId);
+    } catch (e: any) {
+      setError(e.message || "Erreur connexion");
+    }
+  }, []);
+
+  // UPDATE (master → viewer)
   const sendUpdate = useCallback(async (states: number[]) => {
-    try { await updateAdvertisedStates(states); } catch {}
+    try {
+      sendMessage(JSON.stringify(states));
+    } catch {}
   }, []);
 
   return {
@@ -66,6 +86,7 @@ export const useBle = (role: "master" | "viewer") => {
     stopSharing,
     scan,
     stopScan,
+    connect,
     sendUpdate,
   };
 };
