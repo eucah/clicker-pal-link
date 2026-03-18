@@ -15,67 +15,98 @@ export const useBluetooth = (role: "master" | "viewer") => {
   const [receivedStates, setReceivedStates] = useState<number[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // STATUS
   useEffect(() => {
-    onStatusChange(setStatus);
+    const unsubStatus = onStatusChange(setStatus);
+    return () => {
+      unsubStatus?.();
+    };
   }, []);
 
-  // DATA RECEPTION (viewer)
   useEffect(() => {
-    if (role === "viewer") {
-      onDataReceived((data: string) => {
-        try {
-          const parsed = JSON.parse(data);
+    if (role !== "viewer") return;
+
+    const unsubData = onDataReceived((data: string) => {
+      console.log("DATA FROM BT:", data);
+
+      try {
+        const parsed = JSON.parse(data);
+
+        if (Array.isArray(parsed)) {
           setReceivedStates(parsed);
-        } catch {
-          console.warn("Invalid data:", data);
+        } else {
+          console.warn("Bluetooth payload is not an array:", parsed);
         }
-      });
-    }
+      } catch {
+        console.warn("Invalid data:", data);
+      }
+    });
+
+    return () => {
+      unsubData?.();
+    };
   }, [role]);
 
-  // MASTER → envoie état
   const share = useCallback(async (states: number[]) => {
+    setError(null);
+
     try {
-      sendMessage(JSON.stringify(states));
+      await sendMessage(JSON.stringify(states));
     } catch (e: any) {
-      setError(e.message || "Erreur envoi");
+      setError(e?.message || "Erreur envoi Bluetooth");
+      throw e;
     }
   }, []);
 
-  // STOP (disconnect)
   const stopSharing = useCallback(async () => {
-    await disconnect();
+    setError(null);
+
+    try {
+      await disconnect();
+    } catch (e: any) {
+      setError(e?.message || "Erreur déconnexion Bluetooth");
+      throw e;
+    }
   }, []);
 
-  // SCAN (viewer)
   const scan = useCallback(async () => {
     setError(null);
+
     try {
       await scanDevices();
     } catch (e: any) {
-      setError(e.message || "Erreur scan");
+      setError(e?.message || "Erreur scan Bluetooth");
+      throw e;
     }
   }, []);
 
   const stopScan = useCallback(async () => {
-    // pas nécessaire en classic → no-op
-  }, []);
+    setError(null);
 
-  // CONNECT (viewer)
-  const connect = useCallback(async (deviceId: string) => {
     try {
-      await connectToDevice(deviceId);
+      await disconnect();
     } catch (e: any) {
-      setError(e.message || "Erreur connexion");
+      setError(e?.message || "Erreur arrêt scan Bluetooth");
+      throw e;
     }
   }, []);
 
-  // UPDATE (master → viewer)
+  const connect = useCallback(async (deviceId: string) => {
+    setError(null);
+
+    try {
+      await connectToDevice(deviceId);
+    } catch (e: any) {
+      setError(e?.message || "Erreur connexion Bluetooth");
+      throw e;
+    }
+  }, []);
+
   const sendUpdate = useCallback(async (states: number[]) => {
     try {
-      sendMessage(JSON.stringify(states));
-    } catch {}
+      await sendMessage(JSON.stringify(states));
+    } catch (e) {
+      console.warn("Bluetooth sendUpdate failed:", e);
+    }
   }, []);
 
   return {
