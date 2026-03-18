@@ -7,7 +7,7 @@ import BleStatusBadge from "@/components/BleStatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import { ProjectData, BUTTON_COUNT, getButtonLabel, createDefaultInfos } from "@/types/project";
-import { useBle } from "@/hooks/use-ble";
+import { useBluetooth } from "@/hooks/use-bluetooth";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan";
 
@@ -21,7 +21,7 @@ const Index = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const isMaster = role === "master";
-  const ble = useBle(role);
+  const ble = useBluetooth(role);
   const gridRef = useRef<HTMLDivElement>(null);
 
   // Viewer: receive states from master
@@ -156,8 +156,6 @@ const Index = () => {
               className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
                 ble.status === "connected"
                   ? "bg-primary text-primary-foreground"
-                  : ble.status === "advertising"
-                  ? "bg-secondary text-secondary-foreground animate-pulse"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
