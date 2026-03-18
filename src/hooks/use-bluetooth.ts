@@ -10,7 +10,7 @@ import {
   disconnect,
 } from "@/lib/bt-service";
 
-export const useBle = (role: "master" | "viewer") => {
+export const useBluetooth = (role: "master" | "viewer") => {
   const [status, setStatus] = useState<BtConnectionStatus>(getConnectionStatus());
   const [receivedStates, setReceivedStates] = useState<number[] | null>(null);
   const [error, setError] = useState<string | null>(null);
