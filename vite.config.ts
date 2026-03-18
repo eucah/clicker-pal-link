@@ -12,7 +12,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    // This ensures the plugin is pre-bundled correctly
-    include: ["@yesprasoon/capacitor-bluetooth-communication", "@capacitor/core"],
+    include: ["@capacitor/core"],
   },
 });
