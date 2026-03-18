@@ -1,5 +1,5 @@
-// Bluetooth Classic (SPP/RFCOMM) service using @yesprasoon/capacitor-bluetooth-communication
-// Master = Server, Viewer = Client
+// Bluetooth Classic (SPP) service using cordova-plugin-bluetooth-serial
+// Master = Server (listen), Viewer = Client (connect)
 
 export type BtConnectionStatus = "disconnected" | "scanning" | "advertising" | "connected";
 
@@ -16,14 +16,12 @@ let currentStatus: BtConnectionStatus = "disconnected";
 let statusListeners: StatusCallback[] = [];
 let dataListeners: DataCallback[] = [];
 let deviceDiscoveredListeners: DeviceDiscoveredCallback[] = [];
-let isInitialized = false;
-let pollInterval: ReturnType<typeof setInterval> | null = null;
-let serverDataListener: { remove: () => Promise<void> } | null = null;
-let clientDataListener: { remove: () => Promise<void> } | null = null;
+let sendInterval: ReturnType<typeof setInterval> | null = null;
+let subscribed = false;
 
-const notifyStatus = (status: BtConnectionStatus) => {
-  currentStatus = status;
-  statusListeners.forEach((cb) => cb(status));
+const notifyStatus = (s: BtConnectionStatus) => {
+  currentStatus = s;
+  statusListeners.forEach((cb) => cb(s));
 };
 
 export const onStatusChange = (cb: StatusCallback) => {
@@ -43,9 +41,21 @@ export const onDeviceDiscovered = (cb: DeviceDiscoveredCallback) => {
 
 export const getConnectionStatus = () => currentStatus;
 
-// ── Encoding helpers ──
+// ── Helpers ──
+const isNative = () => !!(window as any).Capacitor?.isNativePlatform();
+
+const getBtSerial = (): any => {
+  const bt = (window as any).bluetoothSerial;
+  if (!bt) throw new Error("bluetoothSerial plugin non disponible");
+  return bt;
+};
+
+// Promise wrapper for cordova callbacks
+const btPromise = <T>(fn: (resolve: (v: T) => void, reject: (e: any) => void) => void): Promise<T> =>
+  new Promise<T>((resolve, reject) => fn(resolve, reject));
+
+// ── Encoding ──
 const encodeStates = (states: number[]): string => {
-  // Pack 150 states (2 bits each) into base64-like string
   const bytes: number[] = new Array(Math.ceil(states.length / 4)).fill(0);
   for (let i = 0; i < states.length; i++) {
     const byteIdx = Math.floor(i / 4);
@@ -63,36 +73,20 @@ const decodeStates = (data: string): number[] | null => {
   for (let i = 0; i < 150; i++) {
     const byteIdx = Math.floor(i / 4);
     const bitOffset = (i % 4) * 2;
-    if (byteIdx < bytes.length) {
-      states.push((bytes[byteIdx] >> bitOffset) & 0x03);
-    } else {
-      states.push(0);
-    }
+    states.push(byteIdx < bytes.length ? (bytes[byteIdx] >> bitOffset) & 0x03 : 0);
   }
   return states;
 };
 
-const isNative = () => !!(window as any).Capacitor?.isNativePlatform();
-
-const getBtPlugin = async () => {
-  if (!isNative()) throw new Error("Bluetooth non disponible sur le web");
-  const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
-  return BluetoothCommunication;
-};
-
-const initBt = async () => {
-  if (isInitialized) return;
-  const BT = await getBtPlugin();
-  await BT.initialize();
-  isInitialized = true;
-};
-
+// ── Bluetooth enable ──
 export const ensureBluetoothEnabled = async (): Promise<boolean> => {
-  if (!(window as any).Capacitor?.isNativePlatform()) return true;
+  if (!isNative()) return true;
   try {
-    const BT = await getBtPlugin();
-    await BT.initialize();
-    await BT.enableBluetooth();
+    const bt = getBtSerial();
+    const enabled = await btPromise<boolean>((res, rej) => bt.isEnabled(res, rej)).catch(() => false);
+    if (!enabled) {
+      await btPromise<void>((res, rej) => bt.enable(res, rej));
+    }
     return true;
   } catch (e) {
     console.error("BT enable error:", e);
@@ -101,50 +95,92 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   }
 };
 
-const removeServerListener = async () => {
-  if (!serverDataListener) return;
+// ── Subscribe to incoming data (line-delimited) ──
+const subscribeToData = () => {
+  if (subscribed) return;
   try {
-    await serverDataListener.remove();
-  } catch {}
-  serverDataListener = null;
+    const bt = getBtSerial();
+    bt.subscribe("\n", (rawData: string) => {
+      console.log("BT DATA RECEIVED:", rawData);
+      const trimmed = rawData.trim();
+      if (!trimmed) return;
+      const states = decodeStates(trimmed);
+      if (states) {
+        dataListeners.forEach((cb) => cb(states));
+      }
+    }, (err: any) => {
+      console.error("BT subscribe error:", err);
+    });
+    subscribed = true;
+  } catch (e) {
+    console.error("Subscribe setup error:", e);
+  }
 };
 
-const removeClientListener = async () => {
-  if (!clientDataListener) return;
+const unsubscribeData = () => {
+  if (!subscribed) return;
   try {
-    await clientDataListener.remove();
+    const bt = getBtSerial();
+    bt.unsubscribe();
   } catch {}
-  clientDataListener = null;
+  subscribed = false;
 };
 
-// ── Master: start as server ──
+// ── MASTER: Start server (listen for incoming SPP connections) ──
 let latestStates: number[] = [];
 
 export const startAdvertising = async (states: number[]) => {
+  console.log("MASTER CLICK OK - startAdvertising");
   const enabled = await ensureBluetoothEnabled();
   if (!enabled) throw new Error("Bluetooth non activé");
 
-  await initBt();
+  if (!isNative()) {
+    notifyStatus("advertising");
+    return;
+  }
+
   latestStates = states;
   notifyStatus("advertising");
 
   try {
-    const BT = await getBtPlugin();
-    await removeServerListener();
+    const bt = getBtSerial();
 
-    serverDataListener = await BT.addListener("dataReceived", async (event: any) => {
-      const data = event?.data ?? event;
-      if (data === "HELLO") {
-        try {
-          await BT.sendData({ data: encodeStates(latestStates) });
-        } catch (sendError) {
-          console.warn("Initial states send error:", sendError);
-        }
+    // Make device discoverable
+    await btPromise<void>((res, rej) => {
+      if (bt.setDiscoverable) {
+        bt.setDiscoverable(300, res, rej);
+      } else {
+        res();
+      }
+    }).catch((e) => console.warn("setDiscoverable not supported:", e));
+
+    // Listen for incoming connections
+    await btPromise<void>((res, rej) => {
+      if (bt.listen) {
+        bt.listen(
+          () => {
+            console.log("MASTER: Client connected!");
+            notifyStatus("connected");
+            subscribeToData();
+            // Send initial states immediately
+            const encoded = encodeStates(latestStates) + "\n";
+            bt.write(encoded, () => console.log("MASTER: Initial states sent"), (e: any) => console.warn("MASTER write err:", e));
+            res();
+          },
+          (err: any) => {
+            console.error("MASTER listen error:", err);
+            rej(err);
+          }
+        );
+      } else {
+        // Fallback: plugin may not support listen, stay in advertising mode
+        console.warn("bt.listen not available - server mode not supported by this plugin build");
+        res();
       }
     });
 
-    await BT.startServer();
-    notifyStatus("connected");
+    // Start continuous sending
+    startContinuousSend();
   } catch (e) {
     console.error("Server start error:", e);
     notifyStatus("disconnected");
@@ -152,60 +188,110 @@ export const startAdvertising = async (states: number[]) => {
   }
 };
 
+const startContinuousSend = () => {
+  stopContinuousSend();
+  sendInterval = setInterval(() => {
+    if (currentStatus !== "connected") return;
+    try {
+      const bt = getBtSerial();
+      const encoded = encodeStates(latestStates) + "\n";
+      bt.write(encoded,
+        () => {},
+        (e: any) => {
+          console.warn("MASTER periodic send error:", e);
+          notifyStatus("disconnected");
+          stopContinuousSend();
+        }
+      );
+    } catch {}
+  }, 500);
+};
+
+const stopContinuousSend = () => {
+  if (sendInterval) {
+    clearInterval(sendInterval);
+    sendInterval = null;
+  }
+};
+
 export const updateAdvertisedStates = async (states: number[]) => {
   latestStates = states;
-  // Send to connected viewer
-  try {
-    const BT = await getBtPlugin();
-    const encoded = encodeStates(states);
-    await BT.sendData({ data: encoded });
-  } catch (e) {
-    console.warn("Send states error:", e);
+  // Next interval tick will send the updated states
+  // Also send immediately if connected
+  if (currentStatus === "connected" && isNative()) {
+    try {
+      const bt = getBtSerial();
+      const encoded = encodeStates(states) + "\n";
+      bt.write(encoded, () => {}, (e: any) => console.warn("Send error:", e));
+    } catch {}
   }
 };
 
 export const getLatestStates = () => latestStates;
 
 export const stopAdvertising = async () => {
+  console.log("MASTER: stopAdvertising");
+  stopContinuousSend();
+  unsubscribeData();
   notifyStatus("disconnected");
-  isInitialized = false;
-  await removeServerListener();
 
+  if (!isNative()) return;
   try {
-    const BT = await getBtPlugin();
-    await BT.stopServer();
-  } catch (e) {
-    console.error("Stop server error:", e);
-  }
+    const bt = getBtSerial();
+    await btPromise<void>((res, rej) => bt.disconnect(res, rej)).catch(() => {});
+  } catch {}
 };
 
-// ── Viewer: scan for devices ──
+// ── VIEWER: Scan for paired devices ──
 export const startScanningForDevices = async () => {
+  console.log("VIEWER CLICK OK - startScanningForDevices");
   const enabled = await ensureBluetoothEnabled();
   if (!enabled) throw new Error("Bluetooth non activé");
 
-  await initBt();
+  if (!isNative()) {
+    notifyStatus("scanning");
+    // Simulate a device on web for testing UI
+    setTimeout(() => {
+      deviceDiscoveredListeners.forEach((cb) => cb({ deviceId: "00:11:22:33:44:55", name: "Appareil Test (Web)" }));
+      notifyStatus("disconnected");
+    }, 1000);
+    return;
+  }
+
   notifyStatus("scanning");
 
   try {
-    const BT = await getBtPlugin();
-    const result = await BT.scanDevices();
+    const bt = getBtSerial();
+    // List paired/bonded devices
+    const devices = await btPromise<any[]>((res, rej) => bt.list(res, rej));
+    console.log("BT paired devices:", JSON.stringify(devices));
 
-    // result should contain a list of devices
-    const devices = (result as any)?.devices || [];
     for (const device of devices) {
-      if (device.name || device.address) {
-        const discovered: DiscoveredDevice = {
-          deviceId: device.address || device.id || "",
-          name: device.name || device.address || "Appareil inconnu",
-        };
-        deviceDiscoveredListeners.forEach((cb) => cb(discovered));
+      const discovered: DiscoveredDevice = {
+        deviceId: device.address || device.id || "",
+        name: device.name || device.address || "Appareil inconnu",
+      };
+      deviceDiscoveredListeners.forEach((cb) => cb(discovered));
+    }
+
+    // Also try discovery for unpaired devices
+    if (bt.discoverUnpaired) {
+      try {
+        const unpaired = await btPromise<any[]>((res, rej) => bt.discoverUnpaired(res, rej));
+        console.log("BT unpaired devices:", JSON.stringify(unpaired));
+        for (const device of unpaired) {
+          const discovered: DiscoveredDevice = {
+            deviceId: device.address || device.id || "",
+            name: device.name || device.address || "Appareil inconnu",
+          };
+          deviceDiscoveredListeners.forEach((cb) => cb(discovered));
+        }
+      } catch (e) {
+        console.warn("discoverUnpaired error:", e);
       }
     }
 
-    if (devices.length === 0) {
-      notifyStatus("disconnected");
-    }
+    notifyStatus("disconnected");
   } catch (e) {
     console.error("Scan error:", e);
     notifyStatus("disconnected");
@@ -213,25 +299,29 @@ export const startScanningForDevices = async () => {
   }
 };
 
-// ── Viewer: connect to a specific master ──
+// ── VIEWER: Connect to a specific master ──
 export const connectToDevice = async (deviceId: string) => {
-  try {
-    const BT = await getBtPlugin();
-    await removeClientListener();
-
-    clientDataListener = await BT.addListener("dataReceived", (event: any) => {
-      const data = event?.data ?? event;
-      if (typeof data === "string") {
-        const states = decodeStates(data);
-        if (states) {
-          dataListeners.forEach((cb) => cb(states));
-        }
-      }
-    });
-
-    await BT.connect({ address: deviceId });
-    await BT.sendData({ data: "HELLO" });
+  console.log("VIEWER CLICK OK - connectToDevice:", deviceId);
+  if (!isNative()) {
     notifyStatus("connected");
+    return;
+  }
+
+  try {
+    const bt = getBtSerial();
+
+    await btPromise<void>((res, rej) => bt.connect(deviceId, res, rej));
+    console.log("VIEWER: Connected to", deviceId);
+    notifyStatus("connected");
+
+    // Subscribe to receive data from master
+    subscribeToData();
+
+    // Send HELLO handshake
+    bt.write("HELLO\n",
+      () => console.log("VIEWER: HELLO sent"),
+      (e: any) => console.warn("VIEWER write err:", e)
+    );
   } catch (e) {
     console.error("Connect error:", e);
     notifyStatus("disconnected");
@@ -241,27 +331,18 @@ export const connectToDevice = async (deviceId: string) => {
 
 export const startScanning = startScanningForDevices;
 
-export const startPolling = () => {
-  // No polling needed with Bluetooth Classic - data comes via listener
-};
-
-export const stopPolling = () => {
-  if (pollInterval) {
-    clearInterval(pollInterval);
-    pollInterval = null;
-  }
-};
-
 export const stopScanning = async () => {
-  stopPolling();
+  console.log("VIEWER: stopScanning");
+  unsubscribeData();
   notifyStatus("disconnected");
-  isInitialized = false;
-  await removeClientListener();
 
+  if (!isNative()) return;
   try {
-    const BT = await getBtPlugin();
-    await BT.disconnect();
-  } catch (e) {
-    console.error("Disconnect error:", e);
-  }
+    const bt = getBtSerial();
+    await btPromise<void>((res, rej) => bt.disconnect(res, rej)).catch(() => {});
+  } catch {}
 };
+
+// Legacy compat
+export const startPolling = () => {};
+export const stopPolling = () => {};
