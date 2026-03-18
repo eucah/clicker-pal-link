@@ -38,7 +38,7 @@ export const useBle = (role: "master" | "viewer") => {
   }, []);
 
   const stopSharing = useCallback(async () => {
-    await stopAdvertising();
+    try { await stopAdvertising(); } catch {}
   }, []);
 
   const scan = useCallback(async () => {
@@ -51,11 +51,11 @@ export const useBle = (role: "master" | "viewer") => {
   }, []);
 
   const stopScan = useCallback(async () => {
-    await stopScanning();
+    try { await stopScanning(); } catch {}
   }, []);
 
   const sendUpdate = useCallback(async (states: number[]) => {
-    await updateAdvertisedStates(states);
+    try { await updateAdvertisedStates(states); } catch {}
   }, []);
 
   return {

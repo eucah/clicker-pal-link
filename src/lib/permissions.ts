@@ -1,17 +1,26 @@
-// Android permission checks for Bluetooth Classic and file access
+// Android permission checks for Bluetooth Classic
 
 export const checkAndRequestPermissions = async () => {
   if (!(window as any).Capacitor?.isNativePlatform()) return;
 
   try {
-    const { BluetoothCommunication } = await import("@yesprasoon/capacitor-bluetooth-communication");
-    await BluetoothCommunication.initialize();
-
-    try {
-      await BluetoothCommunication.enableBluetooth();
-    } catch (e) {
-      console.warn("Bluetooth enable error:", e);
+    const bt = (window as any).bluetoothSerial;
+    if (!bt) {
+      console.warn("bluetoothSerial plugin not available");
+      return;
     }
+
+    // Check if bluetooth is enabled
+    bt.isEnabled(
+      () => console.log("Bluetooth is enabled"),
+      () => {
+        console.log("Bluetooth is disabled, trying to enable...");
+        bt.enable(
+          () => console.log("Bluetooth enabled successfully"),
+          (e: any) => console.warn("Failed to enable Bluetooth:", e)
+        );
+      }
+    );
   } catch (e) {
     console.warn("Permission check error:", e);
   }
