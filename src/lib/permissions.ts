@@ -1,27 +1,15 @@
-// Android permission checks for Bluetooth Classic
+import { Capacitor } from "@capacitor/core";
+import { BluetoothClassic } from "@/lib/bluetooth-classic";
 
 export const checkAndRequestPermissions = async () => {
-  if (!(window as any).Capacitor?.isNativePlatform()) return;
+  if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== "android") {
+    return;
+  }
 
   try {
-    const bt = (window as any).bluetoothSerial;
-    if (!bt) {
-      console.warn("bluetoothSerial plugin not available");
-      return;
-    }
-
-    // Check if bluetooth is enabled
-    bt.isEnabled(
-      () => console.log("Bluetooth is enabled"),
-      () => {
-        console.log("Bluetooth is disabled, trying to enable...");
-        bt.enable(
-          () => console.log("Bluetooth enabled successfully"),
-          (e: any) => console.warn("Failed to enable Bluetooth:", e)
-        );
-      }
-    );
-  } catch (e) {
-    console.warn("Permission check error:", e);
+    await BluetoothClassic.isBluetoothAvailable();
+    await BluetoothClassic.isBluetoothEnabled();
+  } catch (error) {
+    console.warn("Bluetooth bootstrap check skipped:", error);
   }
 };

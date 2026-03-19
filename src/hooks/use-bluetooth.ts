@@ -1,13 +1,17 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
-  BtConnectionStatus,
-  onStatusChange,
-  onDataReceived,
-  getConnectionStatus,
-  scanDevices,
+  type BtConnectionStatus,
   connectToDevice,
-  sendMessage,
   disconnect,
+  getConnectionStatus,
+  onDataReceived,
+  onStatusChange,
+  scanDevices,
+  sendMessage,
+  startAdvertising,
+  stopAdvertising,
+  stopScanning,
+  updateAdvertisedStates,
 } from "@/lib/bt-service";
 
 export const useBluetooth = (role: "master" | "viewer") => {
@@ -16,33 +20,30 @@ export const useBluetooth = (role: "master" | "viewer") => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubStatus = onStatusChange(setStatus);
+    const unsubscribe = onStatusChange(setStatus);
     return () => {
-      unsubStatus?.();
+      unsubscribe();
     };
   }, []);
 
   useEffect(() => {
-    if (role !== "viewer") return;
+    if (role !== "viewer") {
+      return;
+    }
 
-    const unsubData = onDataReceived((data: string) => {
-      console.log("DATA FROM BT:", data);
-
+    const unsubscribe = onDataReceived((data) => {
       try {
         const parsed = JSON.parse(data);
-
         if (Array.isArray(parsed)) {
-          setReceivedStates(parsed);
-        } else {
-          console.warn("Bluetooth payload is not an array:", parsed);
+          setReceivedStates(parsed.map((value) => Number(value) || 0));
         }
-      } catch {
-        console.warn("Invalid data:", data);
+      } catch (parseError) {
+        console.warn("Bluetooth payload parsing failed", parseError, data);
       }
     });
 
     return () => {
-      unsubData?.();
+      unsubscribe();
     };
   }, [role]);
 
@@ -50,10 +51,11 @@ export const useBluetooth = (role: "master" | "viewer") => {
     setError(null);
 
     try {
-      await sendMessage(JSON.stringify(states));
-    } catch (e: any) {
-      setError(e?.message || "Erreur envoi Bluetooth");
-      throw e;
+      await startAdvertising(states);
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur démarrage Bluetooth";
+      setError(message);
+      throw caughtError;
     }
   }, []);
 
@@ -61,10 +63,11 @@ export const useBluetooth = (role: "master" | "viewer") => {
     setError(null);
 
     try {
-      await disconnect();
-    } catch (e: any) {
-      setError(e?.message || "Erreur déconnexion Bluetooth");
-      throw e;
+      await stopAdvertising();
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt Bluetooth";
+      setError(message);
+      throw caughtError;
     }
   }, []);
 
@@ -72,10 +75,11 @@ export const useBluetooth = (role: "master" | "viewer") => {
     setError(null);
 
     try {
-      await scanDevices();
-    } catch (e: any) {
-      setError(e?.message || "Erreur scan Bluetooth");
-      throw e;
+      return await scanDevices();
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur scan Bluetooth";
+      setError(message);
+      throw caughtError;
     }
   }, []);
 
@@ -83,10 +87,12 @@ export const useBluetooth = (role: "master" | "viewer") => {
     setError(null);
 
     try {
+      await stopScanning();
       await disconnect();
-    } catch (e: any) {
-      setError(e?.message || "Erreur arrêt scan Bluetooth");
-      throw e;
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt scan Bluetooth";
+      setError(message);
+      throw caughtError;
     }
   }, []);
 
@@ -95,17 +101,26 @@ export const useBluetooth = (role: "master" | "viewer") => {
 
     try {
       await connectToDevice(deviceId);
-    } catch (e: any) {
-      setError(e?.message || "Erreur connexion Bluetooth");
-      throw e;
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur connexion Bluetooth";
+      setError(message);
+      throw caughtError;
     }
   }, []);
 
   const sendUpdate = useCallback(async (states: number[]) => {
     try {
-      await sendMessage(JSON.stringify(states));
-    } catch (e) {
-      console.warn("Bluetooth sendUpdate failed:", e);
+      await updateAdvertisedStates(states);
+    } catch (caughtError) {
+      console.warn("Bluetooth state update failed", caughtError);
+    }
+  }, []);
+
+  const sendRawMessage = useCallback(async (message: string) => {
+    try {
+      await sendMessage(message);
+    } catch (caughtError) {
+      console.warn("Bluetooth raw send failed", caughtError);
     }
   }, []);
 
@@ -118,6 +133,8 @@ export const useBluetooth = (role: "master" | "viewer") => {
     scan,
     stopScan,
     connect,
+    disconnect,
     sendUpdate,
+    sendRawMessage,
   };
 };
