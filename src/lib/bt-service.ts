@@ -1,3 +1,4 @@
+import { Capacitor, type PluginListenerHandle } from "@capacitor/core";
 import { BluetoothClassic } from "@/lib/bluetooth-classic";
 
 export type BtConnectionStatus = "disconnected" | "scanning" | "advertising" | "connected";
@@ -7,118 +8,306 @@ export interface DiscoveredDevice {
   name: string;
 }
 
+export interface BluetoothLogEntry {
+  timestamp: string;
+  message: string;
+  source: "js" | "native";
+}
+
 type StatusCallback = (status: BtConnectionStatus) => void;
 type DataCallback = (data: string) => void;
 type DeviceDiscoveredCallback = (device: DiscoveredDevice) => void;
+type LogCallback = (entry: BluetoothLogEntry) => void;
 
+type BtMode = "master" | "viewer" | null;
+
+const MAX_LOG_ENTRIES = 200;
+const statusListeners = new Set<StatusCallback>();
+const dataListeners = new Set<DataCallback>();
+const deviceListeners = new Set<DeviceDiscoveredCallback>();
+const logListeners = new Set<LogCallback>();
+const listenerHandles: PluginListenerHandle[] = [];
+
+let listenersInitialized = false;
 let currentStatus: BtConnectionStatus = "disconnected";
-let statusListeners: StatusCallback[] = [];
-let dataListeners: DataCallback[] = [];
-let deviceListeners: DeviceDiscoveredCallback[] = [];
+let currentMode: BtMode = null;
+let advertisedStates: number[] = [];
+let logBuffer: BluetoothLogEntry[] = [];
+
+const isNativeAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android";
+
+const addLog = (message: string, source: BluetoothLogEntry["source"] = "js") => {
+  const entry: BluetoothLogEntry = {
+    timestamp: new Date().toISOString(),
+    message,
+    source,
+  };
+
+  logBuffer = [...logBuffer.slice(-(MAX_LOG_ENTRIES - 1)), entry];
+  logListeners.forEach((listener) => listener(entry));
+
+  const prefix = source === "native" ? "[BT NATIVE]" : "[BT JS]";
+  console.log(prefix, message);
+};
 
 const notifyStatus = (status: BtConnectionStatus) => {
   currentStatus = status;
-  statusListeners.forEach((cb) => cb(status));
+  statusListeners.forEach((listener) => listener(status));
 };
 
-BluetoothClassic.addListener("btStatus", ({ state }) => {
-  notifyStatus(state as BtConnectionStatus);
-}).catch(console.error);
+const emitDiscoveredDevices = (devices: DiscoveredDevice[]) => {
+  devices.forEach((device) => {
+    deviceListeners.forEach((listener) => listener(device));
+  });
+};
 
-BluetoothClassic.addListener("btData", ({ message }) => {
-  dataListeners.forEach((cb) => cb(message));
-}).catch(console.error);
+const ensureNativeRuntime = () => {
+  if (!isNativeAndroid) {
+    throw new Error("Bluetooth Classic natif disponible uniquement sur Android via Capacitor.");
+  }
+};
 
-BluetoothClassic.addListener("btLog", ({ message }) => {
-  console.log("[BT NATIVE]", message);
-}).catch(console.error);
+const initializeListeners = async () => {
+  if (listenersInitialized || !isNativeAndroid) {
+    return;
+  }
 
-export const onStatusChange = (cb: StatusCallback) => {
-  statusListeners.push(cb);
+  listenersInitialized = true;
+
+  listenerHandles.push(
+    await BluetoothClassic.addListener("btStatus", ({ state }) => {
+      addLog(`Status changed to ${state}`, "native");
+      notifyStatus(state as BtConnectionStatus);
+
+      if (state === "connected" && currentMode === "master" && advertisedStates.length > 0) {
+        void sendMessage(JSON.stringify(advertisedStates));
+      }
+    }),
+  );
+
+  listenerHandles.push(
+    await BluetoothClassic.addListener("btData", ({ message }) => {
+      addLog(`Data received: ${message}`, "native");
+      dataListeners.forEach((listener) => listener(message));
+    }),
+  );
+
+  listenerHandles.push(
+    await BluetoothClassic.addListener("btLog", ({ message }) => {
+      addLog(message, "native");
+    }),
+  );
+
+  try {
+    const { state } = await BluetoothClassic.getConnectionState();
+    notifyStatus(state as BtConnectionStatus);
+  } catch (error) {
+    addLog(`Unable to fetch initial native state: ${String(error)}`);
+  }
+};
+
+const ensureReady = async () => {
+  ensureNativeRuntime();
+  await initializeListeners();
+};
+
+const safelyStopListening = async () => {
+  if (!isNativeAndroid) {
+    return;
+  }
+
+  await BluetoothClassic.stopListening().catch(() => undefined);
+};
+
+const safelyDisconnect = async () => {
+  if (!isNativeAndroid) {
+    return;
+  }
+
+  await BluetoothClassic.disconnect().catch(() => undefined);
+};
+
+const safelyStopServer = async () => {
+  if (!isNativeAndroid) {
+    return;
+  }
+
+  await BluetoothClassic.stopServer().catch(() => undefined);
+};
+
+export const onStatusChange = (callback: StatusCallback) => {
+  statusListeners.add(callback);
+  callback(currentStatus);
+
   return () => {
-    statusListeners = statusListeners.filter((x) => x !== cb);
+    statusListeners.delete(callback);
   };
 };
 
-export const onDataReceived = (cb: DataCallback) => {
-  dataListeners.push(cb);
+export const onDataReceived = (callback: DataCallback) => {
+  dataListeners.add(callback);
+
   return () => {
-    dataListeners = dataListeners.filter((x) => x !== cb);
+    dataListeners.delete(callback);
   };
 };
 
-export const onDeviceDiscovered = (cb: DeviceDiscoveredCallback) => {
-  deviceListeners.push(cb);
+export const onDeviceDiscovered = (callback: DeviceDiscoveredCallback) => {
+  deviceListeners.add(callback);
+
   return () => {
-    deviceListeners = deviceListeners.filter((x) => x !== cb);
+    deviceListeners.delete(callback);
   };
 };
+
+export const onBluetoothLog = (callback: LogCallback) => {
+  logListeners.add(callback);
+  logBuffer.forEach((entry) => callback(entry));
+
+  return () => {
+    logListeners.delete(callback);
+  };
+};
+
+export const getBluetoothLogs = () => [...logBuffer];
 
 export const getConnectionStatus = () => currentStatus;
 
 export const ensureBluetoothEnabled = async (): Promise<boolean> => {
-  const available = await BluetoothClassic.isBluetoothAvailable();
-  if (!available.available) return false;
+  await ensureReady();
 
-  const enabled = await BluetoothClassic.isBluetoothEnabled();
-  if (enabled.enabled) return true;
+  addLog("Checking Bluetooth availability");
+  const { available } = await BluetoothClassic.isBluetoothAvailable();
+  if (!available) {
+    addLog("Bluetooth unavailable on this device");
+    return false;
+  }
 
+  const { enabled } = await BluetoothClassic.isBluetoothEnabled();
+  if (enabled) {
+    addLog("Bluetooth already enabled");
+    return true;
+  }
+
+  addLog("Bluetooth disabled, requesting activation");
   const result = await BluetoothClassic.enableBluetooth();
+  addLog(`Bluetooth activation result: ${result.enabled}`);
   return result.enabled;
 };
 
-export const startAdvertising = async (_states?: number[]) => {
-  await ensureBluetoothEnabled();
+export const startAdvertising = async (states: number[] = advertisedStates): Promise<void> => {
+  await ensureReady();
+
+  advertisedStates = [...states];
+  currentMode = "master";
+
+  addLog("Preparing Bluetooth Classic server");
+  await safelyStopListening();
+  await safelyDisconnect();
+  await safelyStopServer();
+
+  const enabled = await ensureBluetoothEnabled();
+  if (!enabled) {
+    throw new Error("Bluetooth non activé");
+  }
+
   await BluetoothClassic.startServer();
   notifyStatus("advertising");
 };
 
-export const stopAdvertising = async () => {
-  await BluetoothClassic.stopServer();
-  await BluetoothClassic.disconnect().catch(() => {});
+export const stopAdvertising = async (): Promise<void> => {
+  await ensureReady();
+
+  addLog("Stopping Bluetooth Classic server");
+  currentMode = null;
+  await safelyStopListening();
+  await safelyStopServer();
+  await safelyDisconnect();
   notifyStatus("disconnected");
 };
 
 export const startScanningForDevices = async (): Promise<DiscoveredDevice[]> => {
-  await ensureBluetoothEnabled();
+  await ensureReady();
+
+  currentMode = "viewer";
+  addLog("Listing bonded Bluetooth devices");
+
+  await safelyStopListening();
+  await safelyStopServer();
+  await safelyDisconnect();
+
+  const enabled = await ensureBluetoothEnabled();
+  if (!enabled) {
+    throw new Error("Bluetooth non activé");
+  }
+
   notifyStatus("scanning");
-
   const { devices } = await BluetoothClassic.getBondedDevices();
-
-  devices.forEach((device) => {
-    deviceListeners.forEach((cb) => cb(device));
-  });
-
+  emitDiscoveredDevices(devices);
+  addLog(`Bonded devices found: ${devices.length}`);
   notifyStatus("disconnected");
   return devices;
 };
 
+export const scanDevices = startScanningForDevices;
 export const startScanning = startScanningForDevices;
 
-export const stopScanning = async () => {
-  notifyStatus("disconnected");
+export const stopScanning = async (): Promise<void> => {
+  addLog("Stopping viewer scan state");
+  if (currentStatus === "scanning") {
+    notifyStatus("disconnected");
+  }
 };
 
-export const connectToDevice = async (deviceId: string) => {
-  await ensureBluetoothEnabled();
+export const connectToDevice = async (deviceId: string): Promise<void> => {
+  await ensureReady();
+
+  currentMode = "viewer";
+  addLog(`Connecting viewer to device ${deviceId}`);
+
+  await safelyStopListening();
+  await safelyStopServer();
+  await safelyDisconnect();
+
+  const enabled = await ensureBluetoothEnabled();
+  if (!enabled) {
+    throw new Error("Bluetooth non activé");
+  }
+
   await BluetoothClassic.connect({ deviceAddress: deviceId });
   await BluetoothClassic.startListening();
-  notifyStatus("connected");
 };
 
-export const disconnect = async () => {
-  await BluetoothClassic.stopListening().catch(() => {});
-  await BluetoothClassic.disconnect().catch(() => {});
+export const disconnect = async (): Promise<void> => {
+  if (!isNativeAndroid) {
+    currentMode = null;
+    notifyStatus("disconnected");
+    return;
+  }
+
+  addLog("Disconnecting active Bluetooth session");
+  currentMode = null;
+  await safelyStopListening();
+  await safelyDisconnect();
   notifyStatus("disconnected");
 };
 
-export const sendMessage = async (message: string) => {
+export const sendMessage = async (message: string): Promise<void> => {
+  await ensureReady();
+  addLog(`Sending message: ${message}`);
   await BluetoothClassic.sendMessage({ message });
 };
 
-export const updateAdvertisedStates = async (states: number[]) => {
-  await sendMessage(JSON.stringify(states));
+export const updateAdvertisedStates = async (states: number[]): Promise<void> => {
+  advertisedStates = [...states];
+  addLog(`Updating advertised states (${states.length} values)`);
+
+  if (currentMode === "master" && currentStatus === "connected") {
+    await sendMessage(JSON.stringify(states));
+  }
 };
 
-export const startPolling = () => {};
-export const stopPolling = () => {};
+export const startPolling = () => undefined;
+export const stopPolling = () => undefined;
+
+void initializeListeners();

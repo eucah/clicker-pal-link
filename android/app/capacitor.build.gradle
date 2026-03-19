@@ -10,11 +10,7 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-filesystem')
-    implementation project(':capgo-capacitor-bluetooth-low-energy')
-    implementation project(':yesprasoon-capacitor-bluetooth-communication')
-
 }
-
 
 if (hasProperty('postBuildExtras')) {
   postBuildExtras()

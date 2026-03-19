@@ -1,4 +1,4 @@
-import { registerPlugin } from "@capacitor/core";
+import { registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 
 export type NativeBtState = "disconnected" | "advertising" | "connected";
 
@@ -23,15 +23,15 @@ export interface BluetoothClassicPlugin {
   addListener(
     eventName: "btStatus",
     listenerFunc: (event: { state: NativeBtState | "scanning" }) => void,
-  ): Promise<{ remove: () => void }>;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: "btData",
     listenerFunc: (event: { message: string }) => void,
-  ): Promise<{ remove: () => void }>;
+  ): Promise<PluginListenerHandle>;
   addListener(
     eventName: "btLog",
     listenerFunc: (event: { message: string }) => void,
-  ): Promise<{ remove: () => void }>;
+  ): Promise<PluginListenerHandle>;
 }
 
 export const BluetoothClassic = registerPlugin<BluetoothClassicPlugin>("BluetoothClassic");

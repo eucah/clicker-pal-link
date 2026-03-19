@@ -20,7 +20,6 @@ const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
   const [project, setProject] = useState<ProjectData | null>(null);
   const [role, setRole] = useState<AppRole>("master");
-
   const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -28,6 +27,7 @@ const Index = () => {
   const isMaster = role === "master";
   const ble = useBluetooth(role);
   const gridRef = useRef<HTMLDivElement>(null);
+  const isSharingActive = ble.status === "advertising" || ble.status === "connected";
 
   useEffect(() => {
     if (ble.receivedStates && role === "viewer") {
@@ -37,17 +37,17 @@ const Index = () => {
 
   const sendBleUpdate = useCallback(
     (newStates: number[]) => {
-      if (isMaster && ble.status === "connected") {
+      if (isMaster && ble.status !== "disconnected") {
         void ble.sendUpdate(newStates);
       }
     },
     [isMaster, ble],
   );
 
-  const loadProject = (p: ProjectData, selectedRole?: AppRole) => {
-    setProject(p);
-    setStates(p.states);
-    setButtonInfos(p.buttonInfos);
+  const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
+    setProject(loadedProject);
+    setStates(loadedProject.states);
+    setButtonInfos(loadedProject.buttonInfos);
     setSelectedIndex(null);
 
     if (selectedRole) {
@@ -75,47 +75,38 @@ const Index = () => {
   };
 
   const handleToggle = (index: number) => {
-    setStates((prev) => {
-      const next = [...prev];
-      const currentState = next[index];
-      const newState = (currentState + 1) % 4;
+    setStates((previousStates) => {
+      const nextStates = [...previousStates];
+      const newState = (nextStates[index] + 1) % 4;
 
       if (newState === 1) {
-        for (let i = 0; i < next.length; i++) {
-          if (next[i] === 1) {
-            next[i] = 0;
+        for (let stateIndex = 0; stateIndex < nextStates.length; stateIndex += 1) {
+          if (nextStates[stateIndex] === 1) {
+            nextStates[stateIndex] = 0;
           }
         }
       }
 
-      next[index] = newState;
-      sendBleUpdate(next);
-      return next;
+      nextStates[index] = newState;
+      sendBleUpdate(nextStates);
+      return nextStates;
     });
   };
 
   const handleSelect = (index: number) => {
-    setSelectedIndex((prev) => (prev === index ? null : index));
+    setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
   };
 
   const handleShareBle = async () => {
     try {
-      if (ble.status === "connected") {
+      if (isSharingActive) {
         await ble.stopSharing();
         return;
       }
 
-      const { ensureBluetoothEnabled } = await import("@/lib/bt-service");
-      const enabled = await ensureBluetoothEnabled();
-      if (!enabled) return;
-
-      console.warn(
-        "Le mode 'Partager projet' n'ouvre pas un serveur Bluetooth Classic fiable avec ce plugin. Il envoie seulement si une connexion existe déjà.",
-      );
-
       await ble.share(states);
-    } catch (e) {
-      console.error("Bluetooth action failed:", e);
+    } catch (error) {
+      console.error("Bluetooth action failed:", error);
     }
   };
 
@@ -127,9 +118,8 @@ const Index = () => {
     setScreen("home");
 
     const stopPromise = isMaster ? ble.stopSharing() : ble.stopScan();
-
-    void stopPromise.catch((e) => {
-      console.error("Error stopping Bluetooth:", e);
+    void stopPromise.catch((error) => {
+      console.error("Error stopping Bluetooth:", error);
     });
   };
 
@@ -149,8 +139,8 @@ const Index = () => {
   if (screen === "editor") {
     return (
       <ProjectEditor
-        onSave={(p) => loadProject(p, "master")}
-        onAccess={(p) => loadProject(p, "master")}
+        onSave={(savedProject) => loadProject(savedProject, "master")}
+        onAccess={(savedProject) => loadProject(savedProject, "master")}
         onCancel={() => setScreen("home")}
       />
     );
@@ -166,8 +156,7 @@ const Index = () => {
   }
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
-  const selectedLabel =
-    selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
+  const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
@@ -189,12 +178,12 @@ const Index = () => {
             <button
               onClick={handleShareBle}
               className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
-                ble.status === "connected"
+                isSharingActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
-              {ble.status === "connected" ? (
+              {isSharingActive ? (
                 <>
                   <BluetoothOff className="w-3.5 h-3.5" />
                   Arrêter
@@ -228,9 +217,7 @@ const Index = () => {
       <div className="flex items-center gap-2 px-2 safe-area-x py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
-            <span className="text-[11px] font-bold text-foreground">
-              #{selectedLabel}
-            </span>
+            <span className="text-[11px] font-bold text-foreground">#{selectedLabel}</span>
             <span className="text-[11px] text-field-fils font-semibold">
               Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
             </span>
@@ -238,8 +225,7 @@ const Index = () => {
               Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
             </span>
             <span className="text-[11px] text-field-bornier font-semibold">
-              Bornier:{" "}
-              <span className="font-medium">{selectedInfo.bornier || "—"}</span>
+              Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
             {selectedInfo.locked && (
               <Badge
