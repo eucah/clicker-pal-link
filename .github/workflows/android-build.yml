@@ -1,11 +1,11 @@
 name: Build Android APK
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
       - codex/icon-fix
-  workflow_dispatch:
+ 
 
 jobs:
   build:
@@ -16,18 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 📦 Node
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          
       # ☕ Java (aligné moderne)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
-      # 📦 Node
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       # 📥 Install dependencies
       - name: Install dependencies
