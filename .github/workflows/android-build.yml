@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate Android Icons
         # Changed: Removed --iconSource and used the correct command for v3
-        run: npx @capacitor/assets generate --android --assetPath app-icon.png
+        run: npx @capacitor/assets generate --android --assetPath android/app/src/main/assets/app-icon.png.
         
       - name: Build web app
         run: npm run build
