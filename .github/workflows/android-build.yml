@@ -4,50 +4,83 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - codex/icon-fix
+ 
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 📦 Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 📦 Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
+          
+      # ☕ Java (aligné moderne)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-          
+
+      # 📥 Install dependencies
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      # 🔧 Vérification source icône
+      - name: Ensure icon source exists
+        run: |
+          if [ ! -f resources/icon.png ]; then
+            echo "resources/icon.png manquant → copie depuis assets"
+            mkdir -p resources
+            cp android/app/src/main/assets/app-icon.png resources/icon.png
+          fi
+          ls -l resources/
+
+      # 🧹 Nettoyage complet des anciennes icônes
+      - name: Remove old Android icons
+        run: |
+          rm -rf android/app/src/main/res/mipmap-*
+          rm -rf android/app/src/main/res/drawable*/ic_launcher*
+          echo "Anciennes icônes supprimées"
+
+      # 🎨 Génération correcte des icônes
       - name: Generate Android Icons
-        # Changed: Removed --iconSource and used the correct command for v3
-        run: npx @capacitor/assets generate --android --assetPath android/app/src/main/assets/app-icon.png
-        
+        run: |
+          npx @capacitor/assets generate --android
+
+      # 🔍 Vérification réelle (anti-fake)
+      - name: Verify generated icons
+        run: |
+          echo "Vérification mipmap :"
+          ls android/app/src/main/res/mipmap-*/ic_launcher*.png
+
+      # 🌐 Build web
       - name: Build web app
         run: npm run build
 
+      # 🔄 Sync Capacitor
       - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Rendre gradlew exécutable
         run: chmod +x android/gradlew
 
-      - name: Build APK
+      # 🏗️ Build APK
+      - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug
 
+      # 📦 Upload APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
