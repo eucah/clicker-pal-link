@@ -1,0 +1,25 @@
+name: Cleanup old workflow runs
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # tous les jours à 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Delete old successful build runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 7
+          keep_minimum_runs: 5
+          delete_workflow_pattern: build
+          delete_run_by_conclusion_pattern: success
+          dry_run: false
