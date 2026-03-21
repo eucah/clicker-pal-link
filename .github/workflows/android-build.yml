@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate Android Icons
         # Changed: Removed --iconSource and used the correct command for v3
-        run: npx @capacitor/assets generate --android --assetPath android/app/src/main/assets/app-icon.png.
+        run: npx @capacitor/assets generate --android --assetPath android/app/src/main/assets/app-icon.png
         
       - name: Build web app
         run: npm run build
@@ -50,4 +50,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/Essais continuité.apk
