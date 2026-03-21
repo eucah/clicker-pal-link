@@ -69,12 +69,6 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 🧹 Clean Gradle
-      - name: Clean Android build
-        run: |
-          cd android
-          ./gradlew clean
-
       # 🏗️ Build APK
       - name: Build Debug APK
         run: |
