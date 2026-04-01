@@ -79,8 +79,8 @@ const initializeListeners = async () => {
       addLog(`Status changed to ${state}`, "native");
       notifyStatus(state as BtConnectionStatus);
 
-      if (state === "connected" && currentMode === "master" && advertisedStates.length > 0) {
-        void sendMessage(JSON.stringify(advertisedStates));
+      if (state === "connected" && currentMode === "master" && advertisedPayload) {
+        void sendMessage(advertisedPayload);
       }
     }),
   );
