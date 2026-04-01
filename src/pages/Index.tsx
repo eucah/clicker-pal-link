@@ -29,19 +29,23 @@ const Index = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isSharingActive = ble.status === "advertising" || ble.status === "connected";
 
+  // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
-    if (ble.receivedStates && role === "viewer") {
-      setStates(ble.receivedStates);
+    if (ble.receivedData && role === "viewer") {
+      setStates(ble.receivedData.states);
+      if (ble.receivedData.buttonInfos.length > 0) {
+        setButtonInfos(ble.receivedData.buttonInfos);
+      }
     }
-  }, [ble.receivedStates, role]);
+  }, [ble.receivedData, role]);
 
   const sendBleUpdate = useCallback(
     (newStates: number[]) => {
       if (isMaster && ble.status !== "disconnected") {
-        void ble.sendUpdate(newStates);
+        void ble.sendUpdate(newStates, buttonInfos);
       }
     },
-    [isMaster, ble],
+    [isMaster, ble, buttonInfos],
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
