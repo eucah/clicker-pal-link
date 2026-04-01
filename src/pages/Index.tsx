@@ -101,14 +101,17 @@ const Index = () => {
     setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
   };
 
+  // Issue #5: Stop button must fully stop BT
   const handleShareBle = async () => {
     try {
       if (isSharingActive) {
+        console.log("MASTER CLICK OK - Arrêter");
         await ble.stopSharing();
         return;
       }
 
-      await ble.share(states);
+      console.log("MASTER CLICK OK - Partager projet");
+      await ble.share(states, buttonInfos);
     } catch (error) {
       console.error("Bluetooth action failed:", error);
     }
