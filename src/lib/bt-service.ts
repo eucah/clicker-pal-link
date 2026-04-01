@@ -33,6 +33,8 @@ let currentStatus: BtConnectionStatus = "disconnected";
 let currentMode: BtMode = null;
 let advertisedPayload: string = "";
 let logBuffer: BluetoothLogEntry[] = [];
+let isStoppingSession = false;
+let writesBlocked = false;
 
 const isNativeAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android";
 
@@ -87,6 +89,17 @@ const initializeListeners = async () => {
 
   listenerHandles.push(
     await BluetoothClassic.addListener("btData", ({ message }) => {
+      try {
+        const parsed = JSON.parse(message) as { type?: string };
+        if (parsed?.type === "session_end") {
+          addLog("Session end signal received from remote", "native");
+          void disconnectSession("remote-session-end");
+          return;
+        }
+      } catch {
+        // Backward compatible: non-control payloads are treated as project data
+      }
+
       addLog(`Data received: ${message}`, "native");
       dataListeners.forEach((listener) => listener(message));
     }),
@@ -133,6 +146,57 @@ const safelyStopServer = async () => {
   }
 
   await BluetoothClassic.stopServer().catch(() => undefined);
+};
+
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+const trySendSessionEndSignal = async () => {
+  if (!isNativeAndroid || currentStatus !== "connected") {
+    return;
+  }
+
+  try {
+    const payload = JSON.stringify({ type: "session_end", origin: currentMode ?? "unknown" });
+    await BluetoothClassic.sendMessage({ message: payload });
+    addLog("Session end signal sent");
+    await wait(80);
+  } catch (error) {
+    addLog(`Session end signal failed: ${String(error)}`);
+  }
+};
+
+const resetSessionState = () => {
+  currentMode = null;
+  advertisedPayload = "";
+  writesBlocked = false;
+  notifyStatus("disconnected");
+};
+
+const disconnectSession = async (reason: string): Promise<void> => {
+  if (!isNativeAndroid) {
+    resetSessionState();
+    return;
+  }
+
+  if (isStoppingSession) {
+    addLog(`Disconnect already in progress (${reason})`);
+    return;
+  }
+
+  isStoppingSession = true;
+  writesBlocked = true;
+  addLog(`Disconnect session started (${reason})`);
+
+  try {
+    await trySendSessionEndSignal();
+    await safelyStopListening();
+    await safelyDisconnect();
+    await safelyStopServer();
+  } finally {
+    resetSessionState();
+    isStoppingSession = false;
+    addLog(`Disconnect session completed (${reason})`);
+  }
 };
 
 export const onStatusChange = (callback: StatusCallback) => {
@@ -198,19 +262,16 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
 export const startAdvertising = async (payload: string): Promise<void> => {
   await ensureReady();
 
-  advertisedPayload = payload;
-  currentMode = "master";
-
   addLog("Preparing Bluetooth Classic server");
-  await safelyStopListening();
-  await safelyDisconnect();
-  await safelyStopServer();
+  await disconnectSession("start-advertising-reset");
 
   const enabled = await ensureBluetoothEnabled();
   if (!enabled) {
     throw new Error("Bluetooth non activé");
   }
 
+  advertisedPayload = payload;
+  currentMode = "master";
   await BluetoothClassic.startServer();
   notifyStatus("advertising");
 };
@@ -219,28 +280,22 @@ export const stopAdvertising = async (): Promise<void> => {
   await ensureReady();
 
   addLog("Stopping Bluetooth Classic server");
-  currentMode = null;
-  await safelyStopListening();
-  await safelyStopServer();
-  await safelyDisconnect();
-  notifyStatus("disconnected");
+  await disconnectSession("stop-advertising");
 };
 
 export const startScanningForDevices = async (): Promise<DiscoveredDevice[]> => {
   await ensureReady();
 
-  currentMode = "viewer";
   addLog("Listing bonded Bluetooth devices");
 
-  await safelyStopListening();
-  await safelyStopServer();
-  await safelyDisconnect();
+  await disconnectSession("start-scanning-reset");
 
   const enabled = await ensureBluetoothEnabled();
   if (!enabled) {
     throw new Error("Bluetooth non activé");
   }
 
+  currentMode = "viewer";
   notifyStatus("scanning");
   const { devices } = await BluetoothClassic.getBondedDevices();
   emitDiscoveredDevices(devices);
@@ -254,6 +309,7 @@ export const startScanning = startScanningForDevices;
 
 export const stopScanning = async (): Promise<void> => {
   addLog("Stopping viewer scan state");
+  await disconnectSession("stop-scanning");
   if (currentStatus === "scanning") {
     notifyStatus("disconnected");
   }
@@ -262,38 +318,31 @@ export const stopScanning = async (): Promise<void> => {
 export const connectToDevice = async (deviceId: string): Promise<void> => {
   await ensureReady();
 
-  currentMode = "viewer";
   addLog(`Connecting viewer to device ${deviceId}`);
 
-  await safelyStopListening();
-  await safelyStopServer();
-  await safelyDisconnect();
+  await disconnectSession("connect-reset");
 
   const enabled = await ensureBluetoothEnabled();
   if (!enabled) {
     throw new Error("Bluetooth non activé");
   }
 
+  currentMode = "viewer";
   await BluetoothClassic.connect({ deviceAddress: deviceId });
   await BluetoothClassic.startListening();
 };
 
 export const disconnect = async (): Promise<void> => {
-  if (!isNativeAndroid) {
-    currentMode = null;
-    notifyStatus("disconnected");
-    return;
-  }
-
   addLog("Disconnecting active Bluetooth session");
-  currentMode = null;
-  await safelyStopListening();
-  await safelyDisconnect();
-  notifyStatus("disconnected");
+  await disconnectSession("disconnect");
 };
 
 export const sendMessage = async (message: string): Promise<void> => {
   await ensureReady();
+  if (isStoppingSession || writesBlocked) {
+    addLog("Send skipped because session is stopping");
+    return;
+  }
   addLog(`Sending message: ${message}`);
   await BluetoothClassic.sendMessage({ message });
 };

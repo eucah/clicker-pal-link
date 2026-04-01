@@ -23,7 +23,9 @@ import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
 import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.util.UUID
@@ -68,12 +70,19 @@ class BluetoothClassicPlugin : Plugin() {
     private var writer: OutputStreamWriter? = null
 
     @Volatile
+    private var inputStream: InputStream? = null
+
+    @Volatile
+    private var outputStream: OutputStream? = null
+
+    @Volatile
     private var currentState: String = STATE_DISCONNECTED
 
     @Volatile
     private var serverModeEnabled = false
 
     private val keepReading = AtomicBoolean(false)
+    private val isStopping = AtomicBoolean(false)
     private val connectionLock = Any()
 
     private var serverThread: Thread? = null
@@ -253,13 +262,12 @@ class BluetoothClassicPlugin : Plugin() {
     fun disconnect(call: PluginCall) {
         emitLog("Disconnect requested")
         synchronized(connectionLock) {
-            closeCurrentSocketLocked(emitEvents = false)
-            closeClientThreadLocked()
+            terminateConnectionLocked(
+                reason = "disconnect requested",
+                resumeServerIfNeeded = serverModeEnabled
+            )
             if (serverModeEnabled) {
                 notifyStatus(STATE_ADVERTISING)
-                startAcceptThreadLocked()
-            } else {
-                notifyStatus(STATE_DISCONNECTED)
             }
         }
         call.resolve()
@@ -374,10 +382,15 @@ class BluetoothClassicPlugin : Plugin() {
     }
 
     private fun handleConnectedSocketLocked(newSocket: BluetoothSocket, origin: String) {
-        closeCurrentSocketLocked(emitEvents = false)
+        terminateConnectionLocked(
+            reason = "replace active socket",
+            resumeServerIfNeeded = false
+        )
         socket = newSocket
-        reader = BufferedReader(InputStreamReader(newSocket.inputStream, StandardCharsets.UTF_8))
-        writer = OutputStreamWriter(newSocket.outputStream, StandardCharsets.UTF_8)
+        inputStream = newSocket.inputStream
+        outputStream = newSocket.outputStream
+        reader = BufferedReader(InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        writer = OutputStreamWriter(outputStream, StandardCharsets.UTF_8)
         emitLog("Socket connected ($origin) to ${newSocket.remoteDevice?.address}")
         notifyStatus(STATE_CONNECTED)
         startReadLoopLocked(newSocket)
@@ -447,13 +460,7 @@ class BluetoothClassicPlugin : Plugin() {
     private fun handleConnectionClosed(reason: String, resumeServerIfNeeded: Boolean) {
         synchronized(connectionLock) {
             emitLog("Connection closed: $reason")
-            closeCurrentSocketLocked(emitEvents = false)
-            closeClientThreadLocked()
-            if (resumeServerIfNeeded) {
-                startAcceptThreadLocked()
-            } else {
-                notifyStatus(STATE_DISCONNECTED)
-            }
+            terminateConnectionLocked(reason, resumeServerIfNeeded)
         }
     }
 
@@ -467,6 +474,24 @@ class BluetoothClassicPlugin : Plugin() {
         stopReadLoopLocked()
 
         try {
+            socket?.close()
+        } catch (_: IOException) {
+        }
+        socket = null
+
+        try {
+            inputStream?.close()
+        } catch (_: IOException) {
+        }
+        inputStream = null
+
+        try {
+            outputStream?.close()
+        } catch (_: IOException) {
+        }
+        outputStream = null
+
+        try {
             reader?.close()
         } catch (_: IOException) {
         }
@@ -478,14 +503,29 @@ class BluetoothClassicPlugin : Plugin() {
         }
         writer = null
 
-        try {
-            socket?.close()
-        } catch (_: IOException) {
-        }
-        socket = null
-
         if (emitEvents) {
             notifyStatus(if (serverModeEnabled) STATE_ADVERTISING else STATE_DISCONNECTED)
+        }
+    }
+
+    private fun terminateConnectionLocked(reason: String, resumeServerIfNeeded: Boolean) {
+        if (!isStopping.compareAndSet(false, true)) {
+            emitLog("Terminate already in progress: $reason")
+            return
+        }
+
+        try {
+            emitLog("Terminating connection: $reason")
+            closeCurrentSocketLocked(emitEvents = false)
+            closeClientThreadLocked()
+
+            if (resumeServerIfNeeded) {
+                startAcceptThreadLocked()
+            } else {
+                notifyStatus(STATE_DISCONNECTED)
+            }
+        } finally {
+            isStopping.set(false)
         }
     }
 
