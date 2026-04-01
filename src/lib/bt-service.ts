@@ -298,12 +298,12 @@ export const sendMessage = async (message: string): Promise<void> => {
   await BluetoothClassic.sendMessage({ message });
 };
 
-export const updateAdvertisedStates = async (states: number[]): Promise<void> => {
-  advertisedStates = [...states];
-  addLog(`Updating advertised states (${states.length} values)`);
+export const updateAdvertisedPayload = async (payload: string): Promise<void> => {
+  advertisedPayload = payload;
+  addLog(`Updating advertised payload`);
 
   if (currentMode === "master" && currentStatus === "connected") {
-    await sendMessage(JSON.stringify(states));
+    await sendMessage(payload);
   }
 };
 
