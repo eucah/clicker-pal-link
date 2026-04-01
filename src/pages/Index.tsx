@@ -117,17 +117,25 @@ const Index = () => {
     }
   };
 
-  const handleGoHome = () => {
+  // Issue #3 & #4: Both master and viewer fully disconnect BT on exit
+  const handleGoHome = async () => {
+    try {
+      if (isMaster) {
+        console.log("MASTER EXIT - Stopping BT server");
+        await ble.stopSharing();
+      } else {
+        console.log("VIEWER EXIT - Disconnecting BT");
+        await ble.stopScan();
+      }
+    } catch (error) {
+      console.error("Error stopping Bluetooth on exit:", error);
+    }
+
     setProject(null);
     setStates(Array(BUTTON_COUNT).fill(0));
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("home");
-
-    const stopPromise = isMaster ? ble.stopSharing() : ble.stopScan();
-    void stopPromise.catch((error) => {
-      console.error("Error stopping Bluetooth:", error);
-    });
   };
 
   if (screen === "home") {
