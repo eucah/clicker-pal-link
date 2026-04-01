@@ -4,13 +4,12 @@ import {
   connectToDevice,
   disconnect,
   getConnectionStatus,
+  hardStop,
   onDataReceived,
   onStatusChange,
   scanDevices,
   sendMessage,
   startAdvertising,
-  stopAdvertising,
-  stopScanning,
   updateAdvertisedPayload,
 } from "@/lib/bt-service";
 import { type ButtonInfo } from "@/types/project";
@@ -84,7 +83,7 @@ export const useBluetooth = (role: "master" | "viewer") => {
     setError(null);
     try {
       console.log("MASTER CLICK OK - Stopping share");
-      await stopAdvertising();
+      await hardStop({ notifyPeer: true, reason: "stopSharing" });
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt Bluetooth";
       setError(message);
@@ -106,10 +105,20 @@ export const useBluetooth = (role: "master" | "viewer") => {
   const stopScan = useCallback(async () => {
     setError(null);
     try {
-      await stopScanning();
-      await disconnect();
+      await hardStop({ notifyPeer: true, reason: "stopScan" });
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt scan Bluetooth";
+      setError(message);
+      throw caughtError;
+    }
+  }, []);
+
+  const hardStopSession = useCallback(async (reason?: string) => {
+    setError(null);
+    try {
+      await hardStop({ notifyPeer: true, reason: reason ?? "hook hard stop" });
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt session";
       setError(message);
       throw caughtError;
     }
@@ -155,5 +164,6 @@ export const useBluetooth = (role: "master" | "viewer") => {
     disconnect,
     sendUpdate,
     sendRawMessage,
+    hardStopSession,
   };
 };
