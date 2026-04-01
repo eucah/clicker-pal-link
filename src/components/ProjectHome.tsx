@@ -88,7 +88,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
             className="w-full gap-2"
             size="sm"
           >
-            <Bluetooth className="w-4 h-4" /> Rechercher projet partagé
+            <Bluetooth className="w-4 h-4 text-blue-600" /> Rechercher projet partagé
           </Button>
           <p className="text-[10px] text-muted-foreground text-center">
             Recherche d'une session partagée par un Master en Bluetooth
