@@ -33,6 +33,7 @@ let currentStatus: BtConnectionStatus = "disconnected";
 let currentMode: BtMode = null;
 let advertisedPayload: string = "";
 let logBuffer: BluetoothLogEntry[] = [];
+const SESSION_END_MESSAGE = JSON.stringify({ type: "session_end" });
 
 const isNativeAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android";
 
@@ -88,6 +89,11 @@ const initializeListeners = async () => {
   listenerHandles.push(
     await BluetoothClassic.addListener("btData", ({ message }) => {
       addLog(`Data received: ${message}`, "native");
+      if (message === SESSION_END_MESSAGE) {
+        addLog("Session end received, closing connection");
+        void hardStop({ notifyPeer: false, reason: "peer requested stop" });
+        return;
+      }
       dataListeners.forEach((listener) => listener(message));
     }),
   );
@@ -117,6 +123,15 @@ const safelyStopListening = async () => {
   }
 
   await BluetoothClassic.stopListening().catch(() => undefined);
+};
+
+const withTimeout = async <T>(operation: Promise<T>, label: string, timeoutMs = 1500): Promise<T> => {
+  return await Promise.race([
+    operation,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs);
+    }),
+  ]);
 };
 
 const safelyDisconnect = async () => {
@@ -223,6 +238,48 @@ export const stopAdvertising = async (): Promise<void> => {
   await safelyStopListening();
   await safelyStopServer();
   await safelyDisconnect();
+  notifyStatus("disconnected");
+};
+
+export const hardStop = async (options?: { notifyPeer?: boolean; reason?: string }): Promise<void> => {
+  const notifyPeer = options?.notifyPeer ?? true;
+  const reason = options?.reason ?? "hard stop";
+  addLog(`Hard stop requested (${reason})`);
+
+  if (!isNativeAndroid) {
+    currentMode = null;
+    advertisedPayload = "";
+    notifyStatus("disconnected");
+    return;
+  }
+
+  try {
+    await ensureReady();
+  } catch (error) {
+    addLog(`Hard stop initialization warning: ${String(error)}`);
+  }
+
+  if (notifyPeer && currentStatus === "connected") {
+    try {
+      await withTimeout(BluetoothClassic.sendMessage({ message: SESSION_END_MESSAGE }), "send session end");
+      addLog("Session end message sent");
+    } catch (error) {
+      addLog(`Session end message failed: ${String(error)}`);
+    }
+  }
+
+  await withTimeout(safelyStopListening(), "stop listening").catch((error) => {
+    addLog(`stopListening warning: ${String(error)}`);
+  });
+  await withTimeout(safelyDisconnect(), "disconnect").catch((error) => {
+    addLog(`disconnect warning: ${String(error)}`);
+  });
+  await withTimeout(safelyStopServer(), "stop server").catch((error) => {
+    addLog(`stopServer warning: ${String(error)}`);
+  });
+
+  currentMode = null;
+  advertisedPayload = "";
   notifyStatus("disconnected");
 };
 

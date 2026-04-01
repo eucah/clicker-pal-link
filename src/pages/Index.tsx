@@ -26,6 +26,7 @@ const Index = () => {
 
   const isMaster = role === "master";
   const ble = useBluetooth(role);
+  const { hardStopSession } = ble;
   const gridRef = useRef<HTMLDivElement>(null);
   const isSharingActive = ble.status === "advertising" || ble.status === "connected";
 
@@ -118,15 +119,9 @@ const Index = () => {
   };
 
   // Issue #3 & #4: Both master and viewer fully disconnect BT on exit
-  const handleGoHome = async () => {
+  const handleGoHome = useCallback(async () => {
     try {
-      if (isMaster) {
-        console.log("MASTER EXIT - Stopping BT server");
-        await ble.stopSharing();
-      } else {
-        console.log("VIEWER EXIT - Disconnecting BT");
-        await ble.stopScan();
-      }
+      await hardStopSession(isMaster ? "master go home" : "viewer go home");
     } catch (error) {
       console.error("Error stopping Bluetooth on exit:", error);
     }
@@ -136,7 +131,29 @@ const Index = () => {
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("home");
-  };
+  }, [hardStopSession, isMaster]);
+
+  useEffect(() => {
+    if (screen === "home") {
+      return;
+    }
+
+    window.history.pushState({ clickerPalScreen: screen }, "");
+    const onPopState = () => {
+      void handleGoHome();
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, [screen, handleGoHome]);
+
+  useEffect(() => {
+    return () => {
+      void hardStopSession("index unmount cleanup");
+    };
+  }, [hardStopSession]);
 
   if (screen === "home") {
     return (
