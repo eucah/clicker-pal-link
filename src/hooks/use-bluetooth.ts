@@ -11,12 +11,18 @@ import {
   startAdvertising,
   stopAdvertising,
   stopScanning,
-  updateAdvertisedStates,
+  updateAdvertisedPayload,
 } from "@/lib/bt-service";
+import { type ButtonInfo } from "@/types/project";
+
+export interface ReceivedProjectData {
+  states: number[];
+  buttonInfos: ButtonInfo[];
+}
 
 export const useBluetooth = (role: "master" | "viewer") => {
   const [status, setStatus] = useState<BtConnectionStatus>(getConnectionStatus());
-  const [receivedStates, setReceivedStates] = useState<number[] | null>(null);
+  const [receivedData, setReceivedData] = useState<ReceivedProjectData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,8 +40,19 @@ export const useBluetooth = (role: "master" | "viewer") => {
     const unsubscribe = onDataReceived((data) => {
       try {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) {
-          setReceivedStates(parsed.map((value) => Number(value) || 0));
+        // New format: { states: [...], buttonInfos: [...] }
+        if (parsed && Array.isArray(parsed.states)) {
+          setReceivedData({
+            states: parsed.states.map((v: unknown) => Number(v) || 0),
+            buttonInfos: Array.isArray(parsed.buttonInfos) ? parsed.buttonInfos : [],
+          });
+        }
+        // Legacy format: plain array of states
+        else if (Array.isArray(parsed)) {
+          setReceivedData({
+            states: parsed.map((v: unknown) => Number(v) || 0),
+            buttonInfos: [],
+          });
         }
       } catch (parseError) {
         console.warn("Bluetooth payload parsing failed", parseError, data);
@@ -47,22 +64,26 @@ export const useBluetooth = (role: "master" | "viewer") => {
     };
   }, [role]);
 
-  const share = useCallback(async (states: number[]) => {
-    setError(null);
+  const buildPayload = useCallback((states: number[], buttonInfos: ButtonInfo[]): string => {
+    return JSON.stringify({ states, buttonInfos });
+  }, []);
 
+  const share = useCallback(async (states: number[], buttonInfos: ButtonInfo[]) => {
+    setError(null);
     try {
-      await startAdvertising(states);
+      console.log("MASTER CLICK OK - Starting share");
+      await startAdvertising(buildPayload(states, buttonInfos));
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Erreur démarrage Bluetooth";
       setError(message);
       throw caughtError;
     }
-  }, []);
+  }, [buildPayload]);
 
   const stopSharing = useCallback(async () => {
     setError(null);
-
     try {
+      console.log("MASTER CLICK OK - Stopping share");
       await stopAdvertising();
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Erreur arrêt Bluetooth";
@@ -73,7 +94,6 @@ export const useBluetooth = (role: "master" | "viewer") => {
 
   const scan = useCallback(async () => {
     setError(null);
-
     try {
       return await scanDevices();
     } catch (caughtError) {
@@ -85,7 +105,6 @@ export const useBluetooth = (role: "master" | "viewer") => {
 
   const stopScan = useCallback(async () => {
     setError(null);
-
     try {
       await stopScanning();
       await disconnect();
@@ -98,8 +117,8 @@ export const useBluetooth = (role: "master" | "viewer") => {
 
   const connect = useCallback(async (deviceId: string) => {
     setError(null);
-
     try {
+      console.log("VIEWER CLICK OK - Connecting to", deviceId);
       await connectToDevice(deviceId);
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : "Erreur connexion Bluetooth";
@@ -108,13 +127,13 @@ export const useBluetooth = (role: "master" | "viewer") => {
     }
   }, []);
 
-  const sendUpdate = useCallback(async (states: number[]) => {
+  const sendUpdate = useCallback(async (states: number[], buttonInfos: ButtonInfo[]) => {
     try {
-      await updateAdvertisedStates(states);
+      await updateAdvertisedPayload(buildPayload(states, buttonInfos));
     } catch (caughtError) {
       console.warn("Bluetooth state update failed", caughtError);
     }
-  }, []);
+  }, [buildPayload]);
 
   const sendRawMessage = useCallback(async (message: string) => {
     try {
@@ -126,7 +145,7 @@ export const useBluetooth = (role: "master" | "viewer") => {
 
   return {
     status,
-    receivedStates,
+    receivedData,
     error,
     share,
     stopSharing,

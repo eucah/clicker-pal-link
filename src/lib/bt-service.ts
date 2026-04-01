@@ -31,7 +31,7 @@ const listenerHandles: PluginListenerHandle[] = [];
 let listenersInitialized = false;
 let currentStatus: BtConnectionStatus = "disconnected";
 let currentMode: BtMode = null;
-let advertisedStates: number[] = [];
+let advertisedPayload: string = "";
 let logBuffer: BluetoothLogEntry[] = [];
 
 const isNativeAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android";
@@ -79,8 +79,8 @@ const initializeListeners = async () => {
       addLog(`Status changed to ${state}`, "native");
       notifyStatus(state as BtConnectionStatus);
 
-      if (state === "connected" && currentMode === "master" && advertisedStates.length > 0) {
-        void sendMessage(JSON.stringify(advertisedStates));
+      if (state === "connected" && currentMode === "master" && advertisedPayload) {
+        void sendMessage(advertisedPayload);
       }
     }),
   );
@@ -195,10 +195,10 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   return result.enabled;
 };
 
-export const startAdvertising = async (states: number[] = advertisedStates): Promise<void> => {
+export const startAdvertising = async (payload: string): Promise<void> => {
   await ensureReady();
 
-  advertisedStates = [...states];
+  advertisedPayload = payload;
   currentMode = "master";
 
   addLog("Preparing Bluetooth Classic server");
@@ -298,12 +298,12 @@ export const sendMessage = async (message: string): Promise<void> => {
   await BluetoothClassic.sendMessage({ message });
 };
 
-export const updateAdvertisedStates = async (states: number[]): Promise<void> => {
-  advertisedStates = [...states];
-  addLog(`Updating advertised states (${states.length} values)`);
+export const updateAdvertisedPayload = async (payload: string): Promise<void> => {
+  advertisedPayload = payload;
+  addLog(`Updating advertised payload`);
 
   if (currentMode === "master" && currentStatus === "connected") {
-    await sendMessage(JSON.stringify(states));
+    await sendMessage(payload);
   }
 };
 

@@ -29,19 +29,23 @@ const Index = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isSharingActive = ble.status === "advertising" || ble.status === "connected";
 
+  // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
-    if (ble.receivedStates && role === "viewer") {
-      setStates(ble.receivedStates);
+    if (ble.receivedData && role === "viewer") {
+      setStates(ble.receivedData.states);
+      if (ble.receivedData.buttonInfos.length > 0) {
+        setButtonInfos(ble.receivedData.buttonInfos);
+      }
     }
-  }, [ble.receivedStates, role]);
+  }, [ble.receivedData, role]);
 
   const sendBleUpdate = useCallback(
     (newStates: number[]) => {
       if (isMaster && ble.status !== "disconnected") {
-        void ble.sendUpdate(newStates);
+        void ble.sendUpdate(newStates, buttonInfos);
       }
     },
-    [isMaster, ble],
+    [isMaster, ble, buttonInfos],
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
@@ -97,30 +101,41 @@ const Index = () => {
     setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
   };
 
+  // Issue #5: Stop button must fully stop BT
   const handleShareBle = async () => {
     try {
       if (isSharingActive) {
+        console.log("MASTER CLICK OK - Arrêter");
         await ble.stopSharing();
         return;
       }
 
-      await ble.share(states);
+      console.log("MASTER CLICK OK - Partager projet");
+      await ble.share(states, buttonInfos);
     } catch (error) {
       console.error("Bluetooth action failed:", error);
     }
   };
 
-  const handleGoHome = () => {
+  // Issue #3 & #4: Both master and viewer fully disconnect BT on exit
+  const handleGoHome = async () => {
+    try {
+      if (isMaster) {
+        console.log("MASTER EXIT - Stopping BT server");
+        await ble.stopSharing();
+      } else {
+        console.log("VIEWER EXIT - Disconnecting BT");
+        await ble.stopScan();
+      }
+    } catch (error) {
+      console.error("Error stopping Bluetooth on exit:", error);
+    }
+
     setProject(null);
     setStates(Array(BUTTON_COUNT).fill(0));
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("home");
-
-    const stopPromise = isMaster ? ble.stopSharing() : ble.stopScan();
-    void stopPromise.catch((error) => {
-      console.error("Error stopping Bluetooth:", error);
-    });
   };
 
   if (screen === "home") {
