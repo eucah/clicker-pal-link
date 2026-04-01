@@ -31,7 +31,7 @@ const listenerHandles: PluginListenerHandle[] = [];
 let listenersInitialized = false;
 let currentStatus: BtConnectionStatus = "disconnected";
 let currentMode: BtMode = null;
-let advertisedStates: number[] = [];
+let advertisedPayload: string = "";
 let logBuffer: BluetoothLogEntry[] = [];
 
 const isNativeAndroid = Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android";
