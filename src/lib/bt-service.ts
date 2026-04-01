@@ -195,10 +195,10 @@ export const ensureBluetoothEnabled = async (): Promise<boolean> => {
   return result.enabled;
 };
 
-export const startAdvertising = async (states: number[] = advertisedStates): Promise<void> => {
+export const startAdvertising = async (payload: string): Promise<void> => {
   await ensureReady();
 
-  advertisedStates = [...states];
+  advertisedPayload = payload;
   currentMode = "master";
 
   addLog("Preparing Bluetooth Classic server");
