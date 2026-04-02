@@ -122,7 +122,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       <div className="flex-1 overflow-auto">
         {devices.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground gap-3">
-            <Bluetooth className="w-10 h-10 opacity-50" />
+            <Bluetooth className="w-10 h-10 opacity-50 text-blue-600" />
             <p className="text-sm">Aucun appareil trouvé</p>
             <p className="text-xs">
               Lance un scan puis choisis un appareil déjà appairé
