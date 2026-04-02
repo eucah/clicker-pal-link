@@ -192,7 +192,7 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
-      <header className="flex items-center justify-between px-2 safe-area-x py-1 border-b border-border bg-card shrink-0">
+      <header className="flex items-center justify-between px-4 safe-area-x py-1 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleGoHome}
