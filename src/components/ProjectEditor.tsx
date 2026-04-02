@@ -69,7 +69,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           placeholder="Entrer le nom du projet..."
-          className="h-7 text-sm mt-1 font-mono font-italic"
+          className="h-7 text-sm mt-1 font-mono"
         />
       </div>
 
