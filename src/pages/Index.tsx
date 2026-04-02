@@ -196,7 +196,7 @@ const Index = () => {
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleGoHome}
-            className="p-1.5 px-6 rounded-md bg-secondary text-secondary-foreground"
+            className="px-4 rounded-md bg-secondary text-secondary-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
