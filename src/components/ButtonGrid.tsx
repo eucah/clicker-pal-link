@@ -65,13 +65,13 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
   };
 
   return (
-    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch px-4 gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full">
+    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full">
       <div className="flex flex-col gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-xs font-semibold text-muted-foreground text-center">GAUCHE</div>
         {renderSide(0, 1, false)}
       </div>
       <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
-      <div className="flex flex-col px-4 gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
+      <div className="flex flex-col gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-xs font-semibold text-muted-foreground text-center">DROITE</div>
         {renderSide(75, 101, true)}
       </div>
