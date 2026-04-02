@@ -222,7 +222,7 @@ const Index = () => {
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-3.5 h-3.5" />
+                  <Bluetooth className="w-3.5 h-3.5 text-blue-700" />
                   Partager projet
                 </>
               )}
