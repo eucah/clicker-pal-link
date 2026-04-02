@@ -48,7 +48,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-all">
-      <header className="flex items-center gap-2 px-4.5 py-1.5 landscape:py-1 border-b border-border bg-card shrink-0">
+      <header className="flex items-center gap-2 px-4 py-1.5 landscape:py-1 border-b border-border bg-card shrink-0">
         <button onClick={onCancel} className="p-1 rounded-md bg-secondary text-secondary-foreground">
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -63,7 +63,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
         </div>
       </header>
 
-      <div className="px-4.5 py-1.5 landscape:py-1 border-b border-border shrink-0">
+      <div className="px-4 py-1.5 landscape:py-1 border-b border-border shrink-0">
         <label className="text-sm font-medium text-slate-800">Nom du projet</label>
         <Input
           value={projectName}
@@ -74,7 +74,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
       </div>
 
       <ScrollArea className="flex-1">
-        <div className="px-4.5 py-1">
+        <div className="px-4 py-1">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
