@@ -196,7 +196,7 @@ const Index = () => {
         <div className="flex items-center gap-1.5">
           <button
             onClick={handleGoHome}
-            className="p-1.5 rounded-md bg-secondary text-secondary-foreground"
+            className="p-1.5 px-4 rounded-md bg-secondary text-secondary-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -205,7 +205,7 @@ const Index = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center px-4 gap-1.5">
           {isMaster && (
             <button
               onClick={handleShareBle}
@@ -270,7 +270,7 @@ const Index = () => {
             )}
           </>
         ) : (
-          <span className="text-[11px] text-muted-foreground">
+          <span className="px-4 text-[11px] text-muted-foreground">
             Appuyez sur un bouton pour voir ses infos
           </span>
         )}
@@ -292,7 +292,7 @@ const Index = () => {
             <span className="w-2.5 h-2.5 rounded-sm bg-state-alert inline-block" />
             Défaut
           </span>
-          <span className="flex items-center gap-1">
+          <span className="flex px-4 items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
             Non Testé
           </span>
