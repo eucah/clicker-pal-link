@@ -52,7 +52,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
         <button onClick={onCancel} className="p-1 rounded-md bg-secondary text-secondary-foreground">
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-sm font-bold text-foreground">Nouveau projet</h1>
+        <h1 className="text-l font-bold text-foreground">Nouveau projet</h1>
         <div className="flex ml-auto gap-2">
           <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2" size="sm">
             <Play className="w-3.5 h-3.5" /> Accéder
@@ -64,7 +64,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
       </header>
 
       <div className="px-3 py-1.5 landscape:py-1 border-b border-border shrink-0">
-        <label className="text-xs font-medium text-slate-800">Nom du projet</label>
+        <label className="text-sm font-medium text-slate-800">Nom du projet</label>
         <Input
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
@@ -87,13 +87,13 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
             </thead>
             <tbody>
               {Array.from({ length: BUTTON_COUNT }, (_, i) => (
-                <tr key={i} className="border-b border-border/50">
+                <tr key={i} className="border-b border-border/80 text-slate-700">
                   <td className="py-0.5 font-bold text-foreground">{getButtonLabel(i)}</td>
                   <td className="py-0.5 pr-1">
                     <Input
                       value={buttonInfos[i].fils}
                       onChange={(e) => updateButton(i, "fils", e.target.value)}
-                      className="h-6 text-xs"
+                      className="h-6 text-xs font-mono"
                       placeholder="Fils..."
                     />
                   </td>
@@ -101,7 +101,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                     <Input
                       value={buttonInfos[i].borne ?? ""}
                       onChange={(e) => updateButton(i, "borne", e.target.value)}
-                      className="h-6 text-xs"
+                      className="h-6 text-xs font-mono"
                       placeholder="Borne..."
                     />
                   </td>
@@ -109,7 +109,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                     <Input
                       value={buttonInfos[i].bornier}
                       onChange={(e) => updateButton(i, "bornier", e.target.value)}
-                      className="h-6 text-xs"
+                      className="h-6 text-xs font-mono"
                       placeholder="Bornier..."
                     />
                   </td>
