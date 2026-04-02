@@ -52,8 +52,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
       <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
         {/* Master section */}
         <div className="w-full landscape:w-1/2 space-y-2">
-          <div className="flex items-center gap-2 text-sm font-semibold text-red-900">
-            <Crown className="w-4 h-4 text-red-700" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-purple-900">
+            <Crown className="w-4 h-4 text-purple-700" />
             <span>Master</span>
           </div>
           <div className="flex flex-col gap-2">
