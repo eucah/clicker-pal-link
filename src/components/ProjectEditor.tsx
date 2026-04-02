@@ -64,12 +64,12 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
       </header>
 
       <div className="px-3 py-1.5 landscape:py-1 border-b border-border shrink-0">
-        <label className="text-xs font-medium font-mono text-slate-800">Nom du projet</label>
+        <label className="text-xs font-medium text-slate-800">Nom du projet</label>
         <Input
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
           placeholder="Entrer le nom du projet..."
-          className="h-7 text-sm mt-1"
+          className="h-7 text-sm mt-1 font-mono font-italic"
         />
       </div>
 
