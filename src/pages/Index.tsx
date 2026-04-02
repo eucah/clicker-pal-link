@@ -196,7 +196,7 @@ const Index = () => {
         <div className="flex items-center px-4 gap-1.5">
           <button
             onClick={handleGoHome}
-            className="p-1.5 rounded-md bg-secondary text-secondary-foreground"
+            className="p-2.5 rounded-md bg-secondary text-secondary-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -322,7 +322,7 @@ const Index = () => {
         </span>
       </div>
 
-      <div className="flex-1 overflow-auto p-1" ref={gridRef}>
+      <div className="flex-1 px-3 overflow-auto p-1" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
