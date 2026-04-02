@@ -75,7 +75,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
 
       <ScrollArea className="flex-1">
         <div className="px-3 py-1">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
                 <th className="py-1 text-left w-12">#</th>
@@ -87,7 +87,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
             </thead>
             <tbody>
               {Array.from({ length: BUTTON_COUNT }, (_, i) => (
-                <tr key={i} className="border-b border-border/80 text-slate-700">
+                <tr key={i} className="border-b border-border/80">
                   <td className="py-0.5 font-bold text-foreground">{getButtonLabel(i)}</td>
                   <td className="py-0.5 pr-1">
                     <Input
