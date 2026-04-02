@@ -193,10 +193,10 @@ const Index = () => {
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
       <header className="flex items-center justify-between px-4 safe-area-x py-1 border-b border-border bg-card shrink-0">
-        <div className="flex items-center px-4 gap-1.5">
+        <div className="flex items-center px-2 gap-1.5">
           <button
             onClick={handleGoHome}
-            className="p-2.5 rounded-md bg-secondary text-secondary-foreground"
+            className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
