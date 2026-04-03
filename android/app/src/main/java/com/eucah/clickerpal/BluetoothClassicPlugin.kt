@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import androidx.activity.result.ActivityResult
 import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
 import com.getcapacitor.PermissionState
@@ -29,6 +28,7 @@ import java.nio.charset.StandardCharsets
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
+import androidx.activity.result.ActivityResult
 
 @CapacitorPlugin(
     name = "BluetoothClassic",
@@ -47,37 +47,23 @@ class BluetoothClassicPlugin : Plugin() {
     companion object {
         private const val TAG = "BluetoothClassicPlugin"
         private const val SERVICE_NAME = "ClickerPalLink"
-        private const val STOP_COOLDOWN_MS = 800L
         private const val STATE_DISCONNECTED = "disconnected"
         private const val STATE_ADVERTISING = "advertising"
         private const val STATE_CONNECTED = "connected"
+
+        // ✅ CORRECTIF 1 : message de contrôle de déconnexion propre
+        private const val DISCONNECT_SIGNAL = "__DISCONNECT__"
+
         private val SPP_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
     }
 
-    @Volatile
-    private var bluetoothAdapter: BluetoothAdapter? = null
-
-    @Volatile
-    private var serverSocket: BluetoothServerSocket? = null
-
-    @Volatile
-    private var socket: BluetoothSocket? = null
-
-    @Volatile
-    private var reader: BufferedReader? = null
-
-    @Volatile
-    private var writer: OutputStreamWriter? = null
-
-    @Volatile
-    private var currentState: String = STATE_DISCONNECTED
-
-    @Volatile
-    private var serverModeEnabled = false
-    @Volatile
-    private var isStopping = false
-    @Volatile
-    private var stopCompletedAtMs = 0L
+    @Volatile private var bluetoothAdapter: BluetoothAdapter? = null
+    @Volatile private var serverSocket: BluetoothServerSocket? = null
+    @Volatile private var socket: BluetoothSocket? = null
+    @Volatile private var reader: BufferedReader? = null
+    @Volatile private var writer: OutputStreamWriter? = null
+    @Volatile private var currentState: String = STATE_DISCONNECTED
+    @Volatile private var serverModeEnabled = false
 
     private val keepReading = AtomicBoolean(false)
     private val connectionGeneration = AtomicInteger(0)
@@ -108,12 +94,9 @@ class BluetoothClassicPlugin : Plugin() {
 
     @PluginMethod
     fun enableBluetooth(call: PluginCall) {
-        if (!ensureBluetoothPermissions(call)) {
-            return
-        }
+        if (!ensureBluetoothPermissions(call)) return
 
-        val adapter = bluetoothAdapter
-        if (adapter == null) {
+        val adapter = bluetoothAdapter ?: run {
             call.reject("Bluetooth indisponible sur cet appareil")
             return
         }
@@ -133,28 +116,16 @@ class BluetoothClassicPlugin : Plugin() {
     private fun handleEnableBluetoothResult(call: PluginCall?, result: ActivityResult?) {
         val enabled = bluetoothAdapter?.isEnabled == true && result?.resultCode == Activity.RESULT_OK
         emitLog("Bluetooth enable result: $enabled")
-
-        if (call == null) {
-            return
-        }
-
-        if (!enabled) {
-            call.reject("Bluetooth non activé")
-            return
-        }
-
+        if (call == null) return
+        if (!enabled) { call.reject("Bluetooth non activé"); return }
         call.resolve(JSObject().putValue("enabled", true))
     }
 
     @PluginMethod
     fun getBondedDevices(call: PluginCall) {
-        if (!ensureBluetoothPermissions(call)) {
-            return
-        }
-
+        if (!ensureBluetoothPermissions(call)) return
         val adapter = requireEnabledAdapter(call) ?: return
         val devices = JSArray()
-
         adapter.bondedDevices
             ?.sortedBy { it.name ?: it.address }
             ?.forEach { device ->
@@ -163,7 +134,6 @@ class BluetoothClassicPlugin : Plugin() {
                 item.put("name", device.name ?: device.address)
                 devices.put(item)
             }
-
         emitLog("Bonded devices listed: ${devices.length()}")
         val result = JSObject()
         result.put("devices", devices)
@@ -172,18 +142,11 @@ class BluetoothClassicPlugin : Plugin() {
 
     @PluginMethod
     fun startServer(call: PluginCall) {
-        if (!ensureBluetoothPermissions(call)) {
-            return
-        }
-
+        if (!ensureBluetoothPermissions(call)) return
         val adapter = requireEnabledAdapter(call) ?: return
         emitLog("Starting Bluetooth Classic server")
 
         synchronized(connectionLock) {
-            if (isInStopCooldownLocked()) {
-                call.reject("Bluetooth en cours de stabilisation, réessayez dans un instant")
-                return
-            }
             serverModeEnabled = true
             closeClientThreadLocked()
             closeServerThreadLocked()
@@ -199,11 +162,7 @@ class BluetoothClassicPlugin : Plugin() {
             }
 
             notifyStatus(STATE_ADVERTISING)
-
-            val acceptGeneration = connectionGeneration.get()
-            serverThread = Thread({
-                acceptIncomingConnection(acceptGeneration)
-            }, "BtClassicServerThread").also { it.start() }
+            serverThread = Thread({ acceptIncomingConnection() }, "BtClassicServerThread").also { it.start() }
         }
 
         call.resolve()
@@ -216,7 +175,47 @@ class BluetoothClassicPlugin : Plugin() {
             serverModeEnabled = false
             closeServerSocketLocked()
             closeServerThreadLocked()
-            if (socket == null) {
+            if (socket == null) notifyStatus(STATE_DISCONNECTED)
+        }
+        call.resolve()
+    }
+
+    @PluginMethod
+    fun connect(call: PluginCall) {
+        if (!ensureBluetoothPermissions(call)) return
+        val adapter = requireEnabledAdapter(call) ?: return
+        val deviceAddress = call.getString("deviceAddress")?.trim().orEmpty()
+        if (deviceAddress.isBlank()) { call.reject("Adresse MAC Bluetooth manquante"); return }
+
+        val device = try {
+            adapter.getRemoteDevice(deviceAddress)
+        } catch (_: IllegalArgumentException) { null }
+
+        if (device == null) { call.reject("Appareil Bluetooth introuvable"); return }
+
+        emitLog("Connecting to device $deviceAddress")
+
+        synchronized(connectionLock) {
+            serverModeEnabled = false
+            closeServerSocketLocked()
+            closeServerThreadLocked()
+            closeClientThreadLocked()
+            closeCurrentSocketLocked(emitEvents = false)
+            clientThread = Thread({ connectToRemoteDevice(device, call) }, "BtClassicClientThread").also { it.start() }
+        }
+    }
+
+    // ✅ CORRECTIF 2 : disconnect() envoie le signal avant de couper
+    @PluginMethod
+    fun disconnect(call: PluginCall) {
+        emitLog("Disconnect requested")
+        sendDisconnectSignal()   // ← prévient l'autre appareil proprement
+        synchronized(connectionLock) {
+            stopActiveConnectionLocked(reason = "manual disconnect")
+            if (serverModeEnabled) {
+                notifyStatus(STATE_ADVERTISING)
+                startAcceptThreadLocked()
+            } else {
                 notifyStatus(STATE_DISCONNECTED)
             }
         }
@@ -224,72 +223,8 @@ class BluetoothClassicPlugin : Plugin() {
     }
 
     @PluginMethod
-    fun connect(call: PluginCall) {
-        if (!ensureBluetoothPermissions(call)) {
-            return
-        }
-
-        val adapter = requireEnabledAdapter(call) ?: return
-        val deviceAddress = call.getString("deviceAddress")?.trim().orEmpty()
-        if (deviceAddress.isBlank()) {
-            call.reject("Adresse MAC Bluetooth manquante")
-            return
-        }
-
-        val device = try {
-            adapter.getRemoteDevice(deviceAddress)
-        } catch (_: IllegalArgumentException) {
-            null
-        }
-
-        if (device == null) {
-            call.reject("Appareil Bluetooth introuvable")
-            return
-        }
-
-        emitLog("Connecting to device $deviceAddress")
-
-        synchronized(connectionLock) {
-            if (isInStopCooldownLocked()) {
-                call.reject("Bluetooth en cours de stabilisation, réessayez dans un instant")
-                return
-            }
-            serverModeEnabled = false
-            closeServerSocketLocked()
-            closeServerThreadLocked()
-            closeClientThreadLocked()
-            closeCurrentSocketLocked(emitEvents = false)
-            val connectGeneration = connectionGeneration.get()
-
-            clientThread = Thread({
-                connectToRemoteDevice(device, call, connectGeneration)
-            }, "BtClassicClientThread").also { it.start() }
-        }
-    }
-
-    @PluginMethod
-    fun disconnect(call: PluginCall) {
-        emitLog("Disconnect requested")
-        synchronized(connectionLock) {
-            isStopping = true
-            serverModeEnabled = false
-            stopActiveConnectionLocked(reason = "manual disconnect")
-            closeClientThreadLocked()
-            closeServerThreadLocked()
-            closeServerSocketLocked()
-            notifyStatus(STATE_DISCONNECTED)
-            markStopCompletedLocked()
-        }
-        call.resolve()
-    }
-
-    @PluginMethod
     fun sendMessage(call: PluginCall) {
-        val message = call.getString("message")
-        if (message == null) {
-            call.reject("Message manquant")
-            return
-        }
+        val message = call.getString("message") ?: run { call.reject("Message manquant"); return }
 
         val writerSnapshot = writer
         if (writerSnapshot == null || socket?.isConnected != true) {
@@ -320,7 +255,6 @@ class BluetoothClassicPlugin : Plugin() {
             call.reject("Aucune connexion Bluetooth active")
             return
         }
-
         synchronized(connectionLock) {
             startReadLoopLocked(activeSocket, connectionGeneration.get())
         }
@@ -331,9 +265,7 @@ class BluetoothClassicPlugin : Plugin() {
     @PluginMethod
     fun stopListening(call: PluginCall) {
         emitLog("Listening stopped")
-        synchronized(connectionLock) {
-            stopReadLoopLocked()
-        }
+        synchronized(connectionLock) { stopReadLoopLocked() }
         call.resolve()
     }
 
@@ -344,38 +276,21 @@ class BluetoothClassicPlugin : Plugin() {
         call.resolve(result)
     }
 
-    private fun acceptIncomingConnection(expectedGeneration: Int) {
-        val serverSocketSnapshot = serverSocket
-        if (serverSocketSnapshot == null) {
-            return
-        }
+    // ─── Logique interne ────────────────────────────────────────────────────────
+
+    private fun acceptIncomingConnection() {
+        val serverSocketSnapshot = serverSocket ?: return
 
         try {
             emitLog("Server waiting for incoming connection")
             val acceptedSocket = serverSocketSnapshot.accept()
             synchronized(connectionLock) {
-                val canAttach =
-                    expectedGeneration == connectionGeneration.get() &&
-                        !isStopping &&
-                        serverModeEnabled
-                if (!canAttach) {
-                    emitLog("Dropping stale incoming socket after accept")
-                    try {
-                        acceptedSocket.close()
-                    } catch (_: IOException) {
-                    }
-                    return
-                }
                 closeServerSocketLocked()
                 handleConnectedSocketLocked(acceptedSocket, "incoming")
             }
         } catch (exception: IOException) {
             val shouldResume = synchronized(connectionLock) {
-                !isStopping &&
-                    !isInStopCooldownLocked() &&
-                    serverModeEnabled &&
-                    currentState != STATE_CONNECTED &&
-                    expectedGeneration == connectionGeneration.get()
+                serverModeEnabled && currentState != STATE_CONNECTED
             }
             emitLog("Server accept finished: ${exception.message}")
             if (shouldResume) {
@@ -388,36 +303,13 @@ class BluetoothClassicPlugin : Plugin() {
         }
     }
 
-    private fun connectToRemoteDevice(device: BluetoothDevice, call: PluginCall, expectedGeneration: Int) {
+    private fun connectToRemoteDevice(device: BluetoothDevice, call: PluginCall) {
         try {
             bluetoothAdapter?.cancelDiscovery()
             val clientSocket = device.createRfcommSocketToServiceRecord(SPP_UUID)
-            synchronized(connectionLock) {
-                if (isStopping || expectedGeneration != connectionGeneration.get()) {
-                    emitLog("Aborting stale outgoing connect attempt before connect")
-                    try {
-                        clientSocket.close()
-                    } catch (_: IOException) {
-                    }
-                    return
-                }
-                clientConnectingSocket = clientSocket
-            }
+            synchronized(connectionLock) { clientConnectingSocket = clientSocket }
             clientSocket.connect()
             synchronized(connectionLock) {
-                val canAttach =
-                    !isStopping &&
-                        expectedGeneration == connectionGeneration.get() &&
-                        !isInStopCooldownLocked()
-                if (!canAttach) {
-                    emitLog("Dropping stale outgoing socket after connect")
-                    try {
-                        clientSocket.close()
-                    } catch (_: IOException) {
-                    }
-                    clientConnectingSocket = null
-                    return
-                }
                 clientConnectingSocket = null
                 handleConnectedSocketLocked(clientSocket, "outgoing")
             }
@@ -445,12 +337,10 @@ class BluetoothClassicPlugin : Plugin() {
     }
 
     private fun startAcceptThreadLocked() {
-        if (!serverModeEnabled || isInStopCooldownLocked()) {
-            return
-        }
+        if (!serverModeEnabled) return
 
         val adapter = bluetoothAdapter
-        if (adapter == null || adapter.isEnabled != true) {
+        if (adapter == null || !adapter.isEnabled) {
             notifyStatus(STATE_DISCONNECTED)
             return
         }
@@ -466,10 +356,7 @@ class BluetoothClassicPlugin : Plugin() {
         try {
             serverSocket = adapter.listenUsingRfcommWithServiceRecord(SERVICE_NAME, SPP_UUID)
             notifyStatus(STATE_ADVERTISING)
-            val acceptGeneration = connectionGeneration.get()
-            serverThread = Thread({
-                acceptIncomingConnection(acceptGeneration)
-            }, "BtClassicServerThread").also { it.start() }
+            serverThread = Thread({ acceptIncomingConnection() }, "BtClassicServerThread").also { it.start() }
             emitLog("Server restarted and waiting for reconnection")
         } catch (exception: IOException) {
             emitLog("Unable to restart server: ${exception.message}")
@@ -477,10 +364,9 @@ class BluetoothClassicPlugin : Plugin() {
         }
     }
 
+    // ✅ CORRECTIF 3 : lecture du signal __DISCONNECT__ dans la boucle de réception
     private fun startReadLoopLocked(activeSocket: BluetoothSocket, generation: Int) {
-        if (readThread?.isAlive == true) {
-            return
-        }
+        if (readThread?.isAlive == true) return
 
         keepReading.set(true)
         readThread = Thread({
@@ -488,6 +374,14 @@ class BluetoothClassicPlugin : Plugin() {
             try {
                 while (keepReading.get() && generation == connectionGeneration.get()) {
                     val line = reader?.readLine() ?: break
+
+                    // Signal de déconnexion propre reçu depuis l'autre appareil
+                    if (line.trim() == DISCONNECT_SIGNAL) {
+                        emitLog("Remote disconnect signal received")
+                        notifyListeners("btDisconnected", JSObject().apply { put("reason", "remote") })
+                        break
+                    }
+
                     emitLog("Message received: ${line.take(200)}")
                     val payload = JSObject()
                     payload.put("message", line)
@@ -506,12 +400,30 @@ class BluetoothClassicPlugin : Plugin() {
         }, "BtClassicReadThread").also { it.start() }
     }
 
+    // ✅ CORRECTIF 4 : envoi du signal avant fermeture (utilisé par disconnect et handleOnDestroy)
+    private fun sendDisconnectSignal() {
+        val writerSnapshot = writer ?: return
+        try {
+            synchronized(writerSnapshot) {
+                writerSnapshot.write("$DISCONNECT_SIGNAL\n")
+                writerSnapshot.flush()
+            }
+            emitLog("Disconnect signal sent to remote")
+        } catch (exception: IOException) {
+            emitLog("Could not send disconnect signal: ${exception.message}")
+        }
+    }
+
     private fun handleConnectionClosed(reason: String, resumeServerIfNeeded: Boolean) {
         synchronized(connectionLock) {
             emitLog("Connection closed: $reason")
             stopActiveConnectionLocked(reason = reason)
             closeClientThreadLocked()
-            if (resumeServerIfNeeded && !isStopping && !isInStopCooldownLocked()) {
+
+            // ✅ CORRECTIF 5 : notifier le JS que la connexion est perdue
+            notifyListeners("btDisconnected", JSObject().apply { put("reason", reason) })
+
+            if (resumeServerIfNeeded) {
                 startAcceptThreadLocked()
             } else {
                 notifyStatus(STATE_DISCONNECTED)
@@ -521,9 +433,7 @@ class BluetoothClassicPlugin : Plugin() {
 
     private fun stopReadLoopLocked() {
         keepReading.set(false)
-        if (readThread != Thread.currentThread()) {
-            readThread?.interrupt()
-        }
+        if (readThread != Thread.currentThread()) readThread?.interrupt()
         readThread = null
     }
 
@@ -531,50 +441,27 @@ class BluetoothClassicPlugin : Plugin() {
         connectionGeneration.incrementAndGet()
         stopReadLoopLocked()
         closeClientConnectingSocketLocked()
-        try {
-            reader?.close()
-        } catch (_: IOException) {
-        } catch (_: Exception) {
-        }
+        try { reader?.close() } catch (_: Exception) {}
         reader = null
-
-        try {
-            writer?.close()
-        } catch (_: IOException) {
-        } catch (_: Exception) {
-        }
+        try { writer?.close() } catch (_: Exception) {}
         writer = null
-
-        try {
-            socket?.close()
-        } catch (_: IOException) {
-        } catch (_: Exception) {
-        }
+        try { socket?.close() } catch (_: Exception) {}
         emitLog("Socket resources closed ($reason)")
         socket = null
     }
 
     private fun closeCurrentSocketLocked(emitEvents: Boolean) {
         stopActiveConnectionLocked(reason = "close current socket")
-        if (emitEvents) {
-            notifyStatus(if (serverModeEnabled) STATE_ADVERTISING else STATE_DISCONNECTED)
-        }
+        if (emitEvents) notifyStatus(if (serverModeEnabled) STATE_ADVERTISING else STATE_DISCONNECTED)
     }
 
     private fun closeClientConnectingSocketLocked() {
-        try {
-            clientConnectingSocket?.close()
-        } catch (_: IOException) {
-        } catch (_: Exception) {
-        }
+        try { clientConnectingSocket?.close() } catch (_: Exception) {}
         clientConnectingSocket = null
     }
 
     private fun closeServerSocketLocked() {
-        try {
-            serverSocket?.close()
-        } catch (_: IOException) {
-        }
+        try { serverSocket?.close() } catch (_: IOException) {}
         serverSocket = null
     }
 
@@ -588,50 +475,28 @@ class BluetoothClassicPlugin : Plugin() {
         clientThread = null
     }
 
-    private fun isInStopCooldownLocked(): Boolean {
-        if (isStopping) {
-            return true
-        }
-        val elapsed = System.currentTimeMillis() - stopCompletedAtMs
-        return stopCompletedAtMs != 0L && elapsed < STOP_COOLDOWN_MS
-    }
-
-    private fun markStopCompletedLocked() {
-        stopCompletedAtMs = System.currentTimeMillis()
-        isStopping = false
-    }
-
+    // ✅ CORRECTIF 6 : handleOnDestroy envoie le signal avant de tout fermer
     override fun handleOnDestroy() {
         super.handleOnDestroy()
+        sendDisconnectSignal()   // prévient l'autre appareil quand l'app est tuée
         synchronized(connectionLock) {
-            isStopping = true
             serverModeEnabled = false
             stopActiveConnectionLocked(reason = "plugin destroy")
             closeClientThreadLocked()
             closeServerThreadLocked()
             closeServerSocketLocked()
-            markStopCompletedLocked()
         }
     }
 
     private fun requireEnabledAdapter(call: PluginCall): BluetoothAdapter? {
         val adapter = bluetoothAdapter
-        if (adapter == null) {
-            call.reject("Bluetooth indisponible sur cet appareil")
-            return null
-        }
-        if (!adapter.isEnabled) {
-            call.reject("Bluetooth désactivé")
-            return null
-        }
+        if (adapter == null) { call.reject("Bluetooth indisponible sur cet appareil"); return null }
+        if (!adapter.isEnabled) { call.reject("Bluetooth désactivé"); return null }
         return adapter
     }
 
     private fun ensureBluetoothPermissions(call: PluginCall): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            return true
-        }
-
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
         return if (getPermissionState("bluetooth") == PermissionState.GRANTED) {
             true
         } else {
@@ -646,7 +511,6 @@ class BluetoothClassicPlugin : Plugin() {
             call.reject("Permissions Bluetooth refusées")
             return
         }
-
         when (call.methodName) {
             "enableBluetooth" -> enableBluetooth(call)
             "getBondedDevices" -> getBondedDevices(call)
