@@ -158,8 +158,8 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       </div>
 
       <div className="pt-4">
-        <Button onClick="secondary" size="L" onClick={handleScan} className="w-full gap-2">
-          <Bluetooth className="w-4 h-4" />
+        <Button variant="secondary" size="L" onClick={handleScan} className="w-full gap-2">
+          <RefreshCw className="w-6 h-6" />
           Scanner
         </Button>
       </div>
