@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Plus, Crown, Eye, Bluetooth, triangleAlert } from "lucide-react";
+import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
@@ -90,7 +90,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
           >
             <Bluetooth className="w-4 h-4 text-blue-600" /> Connexion projet partagé
           </Button>
-          <triangleAlert className="text-[10px] text-red-600 font-semibold text-center">
+          <TriangleAlert className="text-[10px] text-red-600 font-semibold text-center"/>
             Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
