@@ -104,7 +104,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       </div>
 
       <div className="mb-3 text-xs text-muted-foreground text-center">
-        Appaire d’abord les deux téléphones dans les paramètres Bluetooth Android
+        Appairer d’abord les deux appareils dans les paramètres Bluetooth Android
       </div>
 
       {status === "scanning" && (
