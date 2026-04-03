@@ -96,7 +96,13 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
         </button>
 
         <h1 className="text-sm font-bold text-foreground">Recherche Bluetooth</h1>
-
+        
+        <Button variant="secondary" size="sm" onClick={handleScan} className="gap-2">
+          <RefreshCw className="w-4 h-4" />
+          Scanner
+        </Button>
+      </div>
+      
       <div className="mb-3 text-xs text-muted-foreground text-center">
         Appairer d’abord les deux appareils dans les paramètres Bluetooth Android
       </div>
