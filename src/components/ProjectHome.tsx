@@ -91,7 +91,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
             <Bluetooth className="w-4 h-4 text-blue-600" /> Connexion projet partagé
           </Button>
           <p className="text-[10px] text-red-600 font-semibold text-center">
-            Les 2 appareils doivent être préalablement appairés avant de démarrer
+            Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
       </div>
