@@ -162,5 +162,6 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       </div>
     </div>
   );
+};
 
 export default ViewerSessionList;
