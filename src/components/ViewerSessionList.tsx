@@ -97,14 +97,11 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
 
         <h1 className="text-sm font-bold text-foreground">Recherche Bluetooth</h1>
         
-        <Button variant="secondary" size="XL" onClick={handleScan} className="gap-2">
-          <RefreshCw className="w-8 h-8" />
-          Scanner
-        </Button>
+        <div className="w-8" />
       </div>
       
       <div className="mb-3 text-xs text-muted-foreground text-center">
-        Appairer d’abord les deux appareils dans les paramètres Bluetooth Android
+        Appairer d'abord les deux appareils dans les paramètres Bluetooth Android
       </div>
 
       {status === "scanning" && (
@@ -156,8 +153,14 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
           </div>
         )}
       </div>
+
+      <div className="pt-4 pb-2">
+        <Button variant="secondary" size="lg" onClick={handleScan} className="w-full gap-3 h-16 text-lg rounded-xl">
+          <RefreshCw className="w-7 h-7" />
+          Scanner
+        </Button>
+      </div>
     </div>
   );
-};
 
 export default ViewerSessionList;
