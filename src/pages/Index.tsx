@@ -4,6 +4,7 @@ import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
 import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
+import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
 import {
@@ -14,7 +15,7 @@ import {
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 
-type Screen = "home" | "editor" | "grid" | "viewer-scan";
+type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
@@ -164,6 +165,7 @@ const Index = () => {
           setScreen("editor");
         }}
         onViewerScan={handleViewerScan}
+        onHelp={() => setScreen("help")}
       />
     );
   }
@@ -185,6 +187,10 @@ const Index = () => {
         onCancel={() => setScreen("home")}
       />
     );
+  }
+
+  if (screen === "help") {
+    return <HelpPage onBack={() => setScreen("home")} />;
   }
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
