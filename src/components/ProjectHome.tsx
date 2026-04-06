@@ -15,7 +15,7 @@ interface ProjectHomeProps {
   onHelp: () => void;
 }
 
-const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHomeProps) => {
+const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -99,6 +99,14 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
       </div>
 
       <input ref={fileInputRef} type="file" accept=".json,.txt" className="hidden" onChange={handleFileChange} />
+
+      <button
+        onClick={onHelp}
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+        aria-label="Aide"
+      >
+        <MessageCircleQuestion className="w-7 h-7" />
+      </button>
     </div>
   );
 };
