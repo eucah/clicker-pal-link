@@ -1,10 +1,11 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestionMark } from "lucide-react";
+import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestionMark, ArrowLeft } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
 import { stopScanning } from "@/lib/bt-service";
+import { useNavigate } from "react-router-dom";
 
 export type AppRole = "master" | "viewer";
 
@@ -16,6 +17,7 @@ interface ProjectHomeProps {
 
 const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkAndRequestPermissions();
@@ -44,6 +46,13 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
+      <button
+        onClick={() => navigate(-1)}
+        className="fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary text-secondary-foreground"
+      >
+        <ArrowLeft className="w-4 h-4" />
+      </button>
+
       <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
         Sélectionnez votre rôle
@@ -98,6 +107,13 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHo
       </div>
 
       <input ref={fileInputRef} type="file" accept=".json,.txt" className="hidden" onChange={handleFileChange} />
+
+      <button
+        onClick={() => navigate("/help")}
+        className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-white border border-gray-200 shadow-lg"
+      >
+        <MessageCircleQuestionMark className="h-7 w-7 text-blue-600" />
+      </button>
     </div>
   );
 };
