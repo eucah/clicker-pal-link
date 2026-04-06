@@ -12,6 +12,7 @@ interface ProjectHomeProps {
   onLoadProject: (project: ProjectData, role: AppRole) => void;
   onCreateProject: () => void;
   onViewerScan: () => void;
+  onHelp: () => void;
 }
 
 const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan }: ProjectHomeProps) => {
