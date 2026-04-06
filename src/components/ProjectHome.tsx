@@ -102,7 +102,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
       <button
         onClick={onHelp}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-white text-blue-600 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
+        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-white text-blue-600 shadow-lg flex items-center justify-center hover:bg-white transition-colors"
         aria-label="Aide"
       >
         <MessageCircleQuestion className="w-5 h-5" />
