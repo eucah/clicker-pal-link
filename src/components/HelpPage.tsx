@@ -24,9 +24,9 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">👑 Rôle Master</h2>
+          <h2 className="text-base font-bold">👑 Rôle Contrôleur</h2>
           <p className="text-muted-foreground">
-            Le <strong>Master</strong> crée et gère le projet. Il peut :
+            Le <strong>Contrôleur</strong> crée et gère le projet. Il peut :
           </p>
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers).</li>
@@ -37,9 +37,9 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">👁️ Rôle Viewer</h2>
+          <h2 className="text-base font-bold">👁️ Rôle Observateur</h2>
           <p className="text-muted-foreground">
-            Le <strong>Viewer</strong> se connecte au Master pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états.
+            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états.
           </p>
         </section>
 
@@ -47,8 +47,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <h2 className="text-base font-bold">📶 Connexion Bluetooth</h2>
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>Les deux appareils doivent être <strong>appairés</strong> au préalable dans les paramètres Android.</li>
-            <li>Le Master démarre le partage depuis la grille (bouton "Partager projet").</li>
-            <li>Le Viewer scanne et se connecte depuis l'écran de connexion.</li>
+            <li>Le Contrôleur démarre le partage depuis la grille (bouton "Partager projet").</li>
+            <li>L'Observateur scanne et se connecte depuis l'écran de connexion.</li>
           </ul>
         </section>
 

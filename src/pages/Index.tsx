@@ -70,7 +70,7 @@ const Index = () => {
 
   const handleViewerConnected = () => {
     setProject({
-      name: "Session Viewer",
+      name: "Session Observateur",
       states: Array(BUTTON_COUNT).fill(0),
       buttonInfos: createDefaultInfos(),
     });
@@ -241,7 +241,7 @@ const Index = () => {
             variant={isMaster ? "default" : "secondary"}
             className="text-[10px] px-1.5 py-0 select-none"
           >
-            {isMaster ? "Master" : "Viewer"}
+            {isMaster ? "Contrôleur" : "Observateur"}
           </Badge>
         </div>
       </header>

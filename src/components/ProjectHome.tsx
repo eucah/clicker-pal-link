@@ -51,11 +51,11 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       </p>
 
       <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
-        {/* Master section */}
+        {/* Contrôleur section */}
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-900">
             <Crown className="w-4 h-4 text-purple-700" />
-            <span>Master</span>
+            <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
             <Button onClick={onCreateProject} className="w-full gap-2" size="sm">
@@ -74,11 +74,11 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
         </div>
 
-        {/* Viewer section */}
+        {/* Observateur section */}
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-green-900">
             <Eye className="w-4 h-4 text-green-700" />
-            <span>Viewer</span>
+            <span>Observateur</span>
           </div>
           <Button
             variant="outline"
