@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion } from "lucide-react";
+import ContinuityTitleStatic from "./ContinuityTitleStatic";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
@@ -45,7 +46,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
-      <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS CONTINUITÉ</h1>
+      <ContinuityTitleStatic />
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
         Sélectionnez votre rôle
       </p>
