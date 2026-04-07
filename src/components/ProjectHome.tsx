@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion } from "lucide-react";
+import ContinuityTitleStatic from "./ContinuityTitleStatic";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
