@@ -1,9 +1,12 @@
 name: Cleanup old workflow runs
 
 on:
-  schedule:
-    - cron: "0 3 * * *"
   workflow_dispatch:
+    inputs:
+      keep_runs:
+        description: "Nombre de runs récents à conserver"
+        required: true
+        default: "5"
 
 jobs:
   cleanup:
@@ -13,13 +16,61 @@ jobs:
       contents: read
 
     steps:
-      - name: Delete old successful Android build runs
-        uses: Mattraks/delete-workflow-runs@v2
+      - name: Keep only the most recent runs
+        uses: actions/github-script@v7
         with:
-          token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          delete_workflow_pattern: Build Android APK
-          delete_run_by_conclusion_pattern: success
-          keep_minimum_runs: 5
-          retain_days: 7
-          dry_run: false
+          github-token: ${{ github.token }}
+          script: |
+            const workflowName = "Build Android APK";
+            const keepRuns = parseInt('${{ github.event.inputs.keep_runs }}', 10);
+
+            if (isNaN(keepRuns) || keepRuns < 0) {
+              core.setFailed("La valeur keep_runs doit être un entier positif ou nul.");
+              return;
+            }
+
+            const { data: workflows } = await github.rest.actions.listRepoWorkflows({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const workflow = workflows.workflows.find(w => w.name === workflowName);
+
+            if (!workflow) {
+              core.setFailed(`Workflow introuvable : ${workflowName}`);
+              return;
+            }
+
+            let page = 1;
+            let allRuns = [];
+
+            while (true) {
+              const { data } = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflow.id,
+                per_page: 100,
+                page,
+              });
+
+              if (!data.workflow_runs.length) break;
+
+              allRuns.push(...data.workflow_runs);
+              page++;
+            }
+
+            allRuns.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const runsToDelete = allRuns.slice(keepRuns);
+
+            for (const run of runsToDelete) {
+              core.info(`Suppression du run #${run.id} (${run.created_at})`);
+              await github.rest.actions.deleteWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: run.id,
+              });
+            }
+
+            core.info(`Conservés : ${Math.min(allRuns.length, keepRuns)} run(s)`);
+            core.info(`Supprimés : ${runsToDelete.length} run(s)`);
