@@ -19,14 +19,34 @@ interface ProjectHomeProps {
 
 const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     checkAndRequestPermissions();
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const updateTheme = () => {
+      setIsDark(root.classList.contains("dark"));
+    };
+
+    updateTheme();
+
+    const observer = new MutationObserver(updateTheme);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
@@ -41,6 +61,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         alert("Erreur lors de la lecture du fichier");
       }
     };
+
     reader.readAsText(file);
     e.target.value = "";
   };
@@ -48,19 +69,14 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
       <div className="w-full flex justify-center mb-1">
-  <picture>
-    {/* Dark mode */}
-    <source srcSet={titleDark} media="(prefers-color-scheme: dark)" />
+        <img
+          src={isDark ? titleDark : titleLight}
+          alt="Essais Continuité"
+          className="w-full max-w-[920px] h-auto object-contain select-none"
+          draggable={false}
+        />
+      </div>
 
-    {/* Light mode */}
-    <img
-      src={titleLight}
-      alt="Essais Continuité"
-      className="w-full max-w-[920px] h-auto object-contain select-none"
-      draggable={false}
-    />
-  </picture>
-</div>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
   Sélectionnez votre rôle
       </p>
