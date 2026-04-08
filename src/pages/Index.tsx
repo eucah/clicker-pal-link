@@ -276,7 +276,7 @@ const Index = () => {
             )}
           </>
         ) : (
-          <span className="px-4 text-[11px] text-muted-foreground">
+          <span className="px-6 text-[11px] text-muted-foreground">
             Appuyez sur un bouton pour voir ses infos
           </span>
         )}
