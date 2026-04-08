@@ -6,7 +6,6 @@ import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
 import { stopScanning } from "@/lib/bt-service";
 import titleLight from "@/assets/title-continuity-light.png";
-import titleDark from "@/assets/title-continuity-dark.png";
 
 export type AppRole = "master" | "viewer";
 
@@ -49,10 +48,6 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
       <div className="w-full flex justify-center mb-1">
   <picture>
-    {/* Dark mode */}
-    <source srcSet={titleDark} media="(prefers-color-scheme: dark)" />
-
-    {/* Light mode */}
     <img
       src={titleLight}
       alt="Essais Continuité"
