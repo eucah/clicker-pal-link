@@ -67,12 +67,12 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
+    <div className="h-screen bg-background flex flex-col items-center justify-center px-12 safe-area-all">
       <div className="w-full flex justify-center mb-1">
         <img
           src={isDark ? titleDark : titleLight}
           alt="Essais Continuité"
-          className="w-full max-w-[480px] h-auto object-contain select-none"
+          className="w-full max-w-[920px] h-auto object-contain select-none"
           draggable={false}
         />
       </div>
