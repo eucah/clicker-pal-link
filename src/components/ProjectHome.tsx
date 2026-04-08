@@ -13,7 +13,8 @@ import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
 import { stopScanning } from "@/lib/bt-service";
-
+import titleLight from "@/assets/title-continuity-light.png";
+import titleDark from "@/assets/title-continuity-dark.png";
 export type AppRole = "master" | "viewer";
 
 interface ProjectHomeProps {
@@ -46,13 +47,20 @@ const ProjectHome = ({
     return () => media.removeEventListener("change", updateTheme);
   }, []);
 
-  const titleImageSrc = useMemo(
-    () =>
-      isDark
-        ? "/assets/title-continuity-dark.png"
-        : "/assets/title-continuity-light.png",
-    [isDark]
-  );
+<div className="w-full flex justify-center mb-1">
+  <picture>
+    {/* Dark mode */}
+    <source srcSet={titleDark} media="(prefers-color-scheme: dark)" />
+
+    {/* Light mode */}
+    <img
+      src={titleLight}
+      alt="Essais Continuité"
+      className="w-full max-w-[920px] h-auto object-contain select-none"
+      draggable={false}
+    />
+  </picture>
+</div>
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
