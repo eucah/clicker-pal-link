@@ -72,7 +72,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         <img
           src={isDark ? titleDark : titleLight}
           alt="Essais Continuité"
-          className="w-[613px] max-w-[613px] h-auto object-contain select-none"
+          className="w-[300px] max-w-full h-auto object-contain select-none"
           draggable={false}
         />
       </div>
