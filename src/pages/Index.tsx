@@ -252,7 +252,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 px-2 safe-area-x py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
+      <div className="flex items-center gap-2 px-5 safe-area-x py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
             <span className="text-[11px] font-bold text-foreground">#{selectedLabel}</span>
