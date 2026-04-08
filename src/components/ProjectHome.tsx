@@ -46,9 +46,9 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
   return (
     <div className="h-screen bg-background flex flex-col items-center justify-center px-4 safe-area-all">
-      <ContinuityTitleStatic />
+      <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">ESSAIS CONTINUITÉ</h1>
       <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
-        Sélectionnez votre rôle
+  Sélectionnez votre rôle
       </p>
 
       <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
