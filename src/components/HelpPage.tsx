@@ -1,4 +1,4 @@
-import { ArrowLeft, Crown, Eye, Bluetooth } from "lucide-react";
+import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, lightbulb, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HelpPageProps {
@@ -17,7 +17,12 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
       <div className="flex-1 overflow-auto px-5 py-4 space-y-5 text-sm text-foreground">
         <section className="space-y-2">
-          <h2 className="text-base font-bold">🎯 Présentation</h2>
+
+          <p className="flex items-center gap-2 text-base font-bold">
+          <presentation className="w-4 h-4 text-grey-700 dark:text-grey-300">
+          Présentation
+          </p>
+
           <p className="text-muted-foreground">
             <strong>Essais Continuité</strong> est une application de test de continuité électrique entre deux appareils Android connectés en Bluetooth.
           </p>
