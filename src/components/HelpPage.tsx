@@ -25,9 +25,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
         <section className="space-y-2">
           <p classname="text-base text-bold">
-          <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" /> 
+          <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
           Rôle Contrôleur
           </p>
+
           <p className="text-muted-foreground">
             Le <strong>Contrôleur</strong> crée et gère le projet. Il peut :
           </p>
@@ -41,9 +42,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
         <section className="space-y-2">
           <p classname="text-base text-bold">
-          <Eye className="w-4 h-4 text-green-700 dark:text-green-300" /> 
+          <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
             Rôle Observateur
           </p>
+
           <p className="text-muted-foreground">
             L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états.
           </p>
