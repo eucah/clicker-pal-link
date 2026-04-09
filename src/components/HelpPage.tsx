@@ -52,7 +52,11 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">📶 Connexion Bluetooth</h2>
+          <p className="flex items-center gap-2 text-base font-bold">
+          <Bluetooth className=w-4 h-4 text-blue-600 />   
+           Connexion Bluetooth
+           </p>
+
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>Les deux appareils doivent être <strong>appairés</strong> au préalable dans les paramètres Android.</li>
             <li>Le Contrôleur démarre le partage depuis la grille (bouton "Partager projet").</li>
