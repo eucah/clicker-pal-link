@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Crown, Eye, Bluetooth } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HelpPageProps {
@@ -24,7 +24,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">👑 Rôle Contrôleur</h2>
+          <crown className="text-base text-purple-700 font-bold"> Rôle Contrôleur</h2>
           <p className="text-muted-foreground">
             Le <strong>Contrôleur</strong> crée et gère le projet. Il peut :
           </p>
