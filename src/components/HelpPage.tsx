@@ -24,7 +24,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <p classname="text-base text-bold">
+          <p className="text-base font-bold">
           <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
           Rôle Contrôleur
           </p>
@@ -41,7 +41,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <p classname="text-base text-bold">
+          <p className="text-base font-bold">
           <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
             Rôle Observateur
           </p>
