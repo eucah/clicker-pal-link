@@ -1,14 +1,31 @@
 import { useEffect, useRef } from "react";
-import { App as CapacitorApp } from "@capacitor/app";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin, type PluginListenerHandle } from "@capacitor/core";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 
 const DEFAULT_EXIT_INTERVAL_MS = 2000;
 
+interface AppPlugin {
+  addListener(
+    eventName: "backButton",
+    listenerFunc: () => void,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  exitApp(): Promise<void>;
+}
+
+const CapacitorApp = registerPlugin<AppPlugin>("App");
+
 type UseAndroidBackButtonOptions = {
   rootPath?: string;
   exitIntervalMs?: number;
+};
+
+const normalizePath = (path: string) => {
+  if (!path || path === "/") {
+    return "/";
+  }
+
+  return path.endsWith("/") ? path.slice(0, -1) : path;
 };
 
 export function useAndroidBackButton({
@@ -19,6 +36,7 @@ export function useAndroidBackButton({
   const location = useLocation();
   const lastBackPressAtRef = useRef(0);
   const pathnameRef = useRef(location.pathname);
+  const normalizedRootPath = normalizePath(rootPath);
 
   useEffect(() => {
     pathnameRef.current = location.pathname;
@@ -32,8 +50,9 @@ export function useAndroidBackButton({
       return;
     }
 
-    const listenerPromise = CapacitorApp.addListener("backButton", () => {
-      const isRootRoute = pathnameRef.current === rootPath;
+    const listener = CapacitorApp.addListener("backButton", () => {
+      const currentPath = normalizePath(pathnameRef.current);
+      const isRootRoute = currentPath === normalizedRootPath;
 
       if (!isRootRoute) {
         navigate(-1);
@@ -62,7 +81,7 @@ export function useAndroidBackButton({
     });
 
     return () => {
-      void listenerPromise.then((listener) => listener.remove());
+      void listener.then((handle) => handle.remove());
     };
-  }, [navigate, rootPath, exitIntervalMs]);
+  }, [exitIntervalMs, navigate, normalizedRootPath]);
 }
