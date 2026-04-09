@@ -24,7 +24,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <crown className="text-base text-purple-700 font-bold"> Rôle Contrôleur</h2>
+          <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" /> 
+           Rôle Contrôleur
           <p className="text-muted-foreground">
             Le <strong>Contrôleur</strong> crée et gère le projet. Il peut :
           </p>
