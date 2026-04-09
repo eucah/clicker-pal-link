@@ -37,7 +37,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <Eye className="w-4 h-4 text-green-700 dark:text-green-300" /> <strong>Rôle Observateur</strong>
+          <Eye className="w-4 h-4 text-green-700 dark:text-green-300" /> Rôle Observateur
           <p className="text-muted-foreground">
             L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états.
           </p>
