@@ -12,6 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "engines": {
+  "node": "20.x"
+  }
   "dependencies": {
     "@capacitor/android": "^8.2.0",
     "@capacitor/app": "^8.2.0",
