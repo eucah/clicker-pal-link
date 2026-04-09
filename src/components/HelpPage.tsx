@@ -1,4 +1,4 @@
-import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, lightbulb, Presentation } from "lucide-react";
+import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, Lightbulb, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HelpPageProps {
@@ -19,7 +19,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <section className="space-y-2">
 
           <p className="flex items-center gap-2 text-base font-bold">
-          <presentation className="w-4 h-4 text-grey-700 dark:text-grey-300">
+          <Presentation className="w-4 h-4 text-grey-700 dark:text-grey-300">
           Présentation
           </p>
 
