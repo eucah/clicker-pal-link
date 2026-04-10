@@ -19,7 +19,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <section className="space-y-2">
 
           <p className="flex items-center gap-2 text-base font-bold">
-          <Presentation className="w-4 h-4 text-grey-700 dark:text-grey-300" />
+          <Presentation className="w-4 h-4 text-gray-700 dark:text-gray-300" />
           Présentation
           </p>
 
@@ -70,8 +70,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">🔘 États des boutons</h2>
-          <div className="space-y-1.5 text-muted-foreground">
+          <p className="flex items-center gap-2 text-base font-bold">
+          <CircleDot className="w-4 h-4 text-stone-700 dark:text-stone-300" />
+          États des boutons
+            
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-idle inline-block" />
               <strong>Attente</strong> — Pas encore testé
@@ -96,8 +98,9 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-base font-bold">💡 Astuces</h2>
-          <ul className="list-disc pl-5 text-muted-foreground space-y-1">
+          <p className="flex items-center gap-2 text-base font-bold">
+          <Lightbulb className="w-4 h-4 text-yellow-700 dark:text-yellow-300" />
+          Astuces
             <li>Appui court sur un bouton = changer son état.</li>
             <li>Appui long sur un bouton = voir ses détails (fils, borne, bornier).</li>
             <li>Le projet peut être sauvegardé en fichier JSON pour être rechargé ultérieurement.</li>
