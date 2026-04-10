@@ -73,6 +73,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <p className="flex items-center gap-2 text-base font-bold">
           <CircleDot className="w-4 h-4 text-stone-700 dark:text-stone-300" />
           États des boutons
+          </p>
             
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-idle inline-block" />
@@ -101,6 +102,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <p className="flex items-center gap-2 text-base font-bold">
           <Lightbulb className="w-4 h-4 text-yellow-700 dark:text-yellow-300" />
           Astuces
+          </p>
+          
             <li>Appui court sur un bouton = changer son état.</li>
             <li>Appui long sur un bouton = voir ses détails (fils, borne, bornier).</li>
             <li>Le projet peut être sauvegardé en fichier JSON pour être rechargé ultérieurement.</li>
