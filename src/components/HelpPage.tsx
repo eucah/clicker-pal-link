@@ -74,7 +74,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <CircleDot className="w-4 h-4 text-stone-700 dark:text-stone-300" />
           États des boutons
           </p>
-          <div className="space-y-1.5 text-muted-foreground">  
+          
+        <div className="space-y-1.5 text-muted-foreground">
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-idle inline-block" />
               <strong>Attente</strong> — Pas encore testé
