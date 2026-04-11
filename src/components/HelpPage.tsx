@@ -59,8 +59,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <section className="space-y-2">
           <p className="flex items-center gap-2 text-base font-bold">
           <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" />   
-           Connexion Bluetooth
-           </p>
+            Connexion Bluetooth
+          </p>
 
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>Les deux appareils doivent être <strong>appairés</strong> au préalable dans les paramètres Android.</li>
