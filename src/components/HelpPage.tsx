@@ -104,7 +104,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <Lightbulb className="w-4 h-4 text-yellow-700 dark:text-yellow-300" />
           Astuces
           </p>
-          
+
+          <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>Appui court sur un bouton = changer son état.</li>
             <li>Appui long sur un bouton = voir ses détails (fils, borne, bornier).</li>
             <li>Le projet peut être sauvegardé en fichier JSON pour être rechargé ultérieurement.</li>
