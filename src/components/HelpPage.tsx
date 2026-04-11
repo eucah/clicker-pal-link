@@ -71,7 +71,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
         <section className="space-y-2">
           <p className="flex items-center gap-2 text-base font-bold">
-          <CircleDot className="w-4 h-4 text-brown-700 dark:text-brown-300" />
+          <CircleDot className="w-4 h-4 text-yellow-900 dark:text-yellow-700" />
           États des boutons
           </p>
           
@@ -101,7 +101,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
         <section className="space-y-2">
           <p className="flex items-center gap-2 text-base font-bold">
-          <Lightbulb className="w-4 h-4 text-yellow-700 dark:text-yellow-300" />
+          <Lightbulb className="w-4 h-4 text-yellow-500 dark:text-yellow-300" />
           Astuces
           </p>
 
