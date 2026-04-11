@@ -24,7 +24,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <p className="text-muted-foreground">
-            <strong>Essais Continuité</strong> est une application de test de continuité électrique entre deux appareils Android connectés en Bluetooth.
+            <strong>Essais Continuité</strong> est une application d'aide aux essais de continuité électrique grâce à deux appareils "Android" connectés en Bluetooth.
           </p>
         </section>
 
@@ -39,8 +39,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers).</li>
-            <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier JSON.</li>
-            <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth Classic.</li>
+            <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier TXT.</li>
+            <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
             <li><strong>Changer l'état des boutons</strong> — Appui court pour cycler entre les états.</li>
           </ul>
         </section>
@@ -52,7 +52,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <p className="text-muted-foreground">
-            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états.
+            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états. Mais a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers).
           </p>
         </section>
 
@@ -71,7 +71,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
         <section className="space-y-2">
           <p className="flex items-center gap-2 text-base font-bold">
-          <CircleDot className="w-4 h-4 text-stone-700 dark:text-stone-300" />
+          <CircleDot className="w-4 h-4 text-brown-700 dark:text-brown-300" />
           États des boutons
           </p>
           
@@ -82,7 +82,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-warning inline-block" />
-              <strong>En cours</strong> — Test en cours
+              <strong>En cours</strong> — Test en cours (clignotant)
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-active inline-block" />
@@ -106,10 +106,12 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-            <li>Appui court sur un bouton = changer son état.</li>
-            <li>Appui long sur un bouton = voir ses détails (fils, borne, bornier).</li>
-            <li>Le projet peut être sauvegardé en fichier JSON pour être rechargé ultérieurement.</li>
-          </ul>
+            <li>Appui court sur un bouton = changer son état et voir ses détails (fils, borne, bornier).</li>
+            <li>Il est possible de revenir à l'état en attente et de refaire l'essai.</li>
+            <li>Le projet peut être sauvegardé en fichier TXT pour être rechargé ultérieurement.</li>
+            <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
+            <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
+        </ul>
         </section>
       </div>
     </div>
