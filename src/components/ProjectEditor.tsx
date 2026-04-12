@@ -113,6 +113,9 @@ interface EditorRowProps {
   onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
 }
 
+const gridInputClassName =
+  "h-6 text-xs font-mono transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground focus-visible:border-foreground";
+
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
     <td className="py-0.5 font-bold text-foreground w-9">{getButtonLabel(index)}</td>
@@ -120,7 +123,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.fils}
         onChange={(e) => onUpdate(index, "fils", e.target.value)}
-        className="h-6 text-xs font-mono"
+        className={gridInputClassName}
         placeholder="Fils..."
       />
     </td>
@@ -128,7 +131,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.borne ?? ""}
         onChange={(e) => onUpdate(index, "borne", e.target.value)}
-        className="h-6 text-xs font-mono"
+        className={gridInputClassName}
         placeholder="Borne..."
       />
     </td>
@@ -136,7 +139,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.bornier}
         onChange={(e) => onUpdate(index, "bornier", e.target.value)}
-        className="h-6 text-xs font-mono"
+        className={gridInputClassName}
         placeholder="Bornier..."
       />
     </td>
@@ -144,7 +147,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
-        className="h-6 text-xs font-mono"
+        className={gridInputClassName}
         placeholder="Cf/Cm..."
       />
     </td>
