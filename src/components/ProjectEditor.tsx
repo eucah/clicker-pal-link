@@ -114,7 +114,7 @@ interface EditorRowProps {
 }
 
 const gridInputClassName =
-  "h-6 text-xs font-mono transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground focus-visible:border-foreground";
+  "h-6 text-sm font-mono transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground focus-visible:border-foreground";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
