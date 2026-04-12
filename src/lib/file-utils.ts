@@ -1,6 +1,10 @@
 import { ButtonInfo, ProjectData, BUTTON_COUNT, getButtonLabel, normalizeButtonInfo } from "@/types/project";
 
 const STATE_NAMES = ["Attente", "En cours", "Validé", "Défaut"] as const;
+const REPORT_STATE_BY_LINE: Record<number, string> = {
+  2: "validé",
+  3: "défaut",
+};
 
 // Format project data as a readable table in text format (no JSON)
 export const formatProjectAsTable = (project: ProjectData): string => {
@@ -63,7 +67,7 @@ export const formatReportAsTable = (project: ProjectData): string => {
     const info = normalizeButtonInfo(project.buttonInfos[i]);
     const state = STATE_NAMES[project.states[i]] || "Attente";
     const locked = info.locked ? "Oui" : "Non";
-    const reportState = project.states[i] === 2 ? "validé" : "défaut";
+    const reportState = mapReportStateByLine(project.states[i]);
     lines.push(
       padRight(label, 6) +
       padRight(info.fils || "-", 20) +
@@ -78,6 +82,13 @@ export const formatReportAsTable = (project: ProjectData): string => {
 
   lines.push("=".repeat(114));
   return lines.join("\n");
+};
+
+const mapReportStateByLine = (lineState: number): string => {
+  if (lineState in REPORT_STATE_BY_LINE) {
+    return REPORT_STATE_BY_LINE[lineState];
+  }
+  return "";
 };
 
 function padRight(str: string, len: number): string {
