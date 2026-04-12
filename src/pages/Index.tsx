@@ -6,14 +6,17 @@ import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
   getButtonLabel,
   createDefaultInfos,
+  normalizeButtonInfo,
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
+import { saveReportFile } from "@/lib/file-utils";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
@@ -36,7 +39,7 @@ const Index = () => {
     if (ble.receivedData && role === "viewer") {
       setStates(ble.receivedData.states);
       if (ble.receivedData.buttonInfos.length > 0) {
-        setButtonInfos(ble.receivedData.buttonInfos);
+        setButtonInfos(ble.receivedData.buttonInfos.map((info) => normalizeButtonInfo(info)));
       }
     }
   }, [ble.receivedData, role]);
@@ -53,7 +56,7 @@ const Index = () => {
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
     setProject(loadedProject);
     setStates(loadedProject.states);
-    setButtonInfos(loadedProject.buttonInfos);
+    setButtonInfos(loadedProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
 
     if (selectedRole) {
@@ -195,6 +198,31 @@ const Index = () => {
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
+  const handleExportReport = async () => {
+    if (!project) {
+      return;
+    }
+
+    const enteredName = window.prompt("Nom du rapport (.txt ajouté si nécessaire)", `${project.name}-rapport`);
+    if (enteredName === null) {
+      return;
+    }
+
+    const trimmed = enteredName.trim();
+    if (!trimmed) {
+      alert("Veuillez saisir un nom de fichier.");
+      return;
+    }
+
+    const success = await saveReportFile(
+      { name: project.name, states, buttonInfos },
+      trimmed.endsWith(".txt") ? trimmed : `${trimmed}.txt`,
+    );
+
+    if (!success) {
+      alert("Export du rapport annulé.");
+    }
+  };
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
@@ -265,6 +293,9 @@ const Index = () => {
             <span className="text-[11px] text-field-bornier font-semibold">
               Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
+            <span className="text-[11px] text-amber-700 font-semibold">
+              Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
+            </span>
             {selectedInfo.locked && (
               <Badge
                 variant="outline"
@@ -274,11 +305,31 @@ const Index = () => {
                 Non Testé
               </Badge>
             )}
+            <Button
+              onClick={handleExportReport}
+              variant="outline"
+              size="sm"
+              className="ml-auto h-6 px-2 text-[11px] gap-1"
+            >
+              <FileChartColumn className="w-3 h-3" />
+              Rapport
+            </Button>
           </>
         ) : (
-          <span className="px-4 text-[11px] text-muted-foreground">
-            Appuyez sur un bouton pour voir ses infos
-          </span>
+          <>
+            <span className="px-4 text-[11px] text-muted-foreground">
+              Appuyez sur un bouton pour voir ses infos
+            </span>
+            <Button
+              onClick={handleExportReport}
+              variant="outline"
+              size="sm"
+              className="ml-auto h-6 px-2 text-[11px] gap-1"
+            >
+              <FileChartColumn className="w-3 h-3" />
+              Rapport
+            </Button>
+          </>
         )}
 
         <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">
