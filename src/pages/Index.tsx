@@ -6,13 +6,14 @@ import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
   getButtonLabel,
   createDefaultInfos,
 } from "@/types/project";
+import { saveReportFile } from "@/lib/file-utils";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
@@ -101,6 +102,22 @@ const Index = () => {
 
   const handleSelect = (index: number) => {
     setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
+  };
+
+  const handleExportReport = async () => {
+    if (!project) return;
+    const proposedName = `${project.name}-rapport`;
+    const enteredName = window.prompt("Nom du rapport TXT", proposedName);
+    if (!enteredName || !enteredName.trim()) return;
+
+    await saveReportFile(
+      {
+        ...project,
+        states,
+        buttonInfos,
+      },
+      enteredName,
+    );
   };
 
   // Issue #5: Stop button must fully stop BT
@@ -252,36 +269,52 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 px-2 safe-area-x py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
-        {selectedIndex !== null && selectedInfo ? (
-          <>
-            <span className="px-4 text-[11px] font-bold text-foreground">#{selectedLabel}</span>
-            <span className="text-[11px] text-field-fils font-semibold">
-              Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
+      <div className="flex flex-wrap items-center gap-2 px-2 safe-area-x py-1 bg-muted/50 border-b border-border shrink-0 min-h-[28px]">
+        <div className="flex flex-wrap items-center gap-2">
+          {selectedIndex !== null && selectedInfo ? (
+            <>
+              <span className="px-4 text-[11px] font-bold text-foreground">#{selectedLabel}</span>
+              <span className="text-[11px] text-field-fils font-semibold">
+                Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
+              </span>
+              <span className="text-[11px] text-field-borne font-semibold">
+                Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
+              </span>
+              <span className="text-[11px] text-field-bornier font-semibold">
+                Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
+              </span>
+              <span className="text-[11px] text-field-cfcm font-semibold">
+                CF/CM: <span className="font-medium">{selectedInfo.cfcm || "—"}</span>
+              </span>
+              {selectedInfo.locked && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground"
+                >
+                  <Lock className="w-2.5 h-2.5 mr-0.5" />
+                  Non Testé
+                </Badge>
+              )}
+            </>
+          ) : (
+            <span className="px-4 text-[11px] text-muted-foreground">
+              Appuyez sur un bouton pour voir ses infos
             </span>
-            <span className="text-[11px] text-field-borne font-semibold">
-              Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
-            </span>
-            <span className="text-[11px] text-field-bornier font-semibold">
-              Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
-            </span>
-            {selectedInfo.locked && (
-              <Badge
-                variant="outline"
-                className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground"
-              >
-                <Lock className="w-2.5 h-2.5 mr-0.5" />
-                Non Testé
-              </Badge>
-            )}
-          </>
-        ) : (
-          <span className="px-4 text-[11px] text-muted-foreground">
-            Appuyez sur un bouton pour voir ses infos
-          </span>
-        )}
+          )}
+        </div>
 
-        <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleExportReport}
+          className="ml-auto h-6 gap-1.5 px-2 text-[11px]"
+        >
+          <FileChartColumn className="w-3.5 h-3.5" />
+          Rapport
+        </Button>
+
+        <div className="hidden landscape:flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" />
             Attente

@@ -1,6 +1,10 @@
 import { ButtonInfo, ProjectData, BUTTON_COUNT, getButtonLabel } from "@/types/project";
 
 const STATE_NAMES = ["Attente", "En cours", "Validé", "Défaut"] as const;
+const REPORT_STATE_NAMES: Record<number, "validé" | "défaut"> = {
+  2: "validé",
+  3: "défaut",
+};
 
 // Format project data as a readable table in text format (no JSON)
 export const formatProjectAsTable = (project: ProjectData): string => {
@@ -8,16 +12,17 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   lines.push(`Projet: ${project.name}`);
   lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
   lines.push("");
-  lines.push("=".repeat(90));
+  lines.push("=".repeat(102));
   lines.push(
     padRight("N°", 6) +
     padRight("Fils", 20) +
     padRight("Borne", 14) +
     padRight("Bornier", 20) +
+    padRight("CF/CM", 12) +
     padRight("État", 12) +
     padRight("Non Testé", 10)
   );
-  lines.push("-".repeat(90));
+  lines.push("-".repeat(102));
 
   for (let i = 0; i < BUTTON_COUNT; i++) {
     const label = String(getButtonLabel(i));
@@ -29,12 +34,53 @@ export const formatProjectAsTable = (project: ProjectData): string => {
       padRight(info.fils || "-", 20) +
       padRight(info.borne || "-", 14) +
       padRight(info.bornier || "-", 20) +
+      padRight(info.cfcm || "-", 12) +
       padRight(state, 12) +
       padRight(locked, 10)
     );
   }
 
-  lines.push("=".repeat(90));
+  lines.push("=".repeat(102));
+  return lines.join("\n");
+};
+
+export const formatProjectReportAsTable = (project: ProjectData): string => {
+  const lines: string[] = [];
+  lines.push(`Rapport: ${project.name}`);
+  lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
+  lines.push("");
+  lines.push("=".repeat(122));
+  lines.push(
+    padRight("N°", 6) +
+    padRight("Fils", 20) +
+    padRight("Borne", 14) +
+    padRight("Bornier", 20) +
+    padRight("CF/CM", 12) +
+    padRight("État", 12) +
+    padRight("Non Testé", 10) +
+    padRight("État ligne", 12)
+  );
+  lines.push("-".repeat(122));
+
+  for (let i = 0; i < BUTTON_COUNT; i++) {
+    const label = String(getButtonLabel(i));
+    const info = project.buttonInfos[i];
+    const state = STATE_NAMES[project.states[i]] || "Attente";
+    const locked = info.locked ? "Oui" : "Non";
+    const lineState = REPORT_STATE_NAMES[project.states[i]] ?? "défaut";
+    lines.push(
+      padRight(label, 6) +
+      padRight(info.fils || "-", 20) +
+      padRight(info.borne || "-", 14) +
+      padRight(info.bornier || "-", 20) +
+      padRight(info.cfcm || "-", 12) +
+      padRight(state, 12) +
+      padRight(locked, 10) +
+      padRight(lineState, 12)
+    );
+  }
+
+  lines.push("=".repeat(122));
   return lines.join("\n");
 };
 
@@ -51,13 +97,23 @@ export const parseProjectFile = (content: string): ProjectData | null => {
     if (markerIndex !== -1) {
       const jsonStr = content.substring(markerIndex + jsonMarker.length).trim();
       const data = JSON.parse(jsonStr) as ProjectData;
-      if (data.name && data.states && data.buttonInfos) return data;
+      if (data.name && data.states && data.buttonInfos) {
+        return {
+          ...data,
+          buttonInfos: data.buttonInfos.map(normalizeButtonInfo),
+        };
+      }
     }
 
     // Try parsing as plain JSON (backward compat)
     try {
       const data = JSON.parse(content) as ProjectData;
-      if (data.name && data.states && data.buttonInfos) return data;
+      if (data.name && data.states && data.buttonInfos) {
+        return {
+          ...data,
+          buttonInfos: data.buttonInfos.map(normalizeButtonInfo),
+        };
+      }
     } catch { /* not JSON, parse table */ }
 
     // Parse table format
@@ -90,18 +146,29 @@ export const parseProjectFile = (content: string): ProjectData | null => {
       const num = line.substring(0, 6).trim();
       if (!num || isNaN(Number(num))) continue;
 
+      const isCfcmFormat = line.length >= 80;
       const isNewFormat = line.length >= 70;
       const fils = line.substring(6, 26).trim();
       const borne = isNewFormat ? line.substring(26, 40).trim() : "";
       const bornier = isNewFormat ? line.substring(40, 60).trim() : line.substring(26, 46).trim();
-      const etat = isNewFormat ? line.substring(60, 72).trim() : line.substring(46, 58).trim();
-      const nonTeste = isNewFormat ? line.substring(72).trim() : line.substring(58).trim();
+      const cfcm = isCfcmFormat ? line.substring(60, 72).trim() : "";
+      const etat = isCfcmFormat
+        ? line.substring(72, 84).trim()
+        : isNewFormat
+          ? line.substring(60, 72).trim()
+          : line.substring(46, 58).trim();
+      const nonTeste = isCfcmFormat
+        ? line.substring(84).trim()
+        : isNewFormat
+          ? line.substring(72).trim()
+          : line.substring(58).trim();
 
       states.push(stateMap[etat] ?? 0);
       buttonInfos.push({
         fils: fils === "-" ? "" : fils,
         borne: borne === "-" ? "" : borne,
         bornier: bornier === "-" ? "" : bornier,
+        cfcm: cfcm === "-" ? "" : cfcm,
         locked: nonTeste === "Oui",
       });
     }
@@ -174,3 +241,45 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
   URL.revokeObjectURL(url);
   return true;
 };
+
+export const saveReportFile = async (project: ProjectData, reportName: string): Promise<boolean> => {
+  const normalizedName = reportName.trim().endsWith(".txt") ? reportName.trim() : `${reportName.trim()}.txt`;
+  const content = formatProjectReportAsTable(project);
+
+  if ("showSaveFilePicker" in window) {
+    try {
+      const handle = await (window as any).showSaveFilePicker({
+        suggestedName: normalizedName,
+        types: [{
+          description: "Fichier texte",
+          accept: { "text/plain": [".txt"] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      return true;
+    } catch (e: any) {
+      if (e.name === "AbortError") return false;
+    }
+  }
+
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = normalizedName;
+  a.click();
+  URL.revokeObjectURL(url);
+  return true;
+};
+
+function normalizeButtonInfo(info: Partial<ButtonInfo>): ButtonInfo {
+  return {
+    fils: info.fils ?? "",
+    borne: info.borne ?? "",
+    bornier: info.bornier ?? "",
+    cfcm: info.cfcm ?? "",
+    locked: !!info.locked,
+  };
+}

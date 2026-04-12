@@ -82,6 +82,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                 <th className="py-1 text-left text-blue-600">Fils</th>
                 <th className="py-1 text-left text-green-600">Borne</th>
                 <th className="py-1 text-left text-red-600">Bornier</th>
+                <th className="py-1 text-left text-field-cfcm">CF/CM</th>
                 <th className="py-1 text-center w-20 text-primary">Non Testé</th>
               </tr>
             </thead>
@@ -111,6 +112,14 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                       onChange={(e) => updateButton(i, "bornier", e.target.value)}
                       className="h-6 text-xs font-mono"
                       placeholder="Bornier..."
+                    />
+                  </td>
+                  <td className="py-0.5 pr-1">
+                    <Input
+                      value={buttonInfos[i].cfcm}
+                      onChange={(e) => updateButton(i, "cfcm", e.target.value)}
+                      className="h-6 text-xs font-mono text-field-cfcm"
+                      placeholder="CF/CM..."
                     />
                   </td>
                   <td className="py-0.5 text-center">
