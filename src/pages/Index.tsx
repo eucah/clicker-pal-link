@@ -6,13 +6,15 @@ import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
   getButtonLabel,
   createDefaultInfos,
+  normalizeButtonInfos,
 } from "@/types/project";
+import { saveReportFile } from "@/lib/file-utils";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
@@ -31,12 +33,11 @@ const Index = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const isSharingActive = ble.status === "advertising" || ble.status === "connected";
 
-  // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
     if (ble.receivedData && role === "viewer") {
       setStates(ble.receivedData.states);
       if (ble.receivedData.buttonInfos.length > 0) {
-        setButtonInfos(ble.receivedData.buttonInfos);
+        setButtonInfos(normalizeButtonInfos(ble.receivedData.buttonInfos));
       }
     }
   }, [ble.receivedData, role]);
@@ -51,9 +52,14 @@ const Index = () => {
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
-    setProject(loadedProject);
+    const normalizedInfos = normalizeButtonInfos(loadedProject.buttonInfos);
+
+    setProject({
+      ...loadedProject,
+      buttonInfos: normalizedInfos,
+    });
     setStates(loadedProject.states);
-    setButtonInfos(loadedProject.buttonInfos);
+    setButtonInfos(normalizedInfos);
     setSelectedIndex(null);
 
     if (selectedRole) {
@@ -103,7 +109,30 @@ const Index = () => {
     setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
   };
 
-  // Issue #5: Stop button must fully stop BT
+  const handleExportReport = async () => {
+    if (!project) return;
+
+    const requestedName = window.prompt("Nom du fichier rapport (.txt)", `${project.name}-rapport.txt`);
+    if (requestedName === null) {
+      return;
+    }
+
+    const trimmedName = requestedName.trim();
+    if (!trimmedName) {
+      alert("Le nom du fichier est obligatoire.");
+      return;
+    }
+
+    await saveReportFile(
+      {
+        ...project,
+        states,
+        buttonInfos,
+      },
+      trimmedName,
+    );
+  };
+
   const handleShareBle = async () => {
     try {
       if (isSharingActive) {
@@ -119,7 +148,6 @@ const Index = () => {
     }
   };
 
-  // Issue #3 & #4: Both master and viewer fully disconnect BT on exit
   const handleGoHome = useCallback(async () => {
     try {
       await hardStopSession(isMaster ? "master go home" : "viewer go home");
@@ -265,6 +293,9 @@ const Index = () => {
             <span className="text-[11px] text-field-bornier font-semibold">
               Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
+            <span className="text-[11px] text-field-cfcm font-semibold">
+              Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
+            </span>
             {selectedInfo.locked && (
               <Badge
                 variant="outline"
@@ -281,7 +312,15 @@ const Index = () => {
           </span>
         )}
 
-        <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">
+        <button
+          onClick={handleExportReport}
+          className="ml-auto flex items-center gap-1 px-2 py-1 rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold hover:bg-accent"
+        >
+          <FileChartColumn className="w-3.5 h-3.5" />
+          Rapport
+        </button>
+
+        <div className="hidden landscape:flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" />
             Attente

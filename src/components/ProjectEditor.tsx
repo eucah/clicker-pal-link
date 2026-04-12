@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,13 +17,18 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   const [projectName, setProjectName] = useState("");
   const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
 
-  const updateButton = (index: number, field: keyof ButtonInfo, value: string | boolean) => {
+  const updateButton = useCallback((index: number, field: keyof ButtonInfo, value: string | boolean) => {
     setButtonInfos((prev) => {
+      const currentValue = prev[index]?.[field];
+      if (currentValue === value) {
+        return prev;
+      }
+
       const next = [...prev];
       next[index] = { ...next[index], [field]: value };
       return next;
     });
-  };
+  }, []);
 
   const buildProject = (): ProjectData | null => {
     if (!projectName.trim()) return null;
@@ -78,11 +83,12 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 text-left w-12">#</th>
+                <th className="py-1 text-left w-10">#</th>
                 <th className="py-1 text-left text-blue-600">Fils</th>
                 <th className="py-1 text-left text-green-600">Borne</th>
                 <th className="py-1 text-left text-red-600">Bornier</th>
-                <th className="py-1 text-center w-20 text-primary">Non Testé</th>
+                <th className="py-1 text-left text-amber-700 w-28">Cf/Cm</th>
+                <th className="py-1 text-center w-16 text-primary">Non Testé</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +105,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                   </td>
                   <td className="py-0.5 pr-1">
                     <Input
-                      value={buttonInfos[i].borne ?? ""}
+                      value={buttonInfos[i].borne}
                       onChange={(e) => updateButton(i, "borne", e.target.value)}
                       className="h-6 text-xs font-mono"
                       placeholder="Borne..."
@@ -111,6 +117,14 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                       onChange={(e) => updateButton(i, "bornier", e.target.value)}
                       className="h-6 text-xs font-mono"
                       placeholder="Bornier..."
+                    />
+                  </td>
+                  <td className="py-0.5 pr-1">
+                    <Input
+                      value={buttonInfos[i].cfCm}
+                      onChange={(e) => updateButton(i, "cfCm", e.target.value)}
+                      className="h-6 text-xs font-mono"
+                      placeholder="Cf/Cm..."
                     />
                   </td>
                   <td className="py-0.5 text-center">

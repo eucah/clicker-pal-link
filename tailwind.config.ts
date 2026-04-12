@@ -59,6 +59,7 @@ export default {
         "field-fils": "hsl(var(--field-fils))",
         "field-borne": "hsl(var(--field-borne))",
         "field-bornier": "hsl(var(--field-bornier))",
+        "field-cfcm": "hsl(var(--field-cfcm))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
