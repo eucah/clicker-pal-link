@@ -12,7 +12,7 @@ import {
   startAdvertising,
   updateAdvertisedPayload,
 } from "@/lib/bt-service";
-import { type ButtonInfo } from "@/types/project";
+import { type ButtonInfo, normalizeButtonInfo } from "@/types/project";
 
 export interface ReceivedProjectData {
   states: number[];
@@ -43,7 +43,9 @@ export const useBluetooth = (role: "master" | "viewer") => {
         if (parsed && Array.isArray(parsed.states)) {
           setReceivedData({
             states: parsed.states.map((v: unknown) => Number(v) || 0),
-            buttonInfos: Array.isArray(parsed.buttonInfos) ? parsed.buttonInfos : [],
+            buttonInfos: Array.isArray(parsed.buttonInfos)
+              ? parsed.buttonInfos.map((info: ButtonInfo) => normalizeButtonInfo(info))
+              : [],
           });
         }
         // Legacy format: plain array of states
