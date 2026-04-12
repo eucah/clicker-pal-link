@@ -6,7 +6,7 @@ import ViewerSessionList from "@/components/ViewerSessionList";
 import BleStatusBadge from "@/components/BleStatusBadge";
 import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Bluetooth, BluetoothOff, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
@@ -14,6 +14,7 @@ import {
   createDefaultInfos,
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
+import { saveReportFile } from "@/lib/file-utils";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
@@ -101,6 +102,23 @@ const Index = () => {
 
   const handleSelect = (index: number) => {
     setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
+  };
+
+  const handleExportReport = async () => {
+    if (!project) return;
+    const inputName = window.prompt("Nom du rapport (.txt ajouté si nécessaire)", `${project.name}-rapport`);
+    if (inputName === null) return;
+    const trimmedName = inputName.trim();
+    if (!trimmedName) return;
+
+    await saveReportFile(
+      {
+        ...project,
+        states,
+        buttonInfos,
+      },
+      trimmedName,
+    );
   };
 
   // Issue #5: Stop button must fully stop BT
@@ -265,6 +283,16 @@ const Index = () => {
             <span className="text-[11px] text-field-bornier font-semibold">
               Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
             </span>
+            <span className="text-[11px] text-amber-700 dark:text-amber-500 font-semibold">
+              Cf/Cm: <span className="font-medium">{selectedInfo.cfcm || "—"}</span>
+            </span>
+            <button
+              onClick={() => void handleExportReport()}
+              className="ml-auto flex items-center gap-1 px-2 py-1 rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold"
+            >
+              <FileChartColumn className="w-3.5 h-3.5" />
+              Rapport
+            </button>
             {selectedInfo.locked && (
               <Badge
                 variant="outline"
@@ -276,9 +304,18 @@ const Index = () => {
             )}
           </>
         ) : (
-          <span className="px-4 text-[11px] text-muted-foreground">
-            Appuyez sur un bouton pour voir ses infos
-          </span>
+          <>
+            <span className="px-4 text-[11px] text-muted-foreground">
+              Appuyez sur un bouton pour voir ses infos
+            </span>
+            <button
+              onClick={() => void handleExportReport()}
+              className="ml-auto flex items-center gap-1 px-2 py-1 rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold"
+            >
+              <FileChartColumn className="w-3.5 h-3.5" />
+              Rapport
+            </button>
+          </>
         )}
 
         <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">

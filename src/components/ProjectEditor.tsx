@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,13 +17,13 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   const [projectName, setProjectName] = useState("");
   const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
 
-  const updateButton = (index: number, field: keyof ButtonInfo, value: string | boolean) => {
+  const updateButton = useCallback((index: number, field: keyof ButtonInfo, value: string | boolean) => {
     setButtonInfos((prev) => {
       const next = [...prev];
       next[index] = { ...next[index], [field]: value };
       return next;
     });
-  };
+  }, []);
 
   const buildProject = (): ProjectData | null => {
     if (!projectName.trim()) return null;
@@ -78,48 +78,22 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 text-left w-12">#</th>
+                <th className="py-1 text-left w-9">#</th>
                 <th className="py-1 text-left text-blue-600">Fils</th>
                 <th className="py-1 text-left text-green-600">Borne</th>
                 <th className="py-1 text-left text-red-600">Bornier</th>
-                <th className="py-1 text-center w-20 text-primary">Non Testé</th>
+                <th className="py-1 text-left text-amber-700">Cf/Cm</th>
+                <th className="py-1 text-center w-14 text-primary">Non Testé</th>
               </tr>
             </thead>
             <tbody>
               {Array.from({ length: BUTTON_COUNT }, (_, i) => (
-                <tr key={i} className="border-b border-border/80">
-                  <td className="py-0.5 font-bold text-foreground">{getButtonLabel(i)}</td>
-                  <td className="py-0.5 pr-1">
-                    <Input
-                      value={buttonInfos[i].fils}
-                      onChange={(e) => updateButton(i, "fils", e.target.value)}
-                      className="h-6 text-xs font-mono"
-                      placeholder="Fils..."
-                    />
-                  </td>
-                  <td className="py-0.5 pr-1">
-                    <Input
-                      value={buttonInfos[i].borne ?? ""}
-                      onChange={(e) => updateButton(i, "borne", e.target.value)}
-                      className="h-6 text-xs font-mono"
-                      placeholder="Borne..."
-                    />
-                  </td>
-                  <td className="py-0.5 pr-1">
-                    <Input
-                      value={buttonInfos[i].bornier}
-                      onChange={(e) => updateButton(i, "bornier", e.target.value)}
-                      className="h-6 text-xs font-mono"
-                      placeholder="Bornier..."
-                    />
-                  </td>
-                  <td className="py-0.5 text-center">
-                    <Checkbox
-                      checked={buttonInfos[i].locked}
-                      onCheckedChange={(checked) => updateButton(i, "locked", !!checked)}
-                    />
-                  </td>
-                </tr>
+                <EditorRow
+                  key={i}
+                  index={i}
+                  info={buttonInfos[i]}
+                  onUpdate={updateButton}
+                />
               ))}
             </tbody>
           </table>
@@ -128,5 +102,56 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
     </div>
   );
 };
+
+interface EditorRowProps {
+  index: number;
+  info: ButtonInfo;
+  onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
+}
+
+const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
+  <tr className="border-b border-border/80">
+    <td className="py-0.5 font-bold text-foreground">{getButtonLabel(index)}</td>
+    <td className="py-0.5 pr-1">
+      <Input
+        value={info.fils}
+        onChange={(e) => onUpdate(index, "fils", e.target.value)}
+        className="h-6 text-xs font-mono"
+        placeholder="Fils..."
+      />
+    </td>
+    <td className="py-0.5 pr-1">
+      <Input
+        value={info.borne ?? ""}
+        onChange={(e) => onUpdate(index, "borne", e.target.value)}
+        className="h-6 text-xs font-mono"
+        placeholder="Borne..."
+      />
+    </td>
+    <td className="py-0.5 pr-1">
+      <Input
+        value={info.bornier}
+        onChange={(e) => onUpdate(index, "bornier", e.target.value)}
+        className="h-6 text-xs font-mono"
+        placeholder="Bornier..."
+      />
+    </td>
+    <td className="py-0.5 pr-1 w-[88px]">
+      <Input
+        value={info.cfcm}
+        onChange={(e) => onUpdate(index, "cfcm", e.target.value)}
+        className="h-6 text-xs font-mono"
+        placeholder="Cf/Cm..."
+      />
+    </td>
+    <td className="py-0.5 text-center">
+      <Checkbox
+        checked={info.locked}
+        onCheckedChange={(checked) => onUpdate(index, "locked", !!checked)}
+      />
+    </td>
+  </tr>
+));
+EditorRow.displayName = "EditorRow";
 
 export default ProjectEditor;

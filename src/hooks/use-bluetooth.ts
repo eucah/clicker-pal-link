@@ -41,9 +41,16 @@ export const useBluetooth = (role: "master" | "viewer") => {
         const parsed = JSON.parse(data);
         // New format: { states: [...], buttonInfos: [...] }
         if (parsed && Array.isArray(parsed.states)) {
+          const parsedInfos = Array.isArray(parsed.buttonInfos) ? parsed.buttonInfos : [];
           setReceivedData({
             states: parsed.states.map((v: unknown) => Number(v) || 0),
-            buttonInfos: Array.isArray(parsed.buttonInfos) ? parsed.buttonInfos : [],
+            buttonInfos: parsedInfos.map((info: Partial<ButtonInfo>) => ({
+              fils: info.fils ?? "",
+              borne: info.borne ?? "",
+              bornier: info.bornier ?? "",
+              cfcm: info.cfcm ?? "",
+              locked: !!info.locked,
+            })),
           });
         }
         // Legacy format: plain array of states

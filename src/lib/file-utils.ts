@@ -8,16 +8,17 @@ export const formatProjectAsTable = (project: ProjectData): string => {
   lines.push(`Projet: ${project.name}`);
   lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
   lines.push("");
-  lines.push("=".repeat(90));
+  lines.push("=".repeat(104));
   lines.push(
     padRight("N°", 6) +
     padRight("Fils", 20) +
     padRight("Borne", 14) +
     padRight("Bornier", 20) +
+    padRight("Cf/Cm", 14) +
     padRight("État", 12) +
     padRight("Non Testé", 10)
   );
-  lines.push("-".repeat(90));
+  lines.push("-".repeat(104));
 
   for (let i = 0; i < BUTTON_COUNT; i++) {
     const label = String(getButtonLabel(i));
@@ -29,18 +30,67 @@ export const formatProjectAsTable = (project: ProjectData): string => {
       padRight(info.fils || "-", 20) +
       padRight(info.borne || "-", 14) +
       padRight(info.bornier || "-", 20) +
+      padRight(info.cfcm || "-", 14) +
       padRight(state, 12) +
       padRight(locked, 10)
     );
   }
 
-  lines.push("=".repeat(90));
+  lines.push("=".repeat(104));
+  return lines.join("\n");
+};
+
+export const formatReportAsTable = (project: ProjectData): string => {
+  const lines: string[] = [];
+  lines.push(`Rapport: ${project.name}`);
+  lines.push(`Date: ${new Date().toLocaleDateString("fr-FR")} ${new Date().toLocaleTimeString("fr-FR")}`);
+  lines.push("");
+  lines.push("=".repeat(118));
+  lines.push(
+    padRight("N°", 6) +
+    padRight("Fils", 20) +
+    padRight("Borne", 14) +
+    padRight("Bornier", 20) +
+    padRight("Cf/Cm", 14) +
+    padRight("État", 12) +
+    padRight("Non Testé", 10) +
+    padRight("Résultat", 12)
+  );
+  lines.push("-".repeat(118));
+
+  for (let i = 0; i < BUTTON_COUNT; i++) {
+    const label = String(getButtonLabel(i));
+    const info = project.buttonInfos[i];
+    const state = STATE_NAMES[project.states[i]] || "Attente";
+    const locked = info.locked ? "Oui" : "Non";
+    const result = project.states[i] === 2 ? "validé" : "défaut";
+    lines.push(
+      padRight(label, 6) +
+      padRight(info.fils || "-", 20) +
+      padRight(info.borne || "-", 14) +
+      padRight(info.bornier || "-", 20) +
+      padRight(info.cfcm || "-", 14) +
+      padRight(state, 12) +
+      padRight(locked, 10) +
+      padRight(result, 12)
+    );
+  }
+
+  lines.push("=".repeat(118));
   return lines.join("\n");
 };
 
 function padRight(str: string, len: number): string {
   return str.length >= len ? str.substring(0, len) : str + " ".repeat(len - str.length);
 }
+
+const normalizeProjectData = (data: ProjectData): ProjectData => ({
+  ...data,
+  buttonInfos: data.buttonInfos.map((info) => ({
+    ...info,
+    cfcm: info.cfcm ?? "",
+  })),
+});
 
 // Parse a project file from table format
 export const parseProjectFile = (content: string): ProjectData | null => {
@@ -51,13 +101,13 @@ export const parseProjectFile = (content: string): ProjectData | null => {
     if (markerIndex !== -1) {
       const jsonStr = content.substring(markerIndex + jsonMarker.length).trim();
       const data = JSON.parse(jsonStr) as ProjectData;
-      if (data.name && data.states && data.buttonInfos) return data;
+      if (data.name && data.states && data.buttonInfos) return normalizeProjectData(data);
     }
 
     // Try parsing as plain JSON (backward compat)
     try {
       const data = JSON.parse(content) as ProjectData;
-      if (data.name && data.states && data.buttonInfos) return data;
+      if (data.name && data.states && data.buttonInfos) return normalizeProjectData(data);
     } catch { /* not JSON, parse table */ }
 
     // Parse table format
@@ -90,18 +140,29 @@ export const parseProjectFile = (content: string): ProjectData | null => {
       const num = line.substring(0, 6).trim();
       if (!num || isNaN(Number(num))) continue;
 
-      const isNewFormat = line.length >= 70;
+      const hasBorneColumn = line.length >= 70;
+      const hasCfcmColumn = line.length >= 82;
       const fils = line.substring(6, 26).trim();
-      const borne = isNewFormat ? line.substring(26, 40).trim() : "";
-      const bornier = isNewFormat ? line.substring(40, 60).trim() : line.substring(26, 46).trim();
-      const etat = isNewFormat ? line.substring(60, 72).trim() : line.substring(46, 58).trim();
-      const nonTeste = isNewFormat ? line.substring(72).trim() : line.substring(58).trim();
+      const borne = hasBorneColumn ? line.substring(26, 40).trim() : "";
+      const bornier = hasBorneColumn ? line.substring(40, 60).trim() : line.substring(26, 46).trim();
+      const cfcm = hasCfcmColumn ? line.substring(60, 74).trim() : "";
+      const etat = hasCfcmColumn
+        ? line.substring(74, 86).trim()
+        : hasBorneColumn
+          ? line.substring(60, 72).trim()
+          : line.substring(46, 58).trim();
+      const nonTeste = hasCfcmColumn
+        ? line.substring(86).trim()
+        : hasBorneColumn
+          ? line.substring(72).trim()
+          : line.substring(58).trim();
 
       states.push(stateMap[etat] ?? 0);
       buttonInfos.push({
         fils: fils === "-" ? "" : fils,
         borne: borne === "-" ? "" : borne,
         bornier: bornier === "-" ? "" : bornier,
+        cfcm: cfcm === "-" ? "" : cfcm,
         locked: nonTeste === "Oui",
       });
     }
@@ -115,8 +176,8 @@ export const parseProjectFile = (content: string): ProjectData | null => {
 };
 
 // Save file - uses Capacitor Filesystem on native, File System Access API on web
-export const saveProjectFile = async (project: ProjectData): Promise<boolean> => {
-  const content = formatProjectAsTable(project);
+const saveTextFile = async (content: string, fileName: string): Promise<boolean> => {
+  const finalName = fileName.endsWith(".txt") ? fileName : `${fileName}.txt`;
 
   // Try Capacitor Filesystem (native Android/iOS)
   if ((window as any).Capacitor?.isNativePlatform()) {
@@ -129,16 +190,15 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
         console.warn("Filesystem permissions:", e);
       }
 
-      const fileName = `${project.name}.txt`;
       await Filesystem.writeFile({
-        path: `EssaisContinuite/${fileName}`,
+        path: `EssaisContinuite/${finalName}`,
         data: content,
         directory: Directory.Documents,
         encoding: Encoding.UTF8,
         recursive: true,
       });
 
-      alert(`Projet enregistré dans Documents/EssaisContinuite/${fileName}`);
+      alert(`Fichier enregistré dans Documents/EssaisContinuite/${finalName}`);
       return true;
     } catch (e: any) {
       console.error("Native save error:", e);
@@ -149,7 +209,7 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
   if ("showSaveFilePicker" in window) {
     try {
       const handle = await (window as any).showSaveFilePicker({
-        suggestedName: `${project.name}.txt`,
+        suggestedName: finalName,
         types: [{
           description: "Fichier texte",
           accept: { "text/plain": [".txt"] },
@@ -169,8 +229,18 @@ export const saveProjectFile = async (project: ProjectData): Promise<boolean> =>
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${project.name}.txt`;
+  a.download = finalName;
   a.click();
   URL.revokeObjectURL(url);
   return true;
+};
+
+export const saveProjectFile = async (project: ProjectData): Promise<boolean> => {
+  const content = formatProjectAsTable(project);
+  return saveTextFile(content, project.name);
+};
+
+export const saveReportFile = async (project: ProjectData, fileName: string): Promise<boolean> => {
+  const content = formatReportAsTable(project);
+  return saveTextFile(content, fileName);
 };
