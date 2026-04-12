@@ -38,7 +38,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             Le <strong>Contrôleur</strong> crée et gère le projet. Il peut :
           </p>
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-            <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers).</li>
+            <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers, Cf/Cm).</li>
             <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier TXT.</li>
             <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
             <li><strong>Changer l'état des boutons</strong> — Appui court pour cycler entre les états.</li>
@@ -53,7 +53,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <p className="text-muted-foreground">
-            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états. Mais a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers).
+            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états. Mais a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers, Cf/Cm).
           </p>
         </section>
 
@@ -107,7 +107,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-            <li>Appui court sur un bouton = changer son état et voir ses détails (fils, borne, bornier).</li>
+            <li>Appui court sur un bouton = changer son état et voir ses détails (fils, borne, bornier, Cf/Cm).</li>
             <li>Il est possible de revenir à l'état en attente et de refaire l'essai.</li>
             <li>Le projet peut être sauvegardé en fichier TXT pour être rechargé ultérieurement.</li>
             <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
