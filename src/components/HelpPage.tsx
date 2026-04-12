@@ -42,6 +42,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier TXT.</li>
             <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
             <li><strong>Changer l'état des boutons</strong> — Appui court pour cycler entre les états.</li>
+            <li><strong>Éditer un Rapport</strong> - Création d'un rapport au format TXT  reprenant les informations du projet par bornes + l'état Validé/Défaut ou vide si non testé.</li>
           </ul>
         </section>
 
