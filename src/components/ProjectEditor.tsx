@@ -113,7 +113,7 @@ interface EditorRowProps {
   onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
 }
 
-const editorCellInputClassName =
+const gridInputClassName =
   "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
