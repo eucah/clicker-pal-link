@@ -13,6 +13,9 @@ interface ProjectEditorProps {
   onCancel: () => void;
 }
 
+const gridInputClassName =
+  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
+
 const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   const [projectName, setProjectName] = useState("");
   const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
@@ -112,9 +115,6 @@ interface EditorRowProps {
   info: ButtonInfo;
   onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
 }
-
-const gridInputClassName =
-  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
