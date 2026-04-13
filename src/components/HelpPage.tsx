@@ -100,6 +100,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />
               <strong>Non Testé</strong> — Verrouillé / exclu
             </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
+              <strong>Bouton pont</strong> — Bouton identifié comme pont
+            </p>
           </div>
         </section>
 
