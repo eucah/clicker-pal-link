@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDefaultInfos } from "@/types/project";
+import { BUTTON_COUNT, createDefaultInfos } from "@/types/project";
 import { resolvePontVisualStates } from "@/lib/pont-utils";
 
 describe("resolvePontVisualStates", () => {
@@ -47,5 +47,16 @@ describe("resolvePontVisualStates", () => {
 
     const result = resolvePontVisualStates(infos);
     expect(result.some((state) => state.hasPontStyleInWaitingState)).toBe(false);
+  });
+
+  it("returns a full-length safe array even with sparse/corrupted infos", () => {
+    const infos = Array.from({ length: 3 }, (_, index) =>
+      index === 0 ? { fils: "pont", borne: "101", bornier: "", cfCm: "", locked: false } : undefined,
+    );
+
+    const result = resolvePontVisualStates(infos as never);
+    expect(result).toHaveLength(BUTTON_COUNT);
+    expect(result[0].isPontSource).toBe(true);
+    expect(result[75].isPontLinked).toBe(true);
   });
 });

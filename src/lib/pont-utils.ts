@@ -1,4 +1,4 @@
-import { ButtonInfo, BUTTON_COUNT, getButtonLabel } from "@/types/project";
+import { ButtonInfo, BUTTON_COUNT, createDefaultInfos, getButtonLabel, normalizeButtonInfo } from "@/types/project";
 
 export interface PontVisualState {
   isPontSource: boolean;
@@ -39,11 +39,20 @@ const createLabelToIndexMap = (): Map<number, number> => {
 
 export const resolvePontVisualStates = (buttonInfos: ButtonInfo[]): PontVisualState[] => {
   const isDev = import.meta.env.DEV;
+  const fallbackInfo = createDefaultInfos()[0];
+  const safeButtonInfos = (Array.isArray(buttonInfos) ? buttonInfos : [])
+    .slice(0, BUTTON_COUNT)
+    .map((info) => normalizeButtonInfo(info));
+
+  while (safeButtonInfos.length < BUTTON_COUNT) {
+    safeButtonInfos.push({ ...fallbackInfo });
+  }
+
   const labelToIndex = createLabelToIndexMap();
   const pontSources = new Set<number>();
   const pontLinkedTargets = new Set<number>();
 
-  buttonInfos.forEach((info, index) => {
+  safeButtonInfos.forEach((info, index) => {
     if (!containsPontKeyword(info.fils ?? "")) {
       return;
     }
@@ -82,7 +91,7 @@ export const resolvePontVisualStates = (buttonInfos: ButtonInfo[]): PontVisualSt
     }
   });
 
-  return buttonInfos.map((_, index) => {
+  return safeButtonInfos.map((_, index) => {
     const isPontSource = pontSources.has(index);
     const isPontLinked = pontLinkedTargets.has(index);
     return {

@@ -3,6 +3,7 @@ import {
   BUTTON_COUNT,
   createDefaultInfos,
   normalizeProjectData,
+  normalizeButtonInfo,
   normalizeStates,
 } from "@/types/project";
 
@@ -73,5 +74,12 @@ describe("normalizeProjectData", () => {
         buttonInfos: "invalid",
       }),
     ).not.toThrow();
+  });
+});
+
+describe("normalizeButtonInfo", () => {
+  it("returns defaults for non-object values", () => {
+    expect(normalizeButtonInfo("invalid")).toEqual(createDefaultInfos()[0]);
+    expect(normalizeButtonInfo(null)).toEqual(createDefaultInfos()[0]);
   });
 });

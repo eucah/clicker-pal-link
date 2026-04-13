@@ -24,13 +24,18 @@ export const STATE_LABELS = [
 export const createDefaultInfos = (): ButtonInfo[] =>
   Array.from({ length: BUTTON_COUNT }, () => ({ fils: "", borne: "", bornier: "", cfCm: "", locked: false }));
 
-export const normalizeButtonInfo = (value: Partial<ButtonInfo> | null | undefined): ButtonInfo => ({
-  fils: value?.fils ?? "",
-  borne: value?.borne ?? "",
-  bornier: value?.bornier ?? "",
-  cfCm: value?.cfCm ?? "",
-  locked: Boolean(value?.locked),
-});
+const asSafeString = (value: unknown): string => (typeof value === "string" ? value : "");
+
+export const normalizeButtonInfo = (value: unknown): ButtonInfo => {
+  const source = value && typeof value === "object" ? (value as Partial<ButtonInfo>) : undefined;
+  return {
+    fils: asSafeString(source?.fils),
+    borne: asSafeString(source?.borne),
+    bornier: asSafeString(source?.bornier),
+    cfCm: asSafeString(source?.cfCm),
+    locked: Boolean(source?.locked),
+  };
+};
 
 const normalizeStateValue = (value: unknown): 0 | 1 | 2 | 3 => {
   if (typeof value !== "number" || !Number.isFinite(value)) {

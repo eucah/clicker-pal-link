@@ -41,7 +41,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const raw = ev.target?.result as string;
+        const raw = typeof ev.target?.result === "string" ? ev.target.result : "";
         const data = parseProjectFile(raw);
         if (data) {
           onLoadProject(normalizeProjectData(data), "master");

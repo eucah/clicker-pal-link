@@ -90,21 +90,23 @@ const Index = () => {
   };
 
   const handleViewerConnected = () => {
-    setProject({
+    const defaultViewerProject = normalizeProjectData({
       name: "Session Observateur",
       states: Array(BUTTON_COUNT).fill(0),
       buttonInfos: createDefaultInfos(),
     });
-    setStates(Array(BUTTON_COUNT).fill(0));
-    setButtonInfos(createDefaultInfos());
+    setProject(defaultViewerProject);
+    setStates(defaultViewerProject.states);
+    setButtonInfos(defaultViewerProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
     setScreen("grid");
   };
 
   const handleToggle = (index: number) => {
     setStates((previousStates) => {
-      const nextStates = [...previousStates];
-      const newState = (nextStates[index] + 1) % 4;
+      const nextStates = normalizeProjectData({ states: previousStates }).states;
+      const currentState = Number.isInteger(nextStates[index]) ? nextStates[index] : 0;
+      const newState = (currentState + 1) % 4;
 
       if (newState === 1) {
         for (let stateIndex = 0; stateIndex < nextStates.length; stateIndex += 1) {
@@ -214,7 +216,7 @@ const Index = () => {
     return <HelpPage onBack={() => setScreen("home")} />;
   }
 
-  const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
+  const selectedInfo = selectedIndex !== null ? normalizeButtonInfo(buttonInfos[selectedIndex]) : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
   const pontVisualStates = useMemo(() => resolvePontVisualStates(buttonInfos), [buttonInfos]);
   const handleExportReport = async () => {

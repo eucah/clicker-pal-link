@@ -21,7 +21,7 @@ interface ButtonGridProps {
 const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
   const getSafeState = (index: number): 0 | 1 | 2 | 3 => {
     const value = states[index];
-    return value === 0 || value === 1 || value === 2 || value === 3 ? value : 0;
+    return Number.isInteger(value) && value >= 0 && value <= 3 ? (value as 0 | 1 | 2 | 3) : 0;
   };
 
   const getSafeInfo = (index: number): ButtonInfo | undefined => buttonInfos[index];
@@ -29,7 +29,8 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedI
   const getSafePontState = (index: number): PontVisualState | undefined => pontVisualStates[index];
 
   const handleClick = (stateIndex: number) => {
-    if (getSafeInfo(stateIndex)?.locked) return;
+    const info = getSafeInfo(stateIndex);
+    if (info?.locked) return;
     if (isMaster) {
       onToggle(stateIndex);
     }
@@ -81,6 +82,18 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedI
     }
     return rows;
   };
+
+  if (import.meta.env.DEV) {
+    if (states.length !== 150) {
+      console.warn("[ButtonGrid] Invalid states length", { length: states.length, expected: 150 });
+    }
+    if (buttonInfos.length !== 150) {
+      console.warn("[ButtonGrid] Invalid buttonInfos length", { length: buttonInfos.length, expected: 150 });
+    }
+    if (pontVisualStates.length !== 150) {
+      console.warn("[ButtonGrid] Invalid pontVisualStates length", { length: pontVisualStates.length, expected: 150 });
+    }
+  }
 
   return (
     <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full">
