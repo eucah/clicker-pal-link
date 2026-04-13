@@ -7,6 +7,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(BluetoothClassicPlugin.class);
+        registerPlugin(AndroidKeepAwakePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
