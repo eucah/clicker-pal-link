@@ -348,6 +348,7 @@ const Index = () => {
             <span className="px-4 text-[11px] text-muted-foreground">
               Appuyez sur un bouton pour voir ses infos
             </span>
+           <div className="flex items-center px-4 gap-1.5">
             <Button
               onClick={handleExportReport}
               variant="outline"
@@ -366,6 +367,7 @@ const Index = () => {
               <List className="w-3 h-3" />
               Légende
             </Button>
+           </div>
           </>
         )}
       </div>
