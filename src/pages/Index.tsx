@@ -413,7 +413,7 @@ const Index = () => {
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
-              <strong>Bouton pont</strong>
+              <strong>Pont</strong>
             </p>
           </div>
         </DialogContent>
