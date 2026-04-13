@@ -17,6 +17,7 @@ import {
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
+import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
@@ -33,6 +34,16 @@ const Index = () => {
   const { hardStopSession } = ble;
   const gridRef = useRef<HTMLDivElement>(null);
   const isSharingActive = ble.status === "advertising" || ble.status === "connected";
+
+  const controllerOnGrid = isMaster && screen === "grid";
+  const masterSharingWithViewerConnected = isMaster && Boolean(project) && ble.status === "connected";
+  const viewerConnectedToProject = !isMaster && screen === "grid" && Boolean(project) && ble.status === "connected";
+
+  useSessionKeepAwake({
+    controllerOnGrid,
+    masterSharingWithViewerConnected,
+    viewerConnectedToProject,
+  });
 
   // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
