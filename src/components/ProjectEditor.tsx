@@ -7,6 +7,9 @@ import { ArrowLeft, Save, Play } from "lucide-react";
 import { ButtonInfo, ProjectData, BUTTON_COUNT, createDefaultInfos, getButtonLabel } from "@/types/project";
 import { saveProjectFile } from "@/lib/file-utils";
 
+const gridInputClassName =
+  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
+
 interface ProjectEditorProps {
   onSave: (project: ProjectData) => void;
   onAccess: (project: ProjectData) => void;
@@ -112,9 +115,6 @@ interface EditorRowProps {
   info: ButtonInfo;
   onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
 }
-
-const gridInputClassName =
-  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
