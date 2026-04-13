@@ -13,13 +13,23 @@ class AndroidKeepAwakePlugin : Plugin() {
     fun setKeepAwake(call: PluginCall) {
         val enabled = call.getBoolean("enabled", false) ?: false
 
-        activity?.runOnUiThread {
-            if (enabled) {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            } else {
-                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val activity = activity
+        if (activity == null) {
+            call.reject("Activity unavailable")
+            return
+        }
+
+        activity.runOnUiThread {
+            try {
+                if (enabled) {
+                    activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                } else {
+                    activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                }
+                call.resolve()
+            } catch (e: Exception) {
+                call.reject("Failed to set keep awake", e)
             }
-            call.resolve()
-        } ?: call.reject("Activity unavailable")
+        }
     }
 }

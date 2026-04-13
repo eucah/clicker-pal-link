@@ -1,6 +1,7 @@
 package com.eucah.clickerpal
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -87,11 +88,13 @@ class BluetoothClassicPlugin : Plugin() {
         call.resolve(JSObject().putValue("available", bluetoothAdapter != null))
     }
 
+    @SuppressLint("MissingPermission")
     @PluginMethod
     fun isBluetoothEnabled(call: PluginCall) {
         call.resolve(JSObject().putValue("enabled", bluetoothAdapter?.isEnabled == true))
     }
 
+    @SuppressLint("MissingPermission")
     @PluginMethod
     fun enableBluetooth(call: PluginCall) {
         if (!ensureBluetoothPermissions(call)) return
@@ -112,6 +115,7 @@ class BluetoothClassicPlugin : Plugin() {
         startActivityForResult(call, intent, "handleEnableBluetoothResult")
     }
 
+    @SuppressLint("MissingPermission")
     @ActivityCallback
     private fun handleEnableBluetoothResult(call: PluginCall?, result: ActivityResult?) {
         val enabled = bluetoothAdapter?.isEnabled == true && result?.resultCode == Activity.RESULT_OK
@@ -121,6 +125,7 @@ class BluetoothClassicPlugin : Plugin() {
         call.resolve(JSObject().putValue("enabled", true))
     }
 
+    @SuppressLint("MissingPermission")
     @PluginMethod
     fun getBondedDevices(call: PluginCall) {
         if (!ensureBluetoothPermissions(call)) return
@@ -140,6 +145,7 @@ class BluetoothClassicPlugin : Plugin() {
         call.resolve(result)
     }
 
+    @SuppressLint("MissingPermission")
     @PluginMethod
     fun startServer(call: PluginCall) {
         if (!ensureBluetoothPermissions(call)) return
@@ -180,6 +186,7 @@ class BluetoothClassicPlugin : Plugin() {
         call.resolve()
     }
 
+    @SuppressLint("MissingPermission")
     @PluginMethod
     fun connect(call: PluginCall) {
         if (!ensureBluetoothPermissions(call)) return
@@ -303,6 +310,7 @@ class BluetoothClassicPlugin : Plugin() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun connectToRemoteDevice(device: BluetoothDevice, call: PluginCall) {
         try {
             bluetoothAdapter?.cancelDiscovery()
@@ -325,6 +333,7 @@ class BluetoothClassicPlugin : Plugin() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun handleConnectedSocketLocked(newSocket: BluetoothSocket, origin: String) {
         stopActiveConnectionLocked(reason = "replace socket")
         socket = newSocket
@@ -336,6 +345,7 @@ class BluetoothClassicPlugin : Plugin() {
         startReadLoopLocked(newSocket, generation)
     }
 
+    @SuppressLint("MissingPermission")
     private fun startAcceptThreadLocked() {
         if (!serverModeEnabled) return
 
@@ -477,7 +487,6 @@ class BluetoothClassicPlugin : Plugin() {
 
     // ✅ CORRECTIF 6 : handleOnDestroy envoie le signal avant de tout fermer
     override fun handleOnDestroy() {
-        super.handleOnDestroy()
         sendDisconnectSignal()   // prévient l'autre appareil quand l'app est tuée
         synchronized(connectionLock) {
             serverModeEnabled = false
@@ -486,8 +495,10 @@ class BluetoothClassicPlugin : Plugin() {
             closeServerThreadLocked()
             closeServerSocketLocked()
         }
+        super.handleOnDestroy()
     }
 
+    @SuppressLint("MissingPermission")
     private fun requireEnabledAdapter(call: PluginCall): BluetoothAdapter? {
         val adapter = bluetoothAdapter
         if (adapter == null) { call.reject("Bluetooth indisponible sur cet appareil"); return null }
