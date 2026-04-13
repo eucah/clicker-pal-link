@@ -43,7 +43,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
-        } ${isPont ? "border-[3px] border-blue-600" : "border border-transparent"} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
+        } ${isPont ? "border-2 border-blue-600" : "border border-transparent"} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}
       </button>
@@ -82,7 +82,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       </div>
       <div className="text-[11px] text-muted-foreground text-center w-full">
         <span className="inline-flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded-full border-[3px] border-blue-600" />
+          <span className="inline-block h-3 w-3 rounded-full border-2 border-blue-600" />
           Bouton pont
         </span>
       </div>

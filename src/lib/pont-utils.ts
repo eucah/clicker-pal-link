@@ -32,8 +32,8 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
   if (!Array.isArray(buttonInfos)) return pontIndexes;
 
   buttonInfos.forEach((info, index) => {
-    if (!info || typeof info.fils !== "string") return;
-    if (!PONT_PATTERN.test(info.fils)) return;
+    if (!info || typeof info.bornier !== "string") return;
+    if (!PONT_PATTERN.test(info.bornier)) return;
 
     pontIndexes.add(index);
 
@@ -47,4 +47,3 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
 
   return pontIndexes;
 };
-

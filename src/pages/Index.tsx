@@ -7,7 +7,14 @@ import BleStatusBadge from "@/components/BleStatusBadge";
 import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, List, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
@@ -28,6 +35,7 @@ const Index = () => {
   const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   const isMaster = role === "master";
   const ble = useBluetooth(role);
@@ -320,10 +328,19 @@ const Index = () => {
               onClick={handleExportReport}
               variant="outline"
               size="sm"
-              className="ml-auto h-6 px-2 text-[11px] gap-1"
+              className="h-6 px-2 text-[11px] gap-1"
             >
               <FileChartColumn className="w-3 h-3" />
               Rapport
+            </Button>
+            <Button
+              onClick={() => setIsLegendOpen(true)}
+              variant="outline"
+              size="sm"
+              className="h-6 px-2 text-[11px] gap-1"
+            >
+              <List className="w-3 h-3" />
+              Légende
             </Button>
           </>
         ) : (
@@ -340,54 +357,17 @@ const Index = () => {
               <FileChartColumn className="w-3 h-3" />
               Rapport
             </Button>
+            <Button
+              onClick={() => setIsLegendOpen(true)}
+              variant="outline"
+              size="sm"
+              className="h-6 px-2 text-[11px] gap-1"
+            >
+              <List className="w-3 h-3" />
+              Légende
+            </Button>
           </>
         )}
-
-        <div className="hidden landscape:flex items-center gap-3 ml-auto text-[11px]">
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" />
-            Attente
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-state-warning inline-block" />
-            En cours
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-state-active inline-block" />
-            Validé
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-state-alert inline-block" />
-            Défaut
-          </span>
-          <span className="flex px-4 items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
-            Non Testé
-          </span>
-        </div>
-      </div>
-
-      <div className="flex landscape:hidden gap-4 px-2 py-1 text-[11px] items-center justify-center bg-muted/30 shrink-0">
-        <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-state-idle inline-block" />
-          Attente
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-state-warning inline-block" />
-          En cours
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-state-active inline-block" />
-          Validé
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-state-alert inline-block" />
-          Défaut
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
-          Non Testé
-        </span>
       </div>
 
       <div className="flex-1 px-3 overflow-auto p-1" ref={gridRef}>
@@ -400,6 +380,44 @@ const Index = () => {
           onSelect={handleSelect}
         />
       </div>
+
+      <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
+        <DialogContent
+          overlayClassName="bg-black/20 backdrop-blur-sm"
+          className="max-w-sm bg-background/90 backdrop-blur-md"
+        >
+          <DialogHeader>
+            <DialogTitle>Légende</DialogTitle>
+            <DialogDescription>États des boutons et marquage pont.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 text-sm">
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-idle inline-block" />
+              <strong>Attente</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-warning inline-block" />
+              <strong>En cours</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-active inline-block" />
+              <strong>Validé</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-alert inline-block" />
+              <strong>Défaut</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />
+              <strong>Non testé</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
+              <strong>Bouton pont</strong>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
