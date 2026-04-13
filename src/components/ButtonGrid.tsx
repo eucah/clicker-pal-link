@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { buildPontIndexSet } from "@/lib/pont-utils";
 import { ButtonInfo } from "@/types/project";
 
 const STATE_COLORS = [
@@ -17,6 +19,8 @@ interface ButtonGridProps {
 }
 
 const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
+  const pontIndexes = useMemo(() => buildPontIndexSet(buttonInfos), [buttonInfos]);
+
   const handleClick = (stateIndex: number) => {
     if (buttonInfos[stateIndex]?.locked) return;
     if (isMaster) {
@@ -29,6 +33,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const info = buttonInfos[stateIndex];
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
+    const isPont = pontIndexes.has(stateIndex);
 
     return (
       <button
@@ -38,7 +43,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
-        } ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
+        } ${isPont ? "border-[3px] border-blue-600" : "border border-transparent"} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}
       </button>
@@ -74,6 +79,12 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       <div className="flex flex-col gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-xs font-semibold text-muted-foreground text-center">DROITE</div>
         {renderSide(75, 101, true)}
+      </div>
+      <div className="text-[11px] text-muted-foreground text-center w-full">
+        <span className="inline-flex items-center gap-1">
+          <span className="inline-block h-3 w-3 rounded-full border-[3px] border-blue-600" />
+          Bouton pont
+        </span>
       </div>
     </div>
   );
