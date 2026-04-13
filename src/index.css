@@ -20,6 +20,7 @@
     --secondary-foreground: 220 15% 20%;
 
     --state-idle: 0 0% 85%;
+    --state-pont: 212 100% 52%;
     --state-warning: 30 95% 55%;
     --state-active: 142 70% 45%;
     --state-alert: 0 80% 55%;
@@ -136,4 +137,14 @@
 }
 .animate-pulse-slow {
   animation: pulse-intensity 2s ease-in-out infinite;
+}
+
+.bg-state-pont-waiting {
+  background-image: linear-gradient(
+    to right,
+    hsl(var(--state-pont)) 0%,
+    hsl(var(--state-pont)) 50%,
+    hsl(var(--state-idle)) 50%,
+    hsl(var(--state-idle)) 100%
+  );
 }

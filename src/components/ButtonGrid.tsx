@@ -11,12 +11,21 @@ interface ButtonGridProps {
   isMaster: boolean;
   states: number[];
   buttonInfos: ButtonInfo[];
+  pontWaitingFlags: boolean[];
   selectedIndex: number | null;
   onToggle: (index: number) => void;
   onSelect: (index: number) => void;
 }
 
-const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
+const ButtonGrid = ({
+  isMaster,
+  states,
+  buttonInfos,
+  pontWaitingFlags,
+  selectedIndex,
+  onToggle,
+  onSelect,
+}: ButtonGridProps) => {
   const handleClick = (stateIndex: number) => {
     if (buttonInfos[stateIndex]?.locked) return;
     if (isMaster) {
@@ -29,6 +38,8 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const info = buttonInfos[stateIndex];
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
+    const usesPontWaitingStyle = !isLocked && states[stateIndex] === 0 && pontWaitingFlags[stateIndex];
+    const stateColorClass = usesPontWaitingStyle ? "bg-state-pont-waiting" : STATE_COLORS[states[stateIndex]];
 
     return (
       <button
@@ -37,7 +48,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
         className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150 text-[10px] landscape:text-[9px] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
-            : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
+            : `${stateColorClass} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
         } ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}

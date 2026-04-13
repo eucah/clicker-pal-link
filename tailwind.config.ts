@@ -52,6 +52,7 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         "state-idle": "hsl(var(--state-idle))",
+        "state-pont": "hsl(var(--state-pont))",
         "state-warning": "hsl(var(--state-warning))",
         "state-active": "hsl(var(--state-active))",
         "state-alert": "hsl(var(--state-alert))",

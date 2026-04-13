@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import ButtonGrid from "@/components/ButtonGrid";
 import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
@@ -14,6 +14,7 @@ import {
   getButtonLabel,
   createDefaultInfos,
   normalizeButtonInfo,
+  buildPontStyleInfo,
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
@@ -209,6 +210,11 @@ const Index = () => {
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
+  const pontStyleInfos = useMemo(() => buildPontStyleInfo(buttonInfos), [buttonInfos]);
+  const pontWaitingFlags = useMemo(
+    () => pontStyleInfos.map((info) => info.hasPontStyleInWaitingState),
+    [pontStyleInfos],
+  );
   const handleExportReport = async () => {
     if (!project) {
       return;
@@ -360,6 +366,10 @@ const Index = () => {
             <span className="w-2.5 h-2.5 rounded-sm bg-state-alert inline-block" />
             Défaut
           </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2.5 h-2.5 rounded-sm bg-state-pont-waiting inline-block" />
+            Rond moitié pont
+          </span>
           <span className="flex px-4 items-center gap-1">
             <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
             Non Testé
@@ -385,6 +395,10 @@ const Index = () => {
           Défaut
         </span>
         <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-sm bg-state-pont-waiting inline-block" />
+          Rond moitié pont
+        </span>
+        <span className="flex items-center gap-1">
           <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
           Non Testé
         </span>
@@ -395,6 +409,7 @@ const Index = () => {
           isMaster={isMaster}
           states={states}
           buttonInfos={buttonInfos}
+          pontWaitingFlags={pontWaitingFlags}
           selectedIndex={selectedIndex}
           onToggle={handleToggle}
           onSelect={handleSelect}
