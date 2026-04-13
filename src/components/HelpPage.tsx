@@ -52,12 +52,12 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             Rôle Observateur
           </p>
 
-          <p className="text-muted-foreground">
+          <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel.</li>
             <li>Il ne peut pas modifier les états.</li>
             <li>Il a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers, Cf/Cm).</li>
             <li>Commme le Contrôleur il a la possibilité d'éditer un Rapport.</li>
-          </p>
+          </ul>
         </section>
 
         <section className="space-y-2">
