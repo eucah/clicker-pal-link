@@ -41,7 +41,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers, Cf/Cm).</li>
             <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier TXT.</li>
             <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
-            <li><strong>Changer l'état des boutons</strong> — Appui court pour cycler entre les états.</li>
+            <li><strong>Changer l'état des s</strong> — Appui court pour cycler entre les états.</li>
             <li><strong>Éditer un Rapport</strong> - Création d'un rapport au format TXT  reprenant les informations du projet par bornes + l'état Validé/Défaut ou vide si non testé.</li>
           </ul>
         </section>
@@ -102,7 +102,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
-              <strong>Bouton pont</strong> — Bouton identifié comme pont
+              <strong>Pont</strong> — Bouton identifié comme pont
             </p>
           </div>
         </section>
