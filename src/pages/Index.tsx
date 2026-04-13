@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import ButtonGrid from "@/components/ButtonGrid";
 import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
@@ -18,6 +18,7 @@ import {
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
 import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
+import { resolvePontVisualStates } from "@/lib/pont-utils";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
@@ -209,6 +210,7 @@ const Index = () => {
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
+  const pontVisualStates = useMemo(() => resolvePontVisualStates(buttonInfos), [buttonInfos]);
   const handleExportReport = async () => {
     if (!project) {
       return;
@@ -364,6 +366,10 @@ const Index = () => {
             <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
             Non Testé
           </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2.5 h-2.5 rounded-full bg-state-pont-waiting inline-block" />
+            Pont
+          </span>
         </div>
       </div>
 
@@ -388,6 +394,10 @@ const Index = () => {
           <span className="w-2.5 h-2.5 rounded-sm bg-state-locked inline-block" />
           Non Testé
         </span>
+        <span className="flex items-center gap-1">
+          <span className="w-2.5 h-2.5 rounded-full bg-state-pont-waiting inline-block" />
+          Pont
+        </span>
       </div>
 
       <div className="flex-1 px-3 overflow-auto p-1" ref={gridRef}>
@@ -395,6 +405,7 @@ const Index = () => {
           isMaster={isMaster}
           states={states}
           buttonInfos={buttonInfos}
+          pontVisualStates={pontVisualStates}
           selectedIndex={selectedIndex}
           onToggle={handleToggle}
           onSelect={handleSelect}

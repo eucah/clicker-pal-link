@@ -24,6 +24,7 @@
     --state-active: 142 70% 45%;
     --state-alert: 0 80% 55%;
     --state-locked: 0 0% 15%;
+    --state-pont: 212 90% 52%;
 
     --field-fils: 210 80% 50%;
     --field-borne: 150 60% 30%;
@@ -88,6 +89,7 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --state-pont: 212 95% 60%;
   }
 }
 
@@ -136,4 +138,15 @@
 }
 .animate-pulse-slow {
   animation: pulse-intensity 2s ease-in-out infinite;
+}
+
+.bg-state-pont-waiting {
+  background-color: hsl(var(--state-idle));
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--state-pont)) 0%,
+    hsl(var(--state-pont)) 50%,
+    hsl(var(--state-idle)) 50%,
+    hsl(var(--state-idle)) 100%
+  );
 }
