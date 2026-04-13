@@ -6,9 +6,11 @@ export interface ButtonInfo {
   locked: boolean;
 }
 
+export type ButtonState = 0 | 1 | 2 | 3;
+
 export interface ProjectData {
   name: string;
-  states: number[];
+  states: ButtonState[];
   buttonInfos: ButtonInfo[];
 }
 
@@ -41,7 +43,7 @@ export const normalizeButtonInfo = (value: Partial<ButtonInfo> | null | undefine
 export const getButtonLabel = (index: number): number =>
   index < 75 ? index + 1 : index - 75 + 101;
 
-const normalizeStateValue = (value: unknown): number => {
+const normalizeStateValue = (value: unknown): ButtonState => {
   const numeric = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(numeric)) {
     return 0;
@@ -50,10 +52,10 @@ const normalizeStateValue = (value: unknown): number => {
   const rounded = Math.round(numeric);
   if (rounded < 0) return 0;
   if (rounded > 3) return 3;
-  return rounded;
+  return rounded as ButtonState;
 };
 
-export const normalizeStates = (value: unknown): number[] => {
+export const normalizeStates = (value: unknown): ButtonState[] => {
   const inputStates = Array.isArray(value) ? value : [];
   const normalized = Array.from({ length: BUTTON_COUNT }, (_, index) => normalizeStateValue(inputStates[index]));
   return normalized;

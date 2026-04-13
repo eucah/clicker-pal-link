@@ -44,7 +44,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         const raw = ev.target?.result as string;
         const data = parseProjectFile(raw);
         if (data) {
-          onLoadProject(normalizeProjectData(data), "master");
+          const normalizedProject = normalizeProjectData(data);
+          onLoadProject(normalizedProject, "master");
         } else {
           alert("Format de fichier invalide");
         }

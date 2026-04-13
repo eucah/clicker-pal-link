@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, Lock } from "lucide-react";
 import {
   ProjectData,
+  type ButtonState,
+  normalizeButtonInfo,
   BUTTON_COUNT,
   getButtonLabel,
   createDefaultInfos,
@@ -26,7 +28,7 @@ const Index = () => {
   const [screen, setScreen] = useState<Screen>("home");
   const [project, setProject] = useState<ProjectData | null>(null);
   const [role, setRole] = useState<AppRole>("master");
-  const [states, setStates] = useState<number[]>(Array(BUTTON_COUNT).fill(0));
+  const [states, setStates] = useState<ButtonState[]>(Array(BUTTON_COUNT).fill(0) as ButtonState[]);
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -60,7 +62,7 @@ const Index = () => {
   }, [ble.receivedData, role]);
 
   const sendBleUpdate = useCallback(
-    (newStates: number[]) => {
+    (newStates: ButtonState[]) => {
       if (isMaster && ble.status !== "disconnected") {
         void ble.sendUpdate(newStates, buttonInfos);
       }
@@ -90,10 +92,10 @@ const Index = () => {
   const handleViewerConnected = () => {
     setProject({
       name: "Session Observateur",
-      states: Array(BUTTON_COUNT).fill(0),
+      states: Array(BUTTON_COUNT).fill(0) as ButtonState[],
       buttonInfos: createDefaultInfos(),
     });
-    setStates(Array(BUTTON_COUNT).fill(0));
+    setStates(Array(BUTTON_COUNT).fill(0) as ButtonState[]);
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("grid");
@@ -102,7 +104,10 @@ const Index = () => {
   const handleToggle = (index: number) => {
     setStates((previousStates) => {
       const nextStates = [...previousStates];
-      const newState = (nextStates[index] + 1) % 4;
+      const currentState = Number.isInteger(nextStates[index]) && nextStates[index] >= 0 && nextStates[index] <= 3
+        ? nextStates[index]
+        : 0;
+      const newState = ((currentState + 1) % 4) as ButtonState;
 
       if (newState === 1) {
         for (let stateIndex = 0; stateIndex < nextStates.length; stateIndex += 1) {
@@ -147,7 +152,7 @@ const Index = () => {
     }
 
     setProject(null);
-    setStates(Array(BUTTON_COUNT).fill(0));
+    setStates(Array(BUTTON_COUNT).fill(0) as ButtonState[]);
     setButtonInfos(createDefaultInfos());
     setSelectedIndex(null);
     setScreen("home");
@@ -212,7 +217,7 @@ const Index = () => {
     return <HelpPage onBack={() => setScreen("home")} />;
   }
 
-  const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
+  const selectedInfo = selectedIndex !== null ? normalizeButtonInfo(buttonInfos[selectedIndex]) : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
   const pontVisualStates = useMemo(() => resolvePontVisualStates(buttonInfos), [buttonInfos]);
   const handleExportReport = async () => {

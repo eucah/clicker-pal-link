@@ -31,6 +31,10 @@ const devLog = (...args: unknown[]) => {
 
 export const resolvePontVisualStates = (buttonInfos: ButtonInfo[]): PontVisualState[] => {
   try {
+    if (import.meta.env.DEV && buttonInfos.length !== BUTTON_COUNT) {
+      devLog("buttonInfos length mismatch", { expected: BUTTON_COUNT, received: buttonInfos.length });
+    }
+
     const safeInfos = Array.from({ length: BUTTON_COUNT }, (_, index) => normalizeButtonInfo(buttonInfos[index]));
     const labelToIndex = new Map<number, number>();
 

@@ -29,15 +29,28 @@ const ButtonGrid = ({
 }: ButtonGridProps) => {
   const getSafeState = (index: number): 0 | 1 | 2 | 3 => {
     const value = states[index];
-    return value === 1 || value === 2 || value === 3 ? value : 0;
+    return Number.isInteger(value) && value >= 0 && value <= 3 ? (value as 0 | 1 | 2 | 3) : 0;
   };
 
   const getSafeInfo = (index: number): ButtonInfo | undefined => buttonInfos[index];
 
   const getSafePontState = (index: number): PontVisualState | undefined => pontVisualStates[index];
 
+  if (import.meta.env.DEV) {
+    if (states.length !== 150) {
+      console.warn("[ButtonGrid] states length mismatch", { expected: 150, received: states.length });
+    }
+    if (buttonInfos.length !== 150) {
+      console.warn("[ButtonGrid] buttonInfos length mismatch", { expected: 150, received: buttonInfos.length });
+    }
+    if (pontVisualStates.length !== 150) {
+      console.warn("[ButtonGrid] pontVisualStates length mismatch", { expected: 150, received: pontVisualStates.length });
+    }
+  }
+
   const handleClick = (stateIndex: number) => {
-    if (getSafeInfo(stateIndex)?.locked) return;
+    const info = getSafeInfo(stateIndex);
+    if (info?.locked) return;
     if (isMaster) {
       onToggle(stateIndex);
     }
