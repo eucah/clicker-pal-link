@@ -1,4 +1,5 @@
 import { ButtonInfo } from "@/types/project";
+import type { PontVisualState } from "@/lib/pont-utils";
 
 const STATE_COLORS = [
   "bg-state-idle",
@@ -11,7 +12,7 @@ interface ButtonGridProps {
   isMaster: boolean;
   states: number[];
   buttonInfos: ButtonInfo[];
-  pontWaitingFlags: boolean[];
+  pontVisualStates: PontVisualState[];
   selectedIndex: number | null;
   onToggle: (index: number) => void;
   onSelect: (index: number) => void;
@@ -21,13 +22,22 @@ const ButtonGrid = ({
   isMaster,
   states,
   buttonInfos,
-  pontWaitingFlags,
+  pontVisualStates,
   selectedIndex,
   onToggle,
   onSelect,
 }: ButtonGridProps) => {
+  const getSafeState = (index: number): 0 | 1 | 2 | 3 => {
+    const value = states[index];
+    return value === 1 || value === 2 || value === 3 ? value : 0;
+  };
+
+  const getSafeInfo = (index: number): ButtonInfo | undefined => buttonInfos[index];
+
+  const getSafePontState = (index: number): PontVisualState | undefined => pontVisualStates[index];
+
   const handleClick = (stateIndex: number) => {
-    if (buttonInfos[stateIndex]?.locked) return;
+    if (getSafeInfo(stateIndex)?.locked) return;
     if (isMaster) {
       onToggle(stateIndex);
     }
@@ -35,11 +45,13 @@ const ButtonGrid = ({
   };
 
   const renderButton = (stateIndex: number, label: number) => {
-    const info = buttonInfos[stateIndex];
+    const safeState = getSafeState(stateIndex);
+    const info = getSafeInfo(stateIndex);
+    const pontState = getSafePontState(stateIndex);
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
-    const usesPontWaitingStyle = !isLocked && states[stateIndex] === 0 && pontWaitingFlags[stateIndex];
-    const stateColorClass = usesPontWaitingStyle ? "bg-state-pont-waiting" : STATE_COLORS[states[stateIndex]];
+    const usesPontWaitingStyle = !isLocked && safeState === 0 && Boolean(pontState?.hasPontStyleInWaitingState);
+    const stateColorClass = usesPontWaitingStyle ? "bg-state-pont-waiting" : STATE_COLORS[safeState] ?? STATE_COLORS[0];
 
     return (
       <button
@@ -48,7 +60,7 @@ const ButtonGrid = ({
         className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150 text-[10px] landscape:text-[9px] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
-            : `${stateColorClass} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
+            : `${stateColorClass} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${safeState === 1 ? "animate-pulse-slow" : ""}`
         } ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}
