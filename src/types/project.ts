@@ -41,51 +41,33 @@ export const normalizeButtonInfo = (value: Partial<ButtonInfo> | null | undefine
 export const getButtonLabel = (index: number): number =>
   index < 75 ? index + 1 : index - 75 + 101;
 
-const containsPontKeyword = (fils: string): boolean => {
-  const normalized = fils.replace(/\s+/g, " ").trim();
-  return /\bpont\b/i.test(normalized);
-};
-
-const extractGridIndexFromBorne = (borne: string, labelToIndex: Map<number, number>): number | null => {
-  const matches = borne.match(/\d+/g);
-  if (!matches) return null;
-
-  for (const token of matches) {
-    const label = Number(token);
-    const index = labelToIndex.get(label);
-    if (index !== undefined) {
-      return index;
-    }
+const normalizeStateValue = (value: unknown): number => {
+  const numeric = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(numeric)) {
+    return 0;
   }
 
-  return null;
+  const rounded = Math.round(numeric);
+  if (rounded < 0) return 0;
+  if (rounded > 3) return 3;
+  return rounded;
 };
 
-export const buildPontStyleInfo = (buttonInfos: ButtonInfo[]): PontStyleInfo[] => {
-  const safeInfos = Array.from({ length: BUTTON_COUNT }, (_, index) => normalizeButtonInfo(buttonInfos[index]));
-  const labelToIndex = new Map<number, number>();
-  for (let i = 0; i < BUTTON_COUNT; i += 1) {
-    labelToIndex.set(getButtonLabel(i), i);
-  }
+export const normalizeStates = (value: unknown): number[] => {
+  const inputStates = Array.isArray(value) ? value : [];
+  const normalized = Array.from({ length: BUTTON_COUNT }, (_, index) => normalizeStateValue(inputStates[index]));
+  return normalized;
+};
 
-  const directPont = Array(BUTTON_COUNT).fill(false) as boolean[];
-  const linkedTargets = new Set<number>();
-  const linkedBySource = Array(BUTTON_COUNT).fill(null) as Array<number | null>;
+export const normalizeProjectData = (value: Partial<ProjectData> | null | undefined): ProjectData => {
+  const safeName = typeof value?.name === "string" && value.name.trim() ? value.name.trim() : "Projet sans nom";
+  const normalizedStates = normalizeStates(value?.states);
+  const sourceInfos = Array.isArray(value?.buttonInfos) ? value.buttonInfos : [];
+  const normalizedInfos = Array.from({ length: BUTTON_COUNT }, (_, index) => normalizeButtonInfo(sourceInfos[index]));
 
-  safeInfos.forEach((info, index) => {
-    if (!containsPontKeyword(info.fils)) return;
-
-    directPont[index] = true;
-    const targetIndex = extractGridIndexFromBorne(info.borne, labelToIndex);
-    linkedBySource[index] = targetIndex;
-    if (targetIndex !== null) {
-      linkedTargets.add(targetIndex);
-    }
-  });
-
-  return safeInfos.map((_, index) => ({
-    isPont: directPont[index],
-    linkedPontTarget: linkedBySource[index],
-    hasPontStyleInWaitingState: directPont[index] || linkedTargets.has(index),
-  }));
+  return {
+    name: safeName,
+    states: normalizedStates,
+    buttonInfos: normalizedInfos,
+  };
 };

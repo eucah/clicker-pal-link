@@ -13,9 +13,9 @@ import {
   BUTTON_COUNT,
   getButtonLabel,
   createDefaultInfos,
-  normalizeButtonInfo,
-  buildPontStyleInfo,
+  normalizeProjectData,
 } from "@/types/project";
+import { resolvePontVisualStates } from "@/lib/pont-utils";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
 import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
@@ -49,10 +49,13 @@ const Index = () => {
   // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
     if (ble.receivedData && role === "viewer") {
-      setStates(ble.receivedData.states);
-      if (ble.receivedData.buttonInfos.length > 0) {
-        setButtonInfos(ble.receivedData.buttonInfos.map((info) => normalizeButtonInfo(info)));
-      }
+      const normalizedViewerProject = normalizeProjectData({
+        name: "Session Observateur",
+        states: ble.receivedData.states,
+        buttonInfos: ble.receivedData.buttonInfos,
+      });
+      setStates(normalizedViewerProject.states);
+      setButtonInfos(normalizedViewerProject.buttonInfos);
     }
   }, [ble.receivedData, role]);
 
@@ -66,9 +69,10 @@ const Index = () => {
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
-    setProject(loadedProject);
-    setStates(loadedProject.states);
-    setButtonInfos(loadedProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
+    const normalizedProject = normalizeProjectData(loadedProject);
+    setProject(normalizedProject);
+    setStates(normalizedProject.states);
+    setButtonInfos(normalizedProject.buttonInfos);
     setSelectedIndex(null);
 
     if (selectedRole) {
@@ -210,11 +214,7 @@ const Index = () => {
 
   const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
-  const pontStyleInfos = useMemo(() => buildPontStyleInfo(buttonInfos), [buttonInfos]);
-  const pontWaitingFlags = useMemo(
-    () => pontStyleInfos.map((info) => info.hasPontStyleInWaitingState),
-    [pontStyleInfos],
-  );
+  const pontVisualStates = useMemo(() => resolvePontVisualStates(buttonInfos), [buttonInfos]);
   const handleExportReport = async () => {
     if (!project) {
       return;
@@ -409,7 +409,7 @@ const Index = () => {
           isMaster={isMaster}
           states={states}
           buttonInfos={buttonInfos}
-          pontWaitingFlags={pontWaitingFlags}
+          pontVisualStates={pontVisualStates}
           selectedIndex={selectedIndex}
           onToggle={handleToggle}
           onSelect={handleSelect}
