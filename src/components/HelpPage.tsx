@@ -53,7 +53,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <p className="text-muted-foreground">
-            L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel. Il ne peut pas modifier les états. Mais a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers, Cf/Cm).
+            <li>L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel.</li>
+            <li>Il ne peut pas modifier les états.</li>
+            <li>Il a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers, Cf/Cm).</li>
+            <li>Commme le Contrôleur il a la possibilité d'éditer un Rapport.</li>
           </p>
         </section>
 
