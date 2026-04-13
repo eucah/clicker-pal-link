@@ -32,5 +32,45 @@ export const normalizeButtonInfo = (value: Partial<ButtonInfo> | null | undefine
   locked: Boolean(value?.locked),
 });
 
+const normalizeStateValue = (value: unknown): 0 | 1 | 2 | 3 => {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return 0;
+  }
+
+  const normalized = Math.round(value);
+  if (normalized < 0 || normalized > 3) {
+    return 0;
+  }
+
+  return normalized as 0 | 1 | 2 | 3;
+};
+
+export const normalizeStates = (value: unknown): number[] => {
+  const source = Array.isArray(value) ? value : [];
+  const normalized = source.slice(0, BUTTON_COUNT).map((state) => normalizeStateValue(state));
+
+  while (normalized.length < BUTTON_COUNT) {
+    normalized.push(0);
+  }
+
+  return normalized;
+};
+
+export const normalizeProjectData = (value: Partial<ProjectData> | null | undefined): ProjectData => {
+  const normalizedName = typeof value?.name === "string" ? value.name.trim() : "";
+  const sourceInfos = Array.isArray(value?.buttonInfos) ? value.buttonInfos : [];
+  const normalizedInfos = sourceInfos.slice(0, BUTTON_COUNT).map((info) => normalizeButtonInfo(info));
+
+  while (normalizedInfos.length < BUTTON_COUNT) {
+    normalizedInfos.push(normalizeButtonInfo(undefined));
+  }
+
+  return {
+    name: normalizedName || "Projet sans nom",
+    states: normalizeStates(value?.states),
+    buttonInfos: normalizedInfos,
+  };
+};
+
 export const getButtonLabel = (index: number): number =>
   index < 75 ? index + 1 : index - 75 + 101;

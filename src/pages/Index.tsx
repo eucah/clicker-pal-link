@@ -14,6 +14,7 @@ import {
   getButtonLabel,
   createDefaultInfos,
   normalizeButtonInfo,
+  normalizeProjectData,
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
@@ -49,10 +50,14 @@ const Index = () => {
   // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
     if (ble.receivedData && role === "viewer") {
-      setStates(ble.receivedData.states);
-      if (ble.receivedData.buttonInfos.length > 0) {
-        setButtonInfos(ble.receivedData.buttonInfos.map((info) => normalizeButtonInfo(info)));
-      }
+      const normalizedViewerProject = normalizeProjectData({
+        name: "Session Observateur",
+        states: ble.receivedData.states,
+        buttonInfos: ble.receivedData.buttonInfos,
+      });
+
+      setStates(normalizedViewerProject.states);
+      setButtonInfos(normalizedViewerProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
     }
   }, [ble.receivedData, role]);
 
@@ -66,9 +71,10 @@ const Index = () => {
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
-    setProject(loadedProject);
-    setStates(loadedProject.states);
-    setButtonInfos(loadedProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
+    const normalizedProject = normalizeProjectData(loadedProject);
+    setProject(normalizedProject);
+    setStates(normalizedProject.states);
+    setButtonInfos(normalizedProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
 
     if (selectedRole) {

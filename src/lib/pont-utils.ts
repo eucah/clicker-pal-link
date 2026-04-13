@@ -14,15 +14,20 @@ const normalizeText = (value: string): string =>
 
 const containsPontKeyword = (value: string): boolean => /\bpont\b/i.test(normalizeText(value));
 
-const extractBorneNumber = (value: string): number | null => {
-  const match = normalizeText(value).match(/\b(\d{1,3})\b/);
-  if (!match) {
+const extractSingleBorneNumber = (value: string): number | null => {
+  const normalized = normalizeText(value);
+  const matches = normalized.match(/\b(\d{1,3})\b/g) ?? [];
+
+  if (matches.length !== 1) {
     return null;
   }
 
-  const parsed = Number.parseInt(match[1], 10);
+  const parsed = Number.parseInt(matches[0], 10);
   return Number.isFinite(parsed) ? parsed : null;
 };
+
+const countBorneNumbers = (value: string): number =>
+  (normalizeText(value).match(/\b\d{1,3}\b/g) ?? []).length;
 
 const createLabelToIndexMap = (): Map<number, number> => {
   const map = new Map<number, number>();
@@ -33,6 +38,7 @@ const createLabelToIndexMap = (): Map<number, number> => {
 };
 
 export const resolvePontVisualStates = (buttonInfos: ButtonInfo[]): PontVisualState[] => {
+  const isDev = import.meta.env.DEV;
   const labelToIndex = createLabelToIndexMap();
   const pontSources = new Set<number>();
   const pontLinkedTargets = new Set<number>();
@@ -44,14 +50,35 @@ export const resolvePontVisualStates = (buttonInfos: ButtonInfo[]): PontVisualSt
 
     pontSources.add(index);
 
-    const borneNumber = extractBorneNumber(info.borne ?? "");
+    const rawBorne = info.borne ?? "";
+    const borneNumber = extractSingleBorneNumber(rawBorne);
     if (borneNumber === null) {
+      if (isDev && countBorneNumbers(rawBorne) > 1) {
+        console.debug("[pont-utils] Pont ambigu ignoré", {
+          sourceIndex: index,
+          sourceLabel: getButtonLabel(index),
+          borneRaw: rawBorne,
+        });
+      }
       return;
     }
 
     const linkedIndex = labelToIndex.get(borneNumber);
-    if (linkedIndex !== undefined) {
-      pontLinkedTargets.add(linkedIndex);
+    if (linkedIndex === undefined || linkedIndex === index) {
+      return;
+    }
+
+    pontLinkedTargets.add(linkedIndex);
+
+    if (isDev) {
+      console.debug("[pont-utils] Pont visuel retenu", {
+        sourceIndex: index,
+        sourceLabel: getButtonLabel(index),
+        borneRaw: rawBorne,
+        borneResolved: borneNumber,
+        targetIndex: linkedIndex,
+        targetLabel: getButtonLabel(linkedIndex),
+      });
     }
   });
 

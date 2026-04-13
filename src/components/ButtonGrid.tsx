@@ -19,8 +19,17 @@ interface ButtonGridProps {
 }
 
 const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
+  const getSafeState = (index: number): 0 | 1 | 2 | 3 => {
+    const value = states[index];
+    return value === 0 || value === 1 || value === 2 || value === 3 ? value : 0;
+  };
+
+  const getSafeInfo = (index: number): ButtonInfo | undefined => buttonInfos[index];
+
+  const getSafePontState = (index: number): PontVisualState | undefined => pontVisualStates[index];
+
   const handleClick = (stateIndex: number) => {
-    if (buttonInfos[stateIndex]?.locked) return;
+    if (getSafeInfo(stateIndex)?.locked) return;
     if (isMaster) {
       onToggle(stateIndex);
     }
@@ -28,14 +37,16 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedI
   };
 
   const renderButton = (stateIndex: number, label: number) => {
-    const info = buttonInfos[stateIndex];
+    const safeState = getSafeState(stateIndex);
+    const info = getSafeInfo(stateIndex);
+    const pontState = getSafePontState(stateIndex);
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
     const showPontWaitingStyle =
-      states[stateIndex] === 0 && Boolean(pontVisualStates[stateIndex]?.hasPontStyleInWaitingState);
+      safeState === 0 && Boolean(pontState?.hasPontStyleInWaitingState);
     const stateColorClass = showPontWaitingStyle
       ? "bg-state-pont-waiting"
-      : STATE_COLORS[states[stateIndex]];
+      : STATE_COLORS[safeState] ?? STATE_COLORS[0];
 
     return (
       <button
@@ -44,7 +55,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, pontVisualStates, selectedI
         className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150 text-[10px] landscape:text-[9px] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
-            : `${stateColorClass} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
+            : `${stateColorClass} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${safeState === 1 ? "animate-pulse-slow" : ""}`
         } ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}

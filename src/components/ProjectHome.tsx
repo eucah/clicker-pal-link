@@ -3,7 +3,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion, Moon } from "lucide-react";
-import { ProjectData } from "@/types/project";
+import { normalizeProjectData, ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
 import { stopScanning } from "@/lib/bt-service";
@@ -44,7 +44,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         const raw = ev.target?.result as string;
         const data = parseProjectFile(raw);
         if (data) {
-          onLoadProject(data, "master");
+          onLoadProject(normalizeProjectData(data), "master");
         } else {
           alert("Format de fichier invalide");
         }
