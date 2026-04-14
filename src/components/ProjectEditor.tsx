@@ -127,7 +127,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Fils..."
       />
     </td>
-    <td className="py-0.5 pr-1">
+    <td className="py-0.5">
       <Input
         value={info.borne ?? ""}
         onChange={(e) => onUpdate(index, "borne", e.target.value)}
@@ -135,7 +135,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Borne..."
       />
     </td>
-    <td className="py-0.5 pr-1">
+    <td className="py-0.5">
       <Input
         value={info.bornier}
         onChange={(e) => onUpdate(index, "bornier", e.target.value)}
@@ -143,7 +143,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Bornier..."
       />
     </td>
-    <td className="py-0.5 pr-0.5">
+    <td className="py-0.5">
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
