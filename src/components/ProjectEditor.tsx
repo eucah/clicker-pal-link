@@ -143,7 +143,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Bornier..."
       />
     </td>
-    <td className="py-0.5">
+    <td className="py-0.5 w-3/4">
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
