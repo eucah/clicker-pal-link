@@ -6,14 +6,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Save, Play } from "lucide-react";
 import { ButtonInfo, ProjectData, BUTTON_COUNT, createDefaultInfos, getButtonLabel } from "@/types/project";
 import { saveProjectFile } from "@/lib/file-utils";
+
 interface ProjectEditorProps {
   onSave: (project: ProjectData) => void;
   onAccess: (project: ProjectData) => void;
   onCancel: () => void;
 }
+
 const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   const [projectName, setProjectName] = useState("");
   const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
+
   const updateButton = useCallback((index: number, field: keyof ButtonInfo, value: string | boolean) => {
     setButtonInfos((prev) => {
       const current = prev[index];
@@ -25,11 +28,13 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
       return next;
     });
   }, []);
+
   const buildProject = (): ProjectData | null => {
     if (!projectName.trim()) return null;
     const states = buttonInfos.map(() => 0);
     return { name: projectName.trim(), states, buttonInfos };
   };
+
   const handleSave = async () => {
     const project = buildProject();
     if (!project) return;
@@ -38,11 +43,13 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
       onSave(project);
     }
   };
+
   const handleAccess = () => {
     const project = buildProject();
     if (!project) return;
     onAccess(project);
   };
+
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-all">
       <header className="flex items-center gap-2 px-4 py-1.5 landscape:py-1 border-b border-border bg-card shrink-0">
@@ -59,6 +66,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           </Button>
         </div>
       </header>
+
       <div className="px-4 py-1.5 landscape:py-1 border-b border-border shrink-0">
         <label className="text-sm font-medium text-foreground">Nom du projet</label>
         <Input
@@ -68,29 +76,50 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           className={gridInputClassName}
         />
       </div>
+
       <ScrollArea className="flex-1">
         <div className="px-4 py-1">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 pl-1 text-left w-9">#</th>
-                <th className="py-1 pl-3 text-left text-blue-600">Fils</th>
-                <th className="py-1 pl-3 text-left text-green-600">Borne</th>
-                <th className="py-1 pl-3 text-left text-red-600">Bornier</th>
-                <th className="py-1 pl-3 text-left text-amber-700">Cf/Cm</th>
+                <th className="py-1 text-left w-9">#</th>
+                <th className="py-1 text-left text-blue-600">Fils</th>
+                <th className="py-1 text-left text-green-600">Borne</th>
+                <th className="py-1 text-left text-red-600">Bornier</th>
+                <th className="py-1 text-left text-amber-700">Cf/Cm</th>
                 <th className="py-1 text-center w-14 text-primary">Non Testé</th>
               </tr>
             </thead>
             <tbody>
-	@@ -115,43 +115,47 @@ interface EditorRowProps {
+              {Array.from({ length: BUTTON_COUNT }, (_, i) => (
+                <EditorRow
+                  key={i}
+                  index={i}
+                  info={buttonInfos[i]}
+                  onUpdate={updateButton}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ScrollArea>
+    </div>
+  );
+};
+
+interface EditorRowProps {
+  index: number;
+  info: ButtonInfo;
+  onUpdate: (index: number, field: keyof ButtonInfo, value: string | boolean) => void;
+}
 
 const gridInputClassName =
-  "h-6 text-xs font-mono border-2 border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
+  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
-    <td className="py-0.5 font-bold text-foreground w-7">{getButtonLabel(index)}</td>
-    <td className="py-0.5">
+    <td className="py-0.5 font-bold text-foreground w-9">{getButtonLabel(index)}</td>
+    <td className="py-0.5 pr-1">
       <Input
         value={info.fils}
         onChange={(e) => onUpdate(index, "fils", e.target.value)}
@@ -98,7 +127,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Fils..."
       />
     </td>
-    <td className="py-0.5">
+    <td className="py-0.5 pr-1">
       <Input
         value={info.borne ?? ""}
         onChange={(e) => onUpdate(index, "borne", e.target.value)}
@@ -106,7 +135,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Borne..."
       />
     </td>
-    <td className="py-0.5">
+    <td className="py-0.5 pr-1">
       <Input
         value={info.bornier}
         onChange={(e) => onUpdate(index, "bornier", e.target.value)}
@@ -114,7 +143,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Bornier..."
       />
     </td>
-    <td className="py-0.5">
+    <td className="py-0.5 pr-1">
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
@@ -122,7 +151,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Cf/Cm..."
       />
     </td>
-    <td className="py-0.5 text-center w-10">
+    <td className="py-0.5 text-center w-14">
       <Checkbox
         checked={info.locked}
         onCheckedChange={(checked) => onUpdate(index, "locked", !!checked)}
@@ -130,5 +159,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
     </td>
   </tr>
 ));
+
 EditorRow.displayName = "EditorRow";
+
 export default ProjectEditor;
