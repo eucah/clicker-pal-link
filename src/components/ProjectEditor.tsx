@@ -119,7 +119,7 @@ const gridInputClassName =
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
     <td className="py-0.5 font-bold text-foreground w-9">{getButtonLabel(index)}</td>
-    <td className="py-0.5 pr-1">
+    <td className="py-0.5">
       <Input
         value={info.fils}
         onChange={(e) => onUpdate(index, "fils", e.target.value)}
