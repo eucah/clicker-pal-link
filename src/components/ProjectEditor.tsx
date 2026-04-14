@@ -82,7 +82,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 pl-1 text-left w-9">#</th>
+                <th className="py-1 pl-1 text-left w-7">#</th>
                 <th className="py-1 pl-3 text-left text-blue-600">Fils</th>
                 <th className="py-1 pl-3 text-left text-green-600">Borne</th>
                 <th className="py-1 pl-3 text-left text-red-600">Bornier</th>
@@ -118,7 +118,7 @@ const gridInputClassName =
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
-    <td className="py-0.5 font-bold text-foreground w-9">{getButtonLabel(index)}</td>
+    <td className="py-0.5 font-bold text-foreground w-7">{getButtonLabel(index)}</td>
     <td className="py-0.5">
       <Input
         value={info.fils}
