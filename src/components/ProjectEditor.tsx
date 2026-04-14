@@ -83,7 +83,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
             <thead>
               <tr className="border-b border-border text-muted-foreground">
                 <th className="py-1 pl-1 text-left w-7">#</th>
-                <th className="py-1 pl-3 text-left text-blue-600">Fils</th>
+                <th className="py-1 pl-3 p-3 text-left text-blue-600">Fils</th>
                 <th className="py-1 pl-3 text-left text-green-600">Borne</th>
                 <th className="py-1 pl-3 text-left text-red-600">Bornier</th>
                 <th className="py-1 pl-3 text-left text-amber-700">Cf/Cm</th>
