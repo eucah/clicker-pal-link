@@ -390,7 +390,6 @@ const Index = () => {
         >
           <DialogHeader>
             <DialogTitle>Légende</DialogTitle>
-            <DialogDescription>États des boutons et marquage pont.</DialogDescription>
           </DialogHeader>
           <div className="space-y-2 text-sm">
             <p className="flex items-center gap-2">
