@@ -82,11 +82,11 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 text-left w-9">#</th>
-                <th className="py-1 text-left text-blue-600">Fils</th>
-                <th className="py-1 text-left text-green-600">Borne</th>
-                <th className="py-1 text-left text-red-600">Bornier</th>
-                <th className="py-1 text-left text-amber-700">Cf/Cm</th>
+                <th className="py-1 pl-4 text-left w-9">#</th>
+                <th className="py-1 pl-4 text-left text-blue-600">Fils</th>
+                <th className="py-1 pl-4 text-left text-green-600">Borne</th>
+                <th className="py-1 pl-4 text-left text-red-600">Bornier</th>
+                <th className="py-1 pl-4 text-left text-amber-700">Cf/Cm</th>
                 <th className="py-1 text-center w-14 text-primary">Non Testé</th>
               </tr>
             </thead>
