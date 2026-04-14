@@ -82,12 +82,12 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 pl-1 text-left w-9">#</th>
+                <th className={`py-1 pl-1 text-left ${indexColumnClassName}`}>#</th>
                 <th className="py-1 pl-3 text-left text-blue-600">Fils</th>
                 <th className="py-1 pl-3 text-left text-green-600">Borne</th>
                 <th className="py-1 pl-3 text-left text-red-600">Bornier</th>
-                <th className="py-1 pl-3 text-left text-amber-700">Cf/Cm</th>
-                <th className="py-1 text-center w-14 text-primary">Non Testé</th>
+                <th className={`py-1 pl-3 text-left text-amber-700 ${cfCmColumnClassName}`}>Cf/Cm</th>
+                <th className={`py-1 text-center text-primary ${nonTesteColumnClassName}`}>Non Testé</th>
               </tr>
             </thead>
             <tbody>
@@ -115,15 +115,19 @@ interface EditorRowProps {
 
 const gridInputClassName =
   "h-6 text-xs font-mono border-2 border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
+const indexColumnClassName = "w-8";
+const cfCmColumnClassName = "w-20";
+const nonTesteColumnClassName = "w-12";
+const detailColumnClassName = "min-w-[11rem]";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
-    <td className="py-0.5 font-bold text-foreground w-7">{getButtonLabel(index)}</td>
+    <td className={`py-0.5 font-bold text-foreground ${indexColumnClassName}`}>{getButtonLabel(index)}</td>
     <td className="py-0.5">
       <Input
         value={info.fils}
         onChange={(e) => onUpdate(index, "fils", e.target.value)}
-        className={gridInputClassName}
+        className={`${gridInputClassName} ${detailColumnClassName}`}
         placeholder="Fils..."
       />
     </td>
@@ -131,7 +135,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.borne ?? ""}
         onChange={(e) => onUpdate(index, "borne", e.target.value)}
-        className={gridInputClassName}
+        className={`${gridInputClassName} ${detailColumnClassName}`}
         placeholder="Borne..."
       />
     </td>
@@ -139,7 +143,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.bornier}
         onChange={(e) => onUpdate(index, "bornier", e.target.value)}
-        className={gridInputClassName}
+        className={`${gridInputClassName} ${detailColumnClassName}`}
         placeholder="Bornier..."
       />
     </td>
@@ -147,11 +151,11 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
-        className={gridInputClassName}
+        className={`${gridInputClassName} ${cfCmColumnClassName}`}
         placeholder="Cf/Cm..."
       />
     </td>
-    <td className="py-0.5 text-center w-10">
+    <td className={`py-0.5 text-center ${nonTesteColumnClassName}`}>
       <Checkbox
         checked={info.locked}
         onCheckedChange={(checked) => onUpdate(index, "locked", !!checked)}
