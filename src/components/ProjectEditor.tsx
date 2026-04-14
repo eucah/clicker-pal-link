@@ -82,7 +82,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-muted-foreground">
-                <th className="py-1 pl-4 text-left w-9">#</th>
+                <th className="py-1 pl-1 text-left w-9">#</th>
                 <th className="py-1 pl-4 text-left text-blue-600">Fils</th>
                 <th className="py-1 pl-4 text-left text-green-600">Borne</th>
                 <th className="py-1 pl-4 text-left text-red-600">Bornier</th>
@@ -114,12 +114,12 @@ interface EditorRowProps {
 }
 
 const gridInputClassName =
-  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
+  "h-6 text-xs font-mono border-2 border-transparent hover:border-input bg-background focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 focus:border-foreground transition-colors";
 
 const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
   <tr className="border-b border-border/80">
     <td className="py-0.5 font-bold text-foreground w-9">{getButtonLabel(index)}</td>
-    <td className="py-0.5">
+    <td className="py-0.5 pr-1">
       <Input
         value={info.fils}
         onChange={(e) => onUpdate(index, "fils", e.target.value)}
