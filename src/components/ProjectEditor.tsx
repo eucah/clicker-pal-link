@@ -87,7 +87,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
                 <th className="py-1 pl-3 text-left text-green-600">Borne</th>
                 <th className="py-1 pl-3 text-left text-red-600">Bornier</th>
                 <th className="py-1 pl-3 text-left text-amber-700">Cf/Cm</th>
-                <th className="py-1 text-center w-14 text-primary">Non Testé</th>
+                <th className="py-1 text-center w-11 text-primary">Non Testé</th>
               </tr>
             </thead>
             <tbody>
@@ -143,7 +143,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Bornier..."
       />
     </td>
-    <td className="py-0.5 w-fit">
+    <td className="py-0.5">
       <Input
         value={info.cfCm}
         onChange={(e) => onUpdate(index, "cfCm", e.target.value)}
@@ -151,7 +151,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Cf/Cm..."
       />
     </td>
-    <td className="py-0.5 text-center w-fit">
+    <td className="py-0.5 text-center w-11">
       <Checkbox
         checked={info.locked}
         onCheckedChange={(checked) => onUpdate(index, "locked", !!checked)}
