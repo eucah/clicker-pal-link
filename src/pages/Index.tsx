@@ -345,7 +345,7 @@ const Index = () => {
           </>
         ) : (
           <>
-            <span className="px-4 text-[11px] text-muted-foreground">
+            <span className="px-4 text-[11px] text-muted-foreground mr-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
            <div className="flex items-center px-4 gap-1.5">
