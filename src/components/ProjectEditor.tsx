@@ -151,7 +151,7 @@ const EditorRow = memo(({ index, info, onUpdate }: EditorRowProps) => (
         placeholder="Cf/Cm..."
       />
     </td>
-    <td className="py-0.5 text-center w-14">
+    <td className="py-0.5 text-center w-fit">
       <Checkbox
         checked={info.locked}
         onCheckedChange={(checked) => onUpdate(index, "locked", !!checked)}
