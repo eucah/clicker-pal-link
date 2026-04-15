@@ -105,4 +105,13 @@ export default {
       addVariant("landscape", "@media (orientation: landscape)");
     }),
   ],
+module.exports = {
+  theme: {
+    extend: {
+      boxShadow: {
+        'foreground-xl': '0 20px 25px -5px rgba(var(--foreground), 0.3)',
+      }
+    }
+  }
+}
 } satisfies Config;
