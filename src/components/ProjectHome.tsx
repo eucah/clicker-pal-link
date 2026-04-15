@@ -89,12 +89,12 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           </div>
           <div className="flex flex-col gap-2">
             <Button onClick={onCreateProject} className="w-full gap-2 rounded-full" size="sm">
-              <Plus className="w-4 h-4 rounded-full shadow-xl" /> Nouveau projet
+              <Plus className="w-4 h-4 rounded-full shadow-xl/30" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full shadow-xl rounded-full gap-2"
+              className="w-full shadow-xl/30 rounded-full gap-2"
               size="sm"
             >
               <FolderOpen className="w-4 h-4" /> Ouvrir un projet
@@ -119,7 +119,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               try { await stopScanning(); } catch {}
               onViewerScan();
             }}
-            className="w-full shadow-xl/30 rounded-full gap-2"
+            className="w-full shadow-foreground-xl/30 rounded-full gap-2"
             size="sm"
           >
             <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
@@ -141,7 +141,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
       <button
         onClick={onHelp}
-        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-lg flex items-center justify-center hover:bg-accent transition-colors"
+        className="fixed bottom-6 right-6 w-10 h-10 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl flex items-center justify-center hover:bg-accent transition-colors"
         aria-label="Aide"
       >
         <MessageCircleQuestion className="w-5 h-5" />
