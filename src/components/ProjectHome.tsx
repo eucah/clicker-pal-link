@@ -141,10 +141,10 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
       <button
         onClick={onHelp}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
+        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
         aria-label="Aide"
       >
-        <BadgeQuestionMark className="w-8 h-8" />
+        <BadgeQuestionMark className="w-7 h-7" />
       </button>
     </div>
   );
