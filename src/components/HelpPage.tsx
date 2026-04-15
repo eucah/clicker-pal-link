@@ -14,7 +14,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
-        </button>
+        </Button>
+      </div>
         <h1 className="text-lg font-bold text-foreground active:scale-95">Aide</h1>
       </header>
 
