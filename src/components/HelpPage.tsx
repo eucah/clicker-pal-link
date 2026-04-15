@@ -12,7 +12,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <h1 className="text-lg font-bold text-foreground">Aide</h1>
+        <h1 className="text-lg font-bold text-foreground active:scale-95">Aide</h1>
       </header>
 
       <div className="flex-1 overflow-auto px-5 py-4 space-y-5 text-sm text-foreground">
