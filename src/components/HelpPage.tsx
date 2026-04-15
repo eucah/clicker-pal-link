@@ -120,7 +120,13 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
             <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
             <li>Pour la création de contacts avec la fonction pont : numéro de contact à mettre dans la section Borne et mettre "Pont" dans la section bornier.</li>
-            <li>Exemple: contact #1 fils : xxfd borne: aaxx  bornier: ashs - contact #10 fils: xxfd  borne: 1  bornier: Pont (la fonction pont sera attribuée à la borne #10 ainsi qu'à la borne #1 , il est possible de chaîner les contacts si multiple ponts).</li>
+            <li>Exemple: 
+              <ul class="list-['-'] pl-5">
+                <li>contact #1 fils : xxfd borne: aaxx  bornier: ashs</li>
+                <li>contact #10 fils: xxfd  borne: 1  bornier: Pont</li>
+                <li>(la fonction pont sera attribuée à la borne #10 ainsi qu'à la borne #1 , il est possible de chaîner les contacts si multiple ponts).</li>
+              </ul>
+            </li>
         </ul>
         </section>
       </div>
