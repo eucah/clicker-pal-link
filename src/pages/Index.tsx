@@ -253,7 +253,7 @@ const Index = () => {
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h1 className="text-sm font-bold text-foreground tracking-tight">
+          <h1 className="text-sm font-bold text-foreground tracking-tight shadow-xl shadow-gray-900/30 active:scale-95">
             {project?.name}
           </h1>
         </div>
