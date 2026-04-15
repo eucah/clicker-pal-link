@@ -15,9 +15,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         >
           <ArrowLeft className="w-4 h-4" />
         </Button>
-      </div>
         <h1 className="text-lg font-bold text-foreground active:scale-95">Aide</h1>
-      </header>
+      </div>
 
       <div className="flex-1 overflow-auto px-5 py-4 space-y-5 text-sm text-foreground">
         <section className="space-y-2">
