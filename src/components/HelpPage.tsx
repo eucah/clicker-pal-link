@@ -7,11 +7,14 @@ interface HelpPageProps {
 
 const HelpPage = ({ onBack }: HelpPageProps) => {
   return (
-    <div className="h-screen bg-background flex flex-col safe-area-all">
-      <header className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card shrink-0">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="w-5 h-5" />
-        </Button>
+    <div className="h-screen bg-background flex flex-col px-4 py-4 safe-area-all">
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={handleCancel}
+          className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </button>
         <h1 className="text-lg font-bold text-foreground active:scale-95">Aide</h1>
       </header>
 
