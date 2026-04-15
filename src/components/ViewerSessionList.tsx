@@ -90,7 +90,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={handleCancel}
-          className="p-2 rounded-md bg-secondary text-secondary-foreground"
+          className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
