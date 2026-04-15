@@ -1,4 +1,4 @@
-import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, Lightbulb, Presentation, BadgeQuestionMark } from "lucide-react";
+import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, Lightbulb, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HelpPageProps {
