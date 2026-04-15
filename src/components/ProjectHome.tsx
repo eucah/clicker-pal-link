@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion, Moon, Sun } from "lucide-react";
+import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, BadgeQuestionMark, Moon, Sun } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
@@ -144,7 +144,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
         aria-label="Aide"
       >
-        <MessageCircleQuestion className="w-8 h-8" />
+        <BadgeQuestionMark className="w-8 h-8" />
       </button>
     </div>
   );
