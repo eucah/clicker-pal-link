@@ -10,7 +10,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
     <div className="h-screen bg-background flex flex-col px-4 py-4 safe-area-all">
       <div className="flex items-center justify-between mb-4">
         <button
-          onClick={handleCancel}
+          onClick={onCancel}
           className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
