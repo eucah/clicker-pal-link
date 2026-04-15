@@ -122,14 +122,13 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li>Pour la création de contacts avec la fonction pont : numéro de contact à mettre dans la section Borne et mettre "Pont" dans la section bornier.</li>
             <li>Exemple: 
               <ul class="list-['-'] pl-5">
-                <li>contact #1 fils : xxfd borne: aaxx  bornier: ashs</li>
-                <li>contact #10 fils: xxfd  borne: 1  bornier: Pont</li>
-                <li>(la fonction pont sera attribuée à la borne #10 ainsi qu'à la borne #1 , il est possible de chaîner les contacts si multiple ponts).</li>
-              </ul>
-            </li>
+                <li>contact #1   fils: xxfd  borne: aaxx  bornier: ashs</li>
+                <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
+                <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
+              (la fonction pont sera attribuée à la borne #140/10 ainsi qu'à la borne #1, cette methode permet d'avoir un aperçu si un ou plusieurs ponts existe pour un même fil).</li>
         </ul>
         </section>
-      </div>
+      </div>+ 
     </div>
   );
 };
