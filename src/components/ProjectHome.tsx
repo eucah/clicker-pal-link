@@ -88,7 +88,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-foreground/10" size="sm">
+            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-foreground/10 transition-all active:scale-95" size="sm">
               <Plus className="w-4 h-4" /> Nouveau projet
             </Button>
             <Button
