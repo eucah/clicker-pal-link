@@ -39,7 +39,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       <button
         key={label}
         onClick={() => handleClick(stateIndex)}
-        className={`aspect-square rounded-full flex items-center justify-center flex-shrink-0 transition-colors duration-150 text-[10px] landscape:text-[9px] font-bold !text-black dark:!text-black ${
+        className={`aspect-square rounded-full flex items-center shadow-xl shadow-foreground/10 justify-center flex-shrink-0 transition-colors duration-150 text-[10px] landscape:text-[9px] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
