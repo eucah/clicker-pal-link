@@ -8,8 +8,8 @@ interface HelpPageProps {
 const HelpPage = ({ onBack }: HelpPageProps) => {
   return (
     <div className="h-screen bg-background flex flex-col px-4 py-4 safe-area-all">
-      <header className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95" >
+      <header>className="flex items-center justify-between mb-4">
+        <Button onClick={onBack} className="p-2 rounded-md bg-secondary text-secondary-foreground  active:scale-95" >
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-lg font-bold text-foreground active:scale-95">Aide</h1>
