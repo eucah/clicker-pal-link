@@ -59,7 +59,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
   return (
     <div className="relative h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
-      <div className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-foreground/30 border border-border bg-card/90 px-2 py-2 backdrop-blur-sm">
+      <div className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-foreground/10 border border-border bg-card/90 px-2 py-2 backdrop-blur-sm">
         <Moon className="h-4 w-4 text-muted-foreground" />
         <Switch
           aria-label="Activer le mode sombre"
@@ -88,13 +88,13 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full" size="sm">
-              <Plus className="w-4 h-4 rounded-full shadow-xl shadow-foreground/30" /> Nouveau projet
+            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-foreground/10" size="sm">
+              <Plus className="w-4 h-4" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full shadow-xl shadow-foreground/30 rounded-full gap-2"
+              className="w-full shadow-xl shadow-foreground/10 rounded-full gap-2"
               size="sm"
             >
               <FolderOpen className="w-4 h-4" /> Ouvrir un projet
@@ -119,7 +119,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               try { await stopScanning(); } catch {}
               onViewerScan();
             }}
-            className="w-full shadow-xl shadow-foreground/30 rounded-full gap-2"
+            className="w-full shadow-xl shadow-foreground/10 rounded-full gap-2"
             size="sm"
           >
             <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
@@ -149,4 +149,5 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     </div>
   );
 };
+
 export default ProjectHome;
