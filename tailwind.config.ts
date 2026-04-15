@@ -1,9 +1,14 @@
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
-export default {
+const config: Config = {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,6 +19,10 @@ export default {
       },
     },
     extend: {
+      // Intégration correcte de votre ombre personnalisée
+      boxShadow: {
+        'foreground-xl/30': '0 20px 25px -5px hsl(var(--foreground) / 0.3)',
+      },
       gridTemplateColumns: {
         "15": "repeat(15, minmax(0, 1fr))",
       },
@@ -77,20 +86,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -105,13 +106,6 @@ export default {
       addVariant("landscape", "@media (orientation: landscape)");
     }),
   ],
-module.exports = {
-  theme: {
-    extend: {
-      boxShadow: {
-        'foreground-xl': '0 20px 25px -5px rgba(var(--foreground), 0.3)',
-      }
-    }
-  }
-}
 } satisfies Config;
+
+export default config;
