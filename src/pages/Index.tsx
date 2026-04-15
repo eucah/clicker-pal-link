@@ -270,12 +270,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-3.5 h-3.5" />
+                  <BluetoothOff className="w-3.5 h-3.5 shadow-xl shadow-gray-900/30 active:scale-95" />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-3.5 h-3.5 text-blue-700" />
+                  <Bluetooth className="w-3.5 h-3.5 text-blue-700  shadow-xl shadow-gray-900/30 active:scale-95" />
                   Partager projet
                 </>
               )}
@@ -353,7 +353,7 @@ const Index = () => {
               onClick={handleExportReport}
               variant="outline"
               size="sm"
-              className="ml-auto h-6 px-2 text-[11px] gap-1"
+              className="ml-auto h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
             >
               <FileChartColumn className="w-3 h-3" />
               Rapport
@@ -362,7 +362,7 @@ const Index = () => {
               onClick={() => setIsLegendOpen(true)}
               variant="outline"
               size="sm"
-              className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-800/20  active:scale-95"
+              className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/20  active:scale-95"
             >
               <List className="w-3 h-3" />
               Légende
