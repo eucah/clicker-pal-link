@@ -128,7 +128,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               </ul>
             </li>
         </section>
-      </div>+ 
+      </div>
     </div>
   );
 };
