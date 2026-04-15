@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion, Moon } from "lucide-react";
+import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion, Moon, Sun } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
 import { checkAndRequestPermissions } from "@/lib/permissions";
@@ -60,7 +60,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   return (
     <div className="relative h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
       <div className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-2 py-2 backdrop-blur-sm">
-        <Moon className="h-4 w-4 text-muted-foreground" />
+        {isDark ? <Sun className="h-4 w-4 text-muted-foreground" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
         <Switch
           aria-label="Activer le mode sombre"
           checked={mounted ? isDark : false}
