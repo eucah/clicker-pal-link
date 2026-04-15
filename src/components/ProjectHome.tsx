@@ -94,7 +94,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <Button
               variant="secondary"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full shadow-xl/30 rounded-full gap-2"
+              className="w-full shadow-foreground-xl/30 rounded-full gap-2"
               size="sm"
             >
               <FolderOpen className="w-4 h-4" /> Ouvrir un projet
