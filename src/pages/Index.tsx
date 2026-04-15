@@ -249,11 +249,11 @@ const Index = () => {
         <div className="flex items-center px-2 gap-1.5">
           <button
             onClick={handleGoHome}
-            className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground"
+            className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h1 className="text-sm font-bold text-foreground tracking-tight shadow-xl shadow-gray-900/30 active:scale-95">
+          <h1 className="text-sm font-bold text-foreground tracking-tight">
             {project?.name}
           </h1>
         </div>
@@ -262,7 +262,7 @@ const Index = () => {
           {isMaster && (
             <button
               onClick={handleShareBle}
-              className={`flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+              className={`flex items-center gap-1 px-2 py-1 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-[11px] font-semibold transition-colors ${
                 isSharingActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
@@ -270,12 +270,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-3.5 h-3.5 shadow-xl shadow-gray-900/30 active:scale-95" />
+                  <BluetoothOff className="w-3.5 h-3.5" />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-3.5 h-3.5 text-blue-700  shadow-xl shadow-gray-900/30 active:scale-95" />
+                  <Bluetooth className="w-3.5 h-3.5 text-blue-700" />
                   Partager projet
                 </>
               )}
