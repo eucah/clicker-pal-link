@@ -58,7 +58,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
         </button>
         <h1 className="text-l font-bold text-foreground">Nouveau projet</h1>
         <div className="flex ml-auto gap-2">
-          <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 shadow-xl shadow-foreground/30" size="sm">
+          <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 shadow-xl shadow-foreground/20" size="sm">
             <Play className="w-3.5 h-3.5" /> Accéder
           </Button>
           <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2" size="sm">
