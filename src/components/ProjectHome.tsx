@@ -149,5 +149,4 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     </div>
   );
 };
-
 export default ProjectHome;
