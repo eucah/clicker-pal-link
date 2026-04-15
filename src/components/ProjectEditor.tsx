@@ -61,7 +61,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
           <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 shadow-xl shadow-foreground/20" size="sm">
             <Play className="w-3.5 h-3.5" /> Accéder
           </Button>
-          <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2 shadow-xl shadow-foreground/20" size="sm">
+          <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2 shadow-xl shadow-foreground/30" size="sm">
             <Save className="w-3.5 h-3.5" /> Enregistrer
           </Button>
         </div>
