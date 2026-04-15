@@ -53,15 +53,15 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-all">
       <header className="flex items-center gap-2 px-4 py-1.5 landscape:py-1 border-b border-border bg-card shrink-0">
-        <button onClick={onCancel} className="p-1 rounded-md bg-secondary text-secondary-foreground">
+        <button onClick={onCancel} className="p-1 rounded-md bg-secondary text-secondary-foreground active:scale-95">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h1 className="text-l font-bold text-foreground">Nouveau projet</h1>
         <div className="flex ml-auto gap-2">
-          <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 shadow-xl shadow-gray-900/30" size="sm">
+          <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 shadow-xl shadow-gray-900/30 active:scale-95" size="sm">
             <Play className="w-3.5 h-3.5" /> Accéder
           </Button>
-          <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2 shadow-xl shadow-gray-900/30" size="sm">
+          <Button onClick={handleSave} disabled={!projectName.trim()} className="gap-2 shadow-xl shadow-gray-900/30 active:scale-95" size="sm">
             <Save className="w-3.5 h-3.5" /> Enregistrer
           </Button>
         </div>
