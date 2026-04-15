@@ -155,7 +155,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
       </div>
 
       <div className="pt-4 pb-2">
-        <Button variant="secondary" size="lg" onClick={handleScan} className="w-full gap-3 h-16 text-lg rounded-xl">
+        <Button variant="secondary" size="lg" onClick={handleScan} className="w-full gap-3 h-16 text-lg rounded-xl  active:scale-95">
           <RefreshCw className="w-7 h-7" />
           Scanner
         </Button>
