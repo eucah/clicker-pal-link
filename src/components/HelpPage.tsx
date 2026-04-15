@@ -126,7 +126,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                 <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
               </ul>
-              (la fonction pont sera attribuée à la borne #140/10 ainsi qu'à la borne #1, cette methode permet d'avoir un aperçu si un ou plusieurs ponts existe pour un même fil).</li>
+            </li>
         </section>
       </div>+ 
     </div>
