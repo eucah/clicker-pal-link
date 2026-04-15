@@ -362,7 +362,7 @@ const Index = () => {
               onClick={() => setIsLegendOpen(true)}
               variant="outline"
               size="sm"
-              className="h-6 px-2 text-[11px] gap-1"
+              className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-800/20  active:scale-95"
             >
               <List className="w-3 h-3" />
               Légende
