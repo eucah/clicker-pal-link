@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/lib/next-image-compat";
 import { useRef, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";

@@ -18,8 +18,8 @@ const BleStatusBadge = ({ status }: BleStatusBadgeProps) => {
   const Icon = config.icon;
 
   return (
-    <Badge variant={config.variant} className="text-[9px] px-1.5 py-0.5 gap-1">
-      <Icon className="w-2.5 h-2.5" />
+    <Badge variant={config.variant} className="text-[13px] px-2 py-1 gap-1.5">
+      <Icon className="w-3.5 h-3.5" />
       {config.label}
     </Badge>
   );

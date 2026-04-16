@@ -249,9 +249,9 @@ const Index = () => {
         <div className="flex items-center px-2 gap-1.5 min-w-0 flex-1">
           <button
             onClick={handleGoHome}
-            className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
+            className="p-2 px-3 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-6 h-6" />
           </button>
           <h1 className="text-sm font-bold text-foreground tracking-tight truncate">
             {project?.name}
@@ -262,7 +262,7 @@ const Index = () => {
           {isMaster && (
             <button
               onClick={handleShareBle}
-              className={`flex items-center gap-1 px-2 py-1 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-[11px] font-semibold transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-[15px] font-semibold transition-colors ${
                 isSharingActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
@@ -270,12 +270,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-3.5 h-3.5" />
+                  <BluetoothOff className="w-5 h-5" />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-3.5 h-3.5 text-blue-700" />
+                  <Bluetooth className="w-5 h-5 text-blue-700" />
                   Partager projet
                 </>
               )}
@@ -286,7 +286,7 @@ const Index = () => {
 
           <Badge
             variant={isMaster ? "default" : "secondary"}
-            className="text-[10px] px-1.5 py-0 select-none"
+            className="text-[14px] px-2 py-0.5 select-none"
           >
             {isMaster ? "Contrôleur" : "Observateur"}
           </Badge>
@@ -349,26 +349,26 @@ const Index = () => {
           </>
         ) : (
           <>
-            <span className="px-4 text-[11px] text-muted-foreground mr-1 min-w-0 flex-1">
+            <span className="px-4 text-[15px] text-muted-foreground mr-1 min-w-0 flex-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
-            <div className="flex items-center px-4 gap-1.5 ml-auto shrink-0">
+            <div className="flex items-center px-4 gap-2 ml-auto shrink-0">
               <Button
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
+                className="h-8 px-3 text-[15px] gap-1.5 shadow-xl shadow-gray-900/30 active:scale-95"
               >
-                <FileChartColumn className="w-3 h-3" />
+                <FileChartColumn className="w-4 h-4" />
                 Rapport
               </Button>
               <Button
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/20 active:scale-95"
+                className="h-8 px-3 text-[15px] gap-1.5 shadow-xl shadow-gray-900/20 active:scale-95"
               >
-                <List className="w-3 h-3" />
+                <List className="w-4 h-4" />
                 Légende
               </Button>
             </div>

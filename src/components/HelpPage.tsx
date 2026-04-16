@@ -122,7 +122,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
             <li>Pour la création de contacts avec la fonction pont : numéro de contact à mettre dans la section Borne et mettre "Pont" dans la section bornier.</li>
             <li>Exemple: 
-              <ul class="list-['-'] pl-5">
+              <ul className="list-['-'] pl-5">
                 <li>contact #1   fils: xxfd  borne: aaxx  bornier: ashs</li>
                 <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                 <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
