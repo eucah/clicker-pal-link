@@ -7,7 +7,7 @@ interface HelpPageProps {
 
 const HelpPage = ({ onBack }: HelpPageProps) => {
   return (
-    <div className="h-screen bg-background flex flex-col safe-area-all">
+    <div className="min-h-screen bg-background flex flex-col safe-area-all">
       <header className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card shrink-0">
         <Button variant="ghost" size="icon" onClick={onBack}>
           <ArrowLeft className="w-5 h-5" />
@@ -15,7 +15,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <h1 className="text-lg font-bold text-foreground">Aide</h1>
       </header>
 
-      <div className="flex-1 overflow-auto px-5 py-4 space-y-5 text-sm text-foreground">
+      <div className="flex-1 overflow-auto">
+        <div className="w-full max-w-4xl mx-auto px-5 py-4 space-y-5 text-sm text-foreground">
         <section className="space-y-2">
 
           <p className="flex items-center gap-2 text-base font-bold">
@@ -129,6 +130,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 (la fonction pont sera attribuée à la borne #140/10 ainsi qu'à la borne #1, cette methode permet d'avoir un aperçu si un ou plusieurs ponts existe pour un même fil).</li>
           </ul>
         </section>
+        </div>
       </div>
     </div>
   );

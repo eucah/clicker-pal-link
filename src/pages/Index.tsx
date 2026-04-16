@@ -244,21 +244,21 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
       <header className="flex items-center justify-between px-4 safe-area-x py-1 border-b border-border bg-card shrink-0">
-        <div className="flex items-center px-2 gap-1.5">
+        <div className="flex items-center px-2 gap-1.5 min-w-0 flex-1">
           <button
             onClick={handleGoHome}
             className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <h1 className="text-sm font-bold text-foreground tracking-tight">
+          <h1 className="text-sm font-bold text-foreground tracking-tight truncate">
             {project?.name}
           </h1>
         </div>
 
-        <div className="flex items-center px-4 gap-1.5">
+        <div className="flex items-center px-4 gap-1.5 shrink-0">
           {isMaster && (
             <button
               onClick={handleShareBle}
@@ -299,80 +299,84 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 safe-area-x py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
-            <span className="px-4 text-[11px] font-bold text-foreground">#{selectedLabel}</span>
-            <span className="text-[11px] text-field-fils font-semibold">
-              Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
-            </span>
-            <span className="text-[11px] text-field-borne font-semibold">
-              Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
-            </span>
-            <span className="text-[11px] text-field-bornier font-semibold">
-              Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
-            </span>
-            <span className="text-[11px] text-amber-700 font-semibold">
-              Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
-            </span>
-            {selectedInfo.locked && (
-              <Badge
+            <div className="flex items-center flex-wrap gap-x-2 gap-y-1 min-w-0 flex-1">
+              <span className="px-4 text-[11px] font-bold text-foreground">#{selectedLabel}</span>
+              <span className="text-[11px] text-field-fils font-semibold">
+                Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
+              </span>
+              <span className="text-[11px] text-field-borne font-semibold">
+                Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
+              </span>
+              <span className="text-[11px] text-field-bornier font-semibold">
+                Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
+              </span>
+              <span className="text-[11px] text-amber-700 font-semibold">
+                Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
+              </span>
+              {selectedInfo.locked && (
+                <Badge
+                  variant="outline"
+                  className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground"
+                >
+                  <Lock className="w-2.5 h-2.5 mr-0.5" />
+                  Non Testé
+                </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 ml-auto shrink-0">
+              <Button
+                onClick={handleExportReport}
                 variant="outline"
-                className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground"
+                size="sm"
+                className="h-6 px-2 text-[11px] gap-1"
               >
-                <Lock className="w-2.5 h-2.5 mr-0.5" />
-                Non Testé
-              </Badge>
-            )}
-            <Button
-              onClick={handleExportReport}
-              variant="outline"
-              size="sm"
-              className="h-6 px-2 text-[11px] gap-1"
-            >
-              <FileChartColumn className="w-3 h-3" />
-              Rapport
-            </Button>
-            <Button
-              onClick={() => setIsLegendOpen(true)}
-              variant="outline"
-              size="sm"
-              className="h-6 px-2 text-[11px] gap-1"
-            >
-              <List className="w-3 h-3" />
-              Légende
-            </Button>
+                <FileChartColumn className="w-3 h-3" />
+                Rapport
+              </Button>
+              <Button
+                onClick={() => setIsLegendOpen(true)}
+                variant="outline"
+                size="sm"
+                className="h-6 px-2 text-[11px] gap-1"
+              >
+                <List className="w-3 h-3" />
+                Légende
+              </Button>
+            </div>
           </>
         ) : (
           <>
-            <span className="px-4 text-[11px] text-muted-foreground mr-1">
+            <span className="px-4 text-[11px] text-muted-foreground mr-1 min-w-0 flex-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
-           <div className="flex items-center px-4 gap-1.5">
-            <Button
-              onClick={handleExportReport}
-              variant="outline"
-              size="sm"
-              className="ml-auto h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
-            >
-              <FileChartColumn className="w-3 h-3" />
-              Rapport
-            </Button>
-            <Button
-              onClick={() => setIsLegendOpen(true)}
-              variant="outline"
-              size="sm"
-              className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/20  active:scale-95"
-            >
-              <List className="w-3 h-3" />
-              Légende
-            </Button>
-           </div>
+            <div className="flex items-center px-4 gap-1.5 ml-auto shrink-0">
+              <Button
+                onClick={handleExportReport}
+                variant="outline"
+                size="sm"
+                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
+              >
+                <FileChartColumn className="w-3 h-3" />
+                Rapport
+              </Button>
+              <Button
+                onClick={() => setIsLegendOpen(true)}
+                variant="outline"
+                size="sm"
+                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/20 active:scale-95"
+              >
+                <List className="w-3 h-3" />
+                Légende
+              </Button>
+            </div>
           </>
         )}
       </div>
 
-      <div className="flex-1 px-3 overflow-auto p-1" ref={gridRef}>
+      <div className="flex-1 px-2 sm:px-3 py-1 overflow-auto" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
