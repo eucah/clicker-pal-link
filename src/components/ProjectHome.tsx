@@ -98,8 +98,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   };
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
-      <div className="absolute left-8 top-12 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
+    <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 py-6 md:py-8 safe-area-all">
+      <div className="absolute left-4 top-4 md:left-8 md:top-14 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
         {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
         <Switch
           aria-label="Activer le mode sombre"
@@ -114,7 +114,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           alt="Essais Continuité"
           width={300}
           height={75}
-          className="w-[300px] max-w-full h-auto object-contain select-none"
+          className="w-[min(300px,82vw)] sm:w-[300px] max-w-full h-auto object-contain select-none"
           draggable={false}
           priority
         />
@@ -124,7 +124,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         Sélectionnez votre rôle
       </p>
 
-      <div className="w-full max-w-xs landscape:max-w-lg flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6">
+      <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
             <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
@@ -171,8 +171,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           >
             <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
-          <p className="flex items-center justify-center gap-1 text-[10px] text-red-600 dark:text-red-400 font-semibold text-center">
-            <TriangleAlert className="w-6 h-6 text-red-600 dark:text-red-400" />
+          <p className="flex items-center justify-center gap-1 text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
+            <TriangleAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
             Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
