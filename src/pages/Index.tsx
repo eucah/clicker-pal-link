@@ -134,7 +134,7 @@ const Index = () => {
         return;
       }
 
-      console.log("MASTER CLICK OK - Partager projet");
+      console.log("MASTER CLICK OK - Partager");
       await ble.share(states, buttonInfos);
     } catch (error) {
       console.error("Bluetooth action failed:", error);
