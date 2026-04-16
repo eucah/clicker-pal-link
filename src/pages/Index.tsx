@@ -270,13 +270,13 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-5 h-5" />
+                  <BluetoothOff className="w-7 h-7" />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-5 h-5 text-blue-700" />
-                  Partager projet
+                  <Bluetooth className="w-7 h-7 text-blue-700" />
+                  Partager
                 </>
               )}
             </button>
@@ -340,7 +340,7 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[11px] gap-1"
+                className="h-6 px-2 text-sm gap-1"
               >
                 <List className="w-3 h-3" />
                 Légende
