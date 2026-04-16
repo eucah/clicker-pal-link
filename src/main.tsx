@@ -12,7 +12,7 @@ const initializeStatusBar = async (): Promise<void> => {
 
   try {
     await StatusBar.setBackgroundColor({ color: "#ffffff" });
-    await StatusBar.setStyle({ style: Style.Dark });
+    await StatusBar.setStyle({ style: Style.Light });
   } catch (error) {
     console.error("Status bar init failed:", error);
   }
