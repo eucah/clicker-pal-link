@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
@@ -25,55 +26,97 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    checkAndRequestPermissions();
+    const requestPermissions = async () => {
+      try {
+        await checkAndRequestPermissions();
+      } catch (error) {
+        console.error("Erreur lors de la demande de permissions", error);
+      }
+    };
+
+    void requestPermissions();
   }, []);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const isDark = theme === "dark";
+  const isDark = mounted && theme === "dark";
+
+  const handleOpenFilePicker = () => {
+    if (!fileInputRef.current) return;
+    fileInputRef.current.click();
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      e.target.value = "";
+      return;
+    }
+
+    const lowerName = file.name.toLowerCase();
+    const allowedMimeTypes = ["application/json", "text/plain"];
+    const hasSupportedMimeType = file.type ? allowedMimeTypes.includes(file.type) : false;
+    const hasSupportedExtension = lowerName.endsWith(".json") || lowerName.endsWith(".txt");
+
+    if (!hasSupportedMimeType && !hasSupportedExtension) {
+      alert("Type de fichier non supporté");
+      e.target.value = "";
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = (ev) => {
+      const result = ev.target?.result;
+      if (typeof result !== "string") {
+        alert("Erreur lors de la lecture du fichier");
+        e.target.value = "";
+        return;
+      }
+
       try {
-        const raw = ev.target?.result as string;
-        const data = parseProjectFile(raw);
+        const data = parseProjectFile(result);
         if (data) {
           onLoadProject(data, "master");
         } else {
           alert("Format de fichier invalide");
         }
       } catch {
-        alert("Erreur lors de la lecture du fichier");
+        alert("Format de fichier invalide");
+      } finally {
+        e.target.value = "";
       }
     };
 
+    reader.onerror = () => {
+      alert("Erreur lors de la lecture du fichier");
+      e.target.value = "";
+    };
+
     reader.readAsText(file);
-    e.target.value = "";
   };
 
   return (
-    <div className="relative h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
+    <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
       <div className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-2 py-2 backdrop-blur-sm">
         {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
         <Switch
           aria-label="Activer le mode sombre"
-          checked={mounted ? isDark : false}
+          checked={isDark}
           onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
         />
       </div>
 
       <div className="w-full flex justify-center mb-1">
-        <img
+        <Image
           src={isDark ? titleDark : titleLight}
           alt="Essais Continuité"
+          width={300}
+          height={75}
           className="w-[300px] max-w-full h-auto object-contain select-none"
           draggable={false}
+          priority
         />
       </div>
 
@@ -93,7 +136,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             </Button>
             <Button
               variant="secondary"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={handleOpenFilePicker}
               className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
               size="sm"
             >
@@ -116,7 +159,11 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           <Button
             variant="outline"
             onClick={async () => {
-              try { await stopScanning(); } catch {}
+              try {
+                await stopScanning();
+              } catch (error) {
+                console.warn("stopScanning a échoué", error);
+              }
               onViewerScan();
             }}
             className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
