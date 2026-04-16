@@ -99,7 +99,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
   return (
     <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 safe-area-all">
-      <div className="absolute left-8 top-8 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-6 py-2 backdrop-blur-sm">
+      <div className="absolute left-8 top-12 z-10 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
         {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
         <Switch
           aria-label="Activer le mode sombre"
