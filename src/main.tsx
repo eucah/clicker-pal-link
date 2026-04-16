@@ -28,7 +28,7 @@ const applyStatusBarTheme = async (isDark: boolean): Promise<void> => {
     });
 
     await StatusBar.setStyle({
-      style: isDark ? Style.Light : Style.Dark,
+      style: isDark ? Style.Dark : Style.Light,
     });
   } catch (error) {
     console.error("Status bar update failed:", error);
