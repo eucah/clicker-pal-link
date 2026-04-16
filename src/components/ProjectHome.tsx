@@ -172,7 +172,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
           <p className="flex items-center justify-center gap-1 text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
-            <TriangleAlert className="w-6 h-6 text-red-600 dark:text-red-400" />
+            <TriangleAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
             Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
