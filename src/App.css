@@ -1,8 +1,15 @@
+html, body, #root {  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Évite le scroll inutile sur mobile */
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  /* Utilise vh/vw pour garantir la taille sur n'importe quel écran */
+  min-height: 100vh; 
 }
 
 .logo {
