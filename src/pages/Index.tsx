@@ -262,7 +262,7 @@ const Index = () => {
           {isMaster && (
             <button
               onClick={handleShareBle}
-              className={`flex items-center gap-1 px-2 py-1 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-[11px] font-semibold transition-colors ${
+              className={`flex items-center gap-1 px-2 py-1 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-sm font-semibold transition-colors ${
                 isSharingActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
@@ -270,12 +270,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-5 h-5" text-sm />
+                  <BluetoothOff className="w-4 h-4" text-sm />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-5 h-5 text-sm text-blue-700" />
+                  <Bluetooth className="w-4 h-4 text-blue-700" />
                   Partager
                 </>
               )}
