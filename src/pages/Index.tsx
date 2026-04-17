@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Bluetooth, BluetoothOff, FileChartColumn, List, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, Crown, Eye, FileChartColumn, List, Lock } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
@@ -288,7 +288,11 @@ const Index = () => {
             variant={isMaster ? "default" : "secondary"}
             className="text-[10px] px-1.5 py-0 select-none"
           >
-            {isMaster ? "Contrôleur" : "Observateur"}
+            {isMaster ? (
+              <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
+            ) : (
+              <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
+            )}
           </Badge>
         </div>
       </header>
