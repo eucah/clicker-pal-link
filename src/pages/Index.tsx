@@ -270,12 +270,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-5 h-5" />
+                  <BluetoothOff className="w-5 h-5" text-sm />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-5 h-5 text-blue-700" />
+                  <Bluetooth className="w-5 h-5 text-sm text-blue-700" />
                   Partager
                 </>
               )}
