@@ -95,7 +95,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
           <ArrowLeft className="w-4 h-4" />
         </button>
 
-        <h1 className="text-sm font-bold text-foreground">Recherche Bluetooth</h1>
+        <h1 className="text-lg font-bold text-foreground">Recherche Bluetooth</h1>
         
         <div className="w-8" />
       </div>
