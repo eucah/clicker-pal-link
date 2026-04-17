@@ -92,6 +92,13 @@
 }
 
 @layer base {
+  /* Scaling racine : identique sur téléphone ≤412px, grandit linéairement
+     jusqu'à un plafond de 22px sur grands écrans. Toutes les unités rem
+     (Tailwind text-*, p-*, w-*, gap-*, etc.) suivent automatiquement. */
+  html {
+    font-size: clamp(16px, calc(16px + (100vw - 412px) * 0.012), 22px);
+  }
+
   * {
     @apply border-border;
   }
