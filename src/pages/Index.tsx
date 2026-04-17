@@ -330,7 +330,7 @@ const Index = () => {
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-sm gap-1"
+                className="h-6 px-1 text-sm gap-1"
               >
                 <FileChartColumn className="w-4 h-4" />
                 Rapport
@@ -339,7 +339,7 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-4 text-sm gap-1"
+                className="h-6 px-1 text-sm gap-1"
               >
                 <List className="w-4 h-4" />
                 Légende
