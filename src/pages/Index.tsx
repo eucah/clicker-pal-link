@@ -284,16 +284,11 @@ const Index = () => {
 
           <BleStatusBadge status={ble.status} />
 
-          <Badge
-            variant={isMaster ? "default" : "secondary"}
-            className="text-[10px] px-1.5 py-0 select-none"
-          >
-            {isMaster ? (
-              <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
-            ) : (
-              <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
-            )}
-          </Badge>
+       {isMaster ? (
+        <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
+        ) : (
+        <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
+        )}
         </div>
       </header>
 
