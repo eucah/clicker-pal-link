@@ -114,7 +114,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           alt="Essais Continuité"
           width={300}
           height={75}
-          className="w-[min(300px,82vw)] sm:w-[300px] max-w-full h-auto object-contain select-none"
+          className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none"
           draggable={false}
           priority
         />

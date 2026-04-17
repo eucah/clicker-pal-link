@@ -39,7 +39,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       <button
         key={label}
         onClick={() => handleClick(stateIndex)}
-        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[10px] sm:text-[11px] landscape:text-[10px] font-bold !text-black dark:!text-black ${
+        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.625rem] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
@@ -61,7 +61,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
         cols.push(renderButton(idx, label));
       }
       rows.push(
-        <div key={r} className="grid grid-cols-15 gap-[3px] landscape:gap-[2px]">
+        <div key={r} className="grid grid-cols-15 gap-[0.1875rem] landscape:gap-[0.125rem]">
           {cols}
         </div>
       );
@@ -70,13 +70,13 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
   };
 
   return (
-    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full max-w-[1200px] mx-auto">
-      <div className="flex flex-col gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
+    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full max-w-[75rem] mx-auto">
+      <div className="flex flex-col gap-[0.1875rem] landscape:gap-[0.125rem] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-xs sm:text-sm font-semibold text-muted-foreground text-center">GAUCHE</div>
         {renderSide(0, 1, false)}
       </div>
       <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
-      <div className="flex flex-col gap-[3px] landscape:gap-[2px] w-full landscape:w-1/2 landscape:justify-evenly">
+      <div className="flex flex-col gap-[0.1875rem] landscape:gap-[0.125rem] w-full landscape:w-1/2 landscape:justify-evenly">
         <div className="text-xs sm:text-sm font-semibold text-muted-foreground text-center">DROITE</div>
         {renderSide(75, 101, true)}
       </div>
