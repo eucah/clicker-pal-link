@@ -131,16 +131,16 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="sm">
-              <Plus className="w-4 h-4" /> Nouveau projet
+            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="xl">
+              <Plus className="w-6 h-6" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
               onClick={handleOpenFilePicker}
               className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
-              size="sm"
+              size="xl"
             >
-              <FolderOpen className="w-4 h-4" /> Ouvrir un projet
+              <FolderOpen className="w-6 h-6" /> Ouvrir un projet
             </Button>
           </div>
         </div>
@@ -167,11 +167,11 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               onViewerScan();
             }}
             className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
-            size="sm"
+            size="xl"
           >
-            <Bluetooth className="w-4 h-4 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
+            <Bluetooth className="w-6 h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
-          <p className="flex items-center justify-center gap-1 text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
+          <p className="flex items-center justify-center gap-1 text-sm md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
             <TriangleAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
             Les deux appareils doivent être appairés avant de démarrer
           </p>
