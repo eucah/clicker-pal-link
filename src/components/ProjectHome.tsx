@@ -127,12 +127,12 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
-            <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
+            <Crown className="w-6 h-6 text-purple-700 dark:text-purple-300" />
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
             <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="lg">
-              <Plus className="w-6 h-6" /> Nouveau projet
+              <Plus className="w-8 h-8" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
@@ -140,7 +140,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
               size="lg"
             >
-              <FolderOpen className="w-6 h-6" /> Ouvrir un projet
+              <FolderOpen className="w-8 h-8" /> Ouvrir un projet
             </Button>
           </div>
         </div>
@@ -153,7 +153,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
-            <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
+            <Eye className="w-6 h-6 text-green-700 dark:text-green-300" />
             <span>Observateur</span>
           </div>
           <Button
@@ -169,7 +169,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
             size="lg"
           >
-            <Bluetooth className="w-6 h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
+            <Bluetooth className="w-8 h-8 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
           <p className="flex items-center justify-center gap-1 text-sm md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
             <TriangleAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
