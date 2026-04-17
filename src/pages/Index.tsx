@@ -298,7 +298,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
+      <div className="flex items-center gap-2 pr-3 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
             <div className="flex items-center flex-wrap gap-x-2 gap-y-1 min-w-0 flex-1">
@@ -330,7 +330,7 @@ const Index = () => {
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-5 px-1 text-sm gap-1"
+                className="h-6 px-1 text-sm gap-1"
               >
                 <FileChartColumn className="w-4 h-4" />
                 Rapport
@@ -339,7 +339,7 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-5 px-1 text-sm gap-1"
+                className="h-6 px-1 text-sm gap-1"
               >
                 <List className="w-4 h-4" />
                 Légende
