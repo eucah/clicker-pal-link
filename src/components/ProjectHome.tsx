@@ -127,7 +127,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
-            <Crown className="w-6 h-6 text-purple-700 dark:text-purple-300" />
+            <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
@@ -153,7 +153,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
-            <Eye className="w-6 h-6 text-green-700 dark:text-green-300" />
+            <Eye className="w-5 h-5 text-green-700 dark:text-green-300" />
             <span>Observateur</span>
           </div>
           <Button
