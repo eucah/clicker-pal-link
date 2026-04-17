@@ -298,7 +298,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 safe-area-x py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
+      <div className="flex items-center gap-2 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
         {selectedIndex !== null && selectedInfo ? (
           <>
             <div className="flex items-center flex-wrap gap-x-2 gap-y-1 min-w-0 flex-1">
