@@ -100,18 +100,18 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
         <div className="w-8" />
       </div>
       
-      <div className="mb-3 text-xs text-muted-foreground text-center">
+      <div className="mb-3 text-sm text-muted-foreground text-center">
         Appairer d'abord les deux appareils dans les paramètres Bluetooth Android
       </div>
 
       {status === "scanning" && (
-        <div className="mb-3 text-xs text-center text-primary animate-pulse">
+        <div className="mb-3 text-sm text-center text-primary animate-pulse">
           Recherche des appareils…
         </div>
       )}
 
       {error && (
-        <div className="mb-3 rounded-md bg-destructive/10 text-destructive text-xs px-3 py-2">
+        <div className="mb-3 rounded-md bg-destructive/10 text-destructive text-sm px-3 py-2">
           {error}
         </div>
       )}
@@ -120,8 +120,8 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
         {devices.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground gap-3">
             <Bluetooth className="w-10 h-10 opacity-50 text-blue-600" />
-            <p className="text-sm">Aucun appareil trouvé</p>
-            <p className="text-xs">
+            <p className="text-lg">Aucun appareil trouvé</p>
+            <p className="text-sm">
               Lance un scan puis choisis un appareil déjà appairé
             </p>
           </div>
@@ -136,15 +136,15 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-sm font-medium text-foreground">
+                    <div className="text-lg font-medium text-foreground">
                       {device.name || "Appareil inconnu"}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
                       {device.deviceId}
                     </div>
                   </div>
 
-                  <div className="text-xs font-medium text-primary">
+                  <div className="text-sm font-medium text-primary">
                     {connectingId === device.deviceId ? "Connexion…" : "Connecter"}
                   </div>
                 </div>
