@@ -131,14 +131,14 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <span>Contrôleur</span>
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="xl">
+            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="lg">
               <Plus className="w-6 h-6" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
               onClick={handleOpenFilePicker}
               className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
-              size="xl"
+              size="lg"
             >
               <FolderOpen className="w-6 h-6" /> Ouvrir un projet
             </Button>
@@ -147,7 +147,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
         <div className="w-full landscape:w-px landscape:self-stretch flex landscape:flex-col items-center gap-3">
           <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
-          <span className="text-xs text-muted-foreground">ou</span>
+          <span className="text-sm text-muted-foreground">ou</span>
           <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
         </div>
 
@@ -167,7 +167,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               onViewerScan();
             }}
             className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
-            size="xl"
+            size="lg"
           >
             <Bluetooth className="w-6 h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
