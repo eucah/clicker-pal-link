@@ -293,32 +293,32 @@ const Index = () => {
       </header>
 
       {ble.error && (
-        <div className="px-2 py-1 bg-destructive/10 text-destructive text-[10px] text-center shrink-0">
+        <div className="px-2 py-1 bg-destructive/10 text-destructive text-[0.625rem] text-center shrink-0">
           {ble.error}
         </div>
       )}
 
-      <div className="flex items-center gap-2 pr-3 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[28px]">
+      <div className="flex items-center gap-2 pr-3 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem]">
         {selectedIndex !== null && selectedInfo ? (
           <>
             <div className="flex items-center flex-wrap gap-x-2 gap-y-1 min-w-0 flex-1">
-              <span className="px-4 text-[11px] font-bold text-foreground">#{selectedLabel}</span>
-              <span className="text-[11px] text-field-fils font-semibold">
+              <span className="px-4 text-[0.6875rem] font-bold text-foreground">#{selectedLabel}</span>
+              <span className="text-[0.6875rem] text-field-fils font-semibold">
                 Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
               </span>
-              <span className="text-[11px] text-field-borne font-semibold">
+              <span className="text-[0.6875rem] text-field-borne font-semibold">
                 Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
               </span>
-              <span className="text-[11px] text-field-bornier font-semibold">
+              <span className="text-[0.6875rem] text-field-bornier font-semibold">
                 Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
               </span>
-              <span className="text-[11px] text-amber-700 font-semibold">
+              <span className="text-[0.6875rem] text-amber-700 font-semibold">
                 Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
               </span>
               {selectedInfo.locked && (
                 <Badge
                   variant="outline"
-                  className="text-[9px] px-1 py-0 border-state-locked text-muted-foreground"
+                  className="text-[0.5625rem] px-1 py-0 border-state-locked text-muted-foreground"
                 >
                   <Lock className="w-2.5 h-2.5 mr-0.5" />
                   Non Testé
@@ -356,7 +356,7 @@ const Index = () => {
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
+                className="h-6 px-2 text-[0.6875rem] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
               >
                 <FileChartColumn className="w-3 h-3" />
                 Rapport
@@ -365,7 +365,7 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[11px] gap-1 shadow-xl shadow-gray-900/20 active:scale-95"
+                className="h-6 px-2 text-[0.6875rem] gap-1 shadow-xl shadow-gray-900/20 active:scale-95"
               >
                 <List className="w-3 h-3" />
                 Légende
