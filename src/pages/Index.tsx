@@ -8,9 +8,18 @@ import HelpPage from "@/components/HelpPage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -36,6 +45,7 @@ const Index = () => {
   const [buttonInfos, setButtonInfos] = useState(createDefaultInfos());
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const [isBackConfirmOpen, setIsBackConfirmOpen] = useState(false);
 
   const isMaster = role === "master";
   const ble = useBluetooth(role);
@@ -142,7 +152,7 @@ const Index = () => {
   };
 
   // Issue #3 & #4: Both master and viewer fully disconnect BT on exit
-  const handleGoHome = useCallback(async () => {
+  const leaveGridAndGoHome = useCallback(async () => {
     try {
       await hardStopSession(isMaster ? "master go home" : "viewer go home");
     } catch (error) {
@@ -156,6 +166,17 @@ const Index = () => {
     setScreen("home");
   }, [hardStopSession, isMaster]);
 
+  const shouldConfirmMasterGridBack = isMaster && screen === "grid";
+
+  const requestGoHome = useCallback(() => {
+    if (shouldConfirmMasterGridBack) {
+      setIsBackConfirmOpen(true);
+      return;
+    }
+
+    void leaveGridAndGoHome();
+  }, [leaveGridAndGoHome, shouldConfirmMasterGridBack]);
+
   useEffect(() => {
     if (screen === "home") {
       return;
@@ -163,14 +184,21 @@ const Index = () => {
 
     window.history.pushState({ clickerPalScreen: screen }, "");
     const onPopState = () => {
-      void handleGoHome();
+      if (shouldConfirmMasterGridBack) {
+        // Keep an internal history entry so Android back can re-open confirmation.
+        window.history.pushState({ clickerPalScreen: screen }, "");
+        setIsBackConfirmOpen(true);
+        return;
+      }
+
+      void leaveGridAndGoHome();
     };
 
     window.addEventListener("popstate", onPopState);
     return () => {
       window.removeEventListener("popstate", onPopState);
     };
-  }, [screen, handleGoHome]);
+  }, [screen, shouldConfirmMasterGridBack, leaveGridAndGoHome]);
 
   useEffect(() => {
     return () => {
@@ -248,7 +276,7 @@ const Index = () => {
       <header className="flex items-center justify-between px-4 safe-area-x py-1 border-b border-border bg-card shrink-0">
         <div className="flex items-center px-2 gap-1.5 min-w-0 flex-1">
           <button
-            onClick={handleGoHome}
+            onClick={requestGoHome}
             className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -422,6 +450,28 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isBackConfirmOpen} onOpenChange={setIsBackConfirmOpen}>
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Quitter la grille&nbsp;?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Attention&nbsp;: revenir à l&apos;accueil arrêtera la session en cours. Voulez-vous continuer&nbsp;?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setIsBackConfirmOpen(false);
+                void leaveGridAndGoHome();
+              }}
+            >
+              Confirmer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -98,33 +98,47 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   };
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground flex flex-col items-center justify-center px-4 py-6 md:py-8 safe-area-all">
-      <div className="absolute left-4 top-4 md:left-8 md:top-10 mt-6 flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
-        {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
-        <Switch
-          aria-label="Activer le mode sombre"
-          checked={isDark}
-          onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-        />
+    <div className="min-h-screen bg-background text-foreground flex flex-col px-4 pb-6 md:pb-8 safe-area-x safe-area-bottom">
+      <div className="w-full pt-safe-top md:px-4 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
+            {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
+            <Switch
+              aria-label="Activer le mode sombre"
+              checked={isDark}
+              onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+            />
+          </div>
+
+          <button
+            onClick={onHelp}
+            className="h-10 px-3 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+            aria-label="Aide"
+          >
+            <MessageCircleQuestion className="w-5 h-5" />
+            <span className="text-sm font-medium">Aide</span>
+          </button>
+        </div>
       </div>
 
-      <div className="w-full flex justify-center mb-1">
-        <Image
-          src={isDark ? titleDark : titleLight}
-          alt="Essais Continuité"
-          width={300}
-          height={75}
-          className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none"
-          draggable={false}
-          priority
-        />
-      </div>
+      <div className="w-full flex-1 flex flex-col items-center justify-center py-4">
+        <div className="w-full flex justify-center mb-1">
+          <Image
+            src={isDark ? titleDark : titleLight}
+            alt="Essais Continuité"
+            width={300}
+            height={75}
+            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none"
+            draggable={false}
+            priority
+          />
+        </div>
 
-      <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
-        Sélectionnez votre rôle
-      </p>
+        <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
+          Sélectionnez votre rôle
+        </p>
 
-      <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
+        <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
             <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
@@ -176,6 +190,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
+        </div>
       </div>
 
       <input
@@ -185,14 +200,6 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         className="hidden"
         onChange={handleFileChange}
       />
-
-      <button
-        onClick={onHelp}
-        className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
-        aria-label="Aide"
-      >
-        <MessageCircleQuestion className="w-6 h-6" />
-      </button>
     </div>
   );
 };
