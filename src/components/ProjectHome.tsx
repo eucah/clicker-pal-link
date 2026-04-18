@@ -98,7 +98,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   };
 
   const themeSwitch = (
-    <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
+    <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 landscape:px-2.5 landscape:py-1.5 backdrop-blur-sm">
       {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
       <Switch
         aria-label="Activer le mode sombre"
@@ -111,16 +111,16 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
   const helpButton = (
     <button
       onClick={onHelp}
-      className="h-10 px-3 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+      className="h-10 landscape:h-9 px-3 landscape:px-2.5 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 landscape:gap-1.5 hover:bg-accent transition-colors active:scale-95"
       aria-label="Aide"
     >
-      <MessageCircleQuestion className="w-5 h-5" />
-      <span className="text-sm font-medium">Aide</span>
+      <MessageCircleQuestion className="w-5 h-5 landscape:w-4 landscape:h-4" />
+      <span className="text-sm landscape:text-xs font-medium">Aide</span>
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col px-4 pb-6 md:pb-8 safe-area-x safe-area-bottom">
+    <div className="min-h-screen h-[100dvh] bg-background text-foreground flex flex-col px-4 pb-6 landscape:pb-3 md:pb-8 safe-area-x safe-area-bottom overflow-x-hidden landscape:overflow-hidden">
       <div className="w-full pt-safe-top md:px-4 shrink-0 landscape:hidden">
         <div className="flex items-center justify-between px-4">
           {themeSwitch}
@@ -128,8 +128,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         </div>
       </div>
 
-      <div className="w-full flex-1 flex flex-col items-center justify-center py-4">
-        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-3 landscape:max-w-4xl landscape:px-4">
+      <div className="w-full flex-1 flex flex-col items-center justify-center landscape:justify-start py-4 landscape:py-2">
+        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-2 landscape:max-w-4xl landscape:px-3">
           <div className="hidden landscape:flex landscape:justify-start">
             {themeSwitch}
           </div>
@@ -138,7 +138,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             alt="Essais Continuité"
             width={300}
             height={75}
-            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none landscape:justify-self-center"
+            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none landscape:w-[min(15.5rem,52vw)] landscape:justify-self-center"
             draggable={false}
             priority
           />
@@ -147,38 +147,38 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground text-center mb-4 landscape:mb-2">
+        <p className="text-sm landscape:text-xs text-muted-foreground text-center mb-4 landscape:mb-1.5">
           Sélectionnez votre rôle
         </p>
 
-        <div className="w-full max-w-xs landscape:max-w-lg md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-6 md:gap-8">
-        <div className="w-full landscape:w-1/2 space-y-2">
+        <div className="w-full max-w-xs landscape:max-w-3xl md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
+        <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
             <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
             <span>Contrôleur</span>
           </div>
-          <div className="flex flex-col gap-2">
-            <Button onClick={onCreateProject} className="w-full gap-2 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95" size="lg">
-              <Plus className="w-8 h-8" /> Nouveau projet
+          <div className="flex flex-col gap-2 landscape:gap-1.5">
+            <Button onClick={onCreateProject} className="w-full gap-2 landscape:gap-1.5 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95 landscape:h-10 landscape:px-4" size="lg">
+              <Plus className="w-8 h-8 landscape:w-6 landscape:h-6" /> Nouveau projet
             </Button>
             <Button
               variant="secondary"
               onClick={handleOpenFilePicker}
-              className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
+              className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
               size="lg"
             >
-              <FolderOpen className="w-8 h-8" /> Ouvrir un projet
+              <FolderOpen className="w-8 h-8 landscape:w-6 landscape:h-6" /> Ouvrir un projet
             </Button>
           </div>
         </div>
 
-        <div className="w-full landscape:w-px landscape:self-stretch flex landscape:flex-col items-center gap-3">
+        <div className="w-full landscape:w-px landscape:self-stretch flex landscape:flex-col items-center gap-3 landscape:gap-2">
           <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
-          <span className="text-sm text-muted-foreground">ou</span>
+          <span className="text-sm landscape:text-xs text-muted-foreground">ou</span>
           <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
         </div>
 
-        <div className="w-full landscape:w-1/2 space-y-2">
+        <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
           <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
             <Eye className="w-5 h-5 text-green-700 dark:text-green-300" />
             <span>Observateur</span>
@@ -193,13 +193,13 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               }
               onViewerScan();
             }}
-            className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 active:scale-95"
+            className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
             size="lg"
           >
-            <Bluetooth className="w-8 h-8 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
+            <Bluetooth className="w-8 h-8 landscape:w-6 landscape:h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
           </Button>
-          <p className="flex items-center justify-center gap-1 text-sm md:text-sm text-red-600 dark:text-red-400 font-semibold text-center">
-            <TriangleAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
+          <p className="flex items-center justify-center gap-1 text-sm landscape:text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center leading-tight">
+            <TriangleAlert className="w-10 h-10 landscape:w-7 landscape:h-7 text-red-600 dark:text-red-400 shrink-0" />
             Les deux appareils doivent être appairés avant de démarrer
           </p>
         </div>
