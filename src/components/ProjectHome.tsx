@@ -101,7 +101,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     <div className="min-h-screen bg-background text-foreground flex flex-col px-4 pb-6 md:pb-8 safe-area-x safe-area-bottom">
       <div className="w-full pt-safe-top md:px-4 shrink-0">
         <div className="flex z-10 items-center justify-between">
-          <div className="flex items-center gap-2 left-4 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
+          <div className="flex items-center gap-2 ml-4 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
             {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
             <Switch
               aria-label="Activer le mode sombre"
@@ -112,7 +112,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
 
           <button
             onClick={onHelp}
-            className="h-10 px-3 right-4 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+            className="h-10 px-3 mr-4 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
             aria-label="Aide"
           >
             <MessageCircleQuestion className="w-5 h-5" />
