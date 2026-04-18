@@ -97,49 +97,53 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     reader.readAsText(file);
   };
 
-  const controls = (
-    <>
-      <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
-        {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
-        <Switch
-          aria-label="Activer le mode sombre"
-          checked={isDark}
-          onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-        />
-      </div>
+  const themeSwitch = (
+    <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 backdrop-blur-sm">
+      {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
+      <Switch
+        aria-label="Activer le mode sombre"
+        checked={isDark}
+        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+      />
+    </div>
+  );
 
-      <button
-        onClick={onHelp}
-        className="h-10 px-3 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
-        aria-label="Aide"
-      >
-        <MessageCircleQuestion className="w-5 h-5" />
-        <span className="text-sm font-medium">Aide</span>
-      </button>
-    </>
+  const helpButton = (
+    <button
+      onClick={onHelp}
+      className="h-10 px-3 rounded-full bg-card text-blue-600 dark:text-blue-400 border border-border shadow-xl shadow-gray-900/30 flex items-center justify-center gap-2 hover:bg-accent transition-colors active:scale-95"
+      aria-label="Aide"
+    >
+      <MessageCircleQuestion className="w-5 h-5" />
+      <span className="text-sm font-medium">Aide</span>
+    </button>
   );
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col px-4 pb-6 md:pb-8 safe-area-x safe-area-bottom">
       <div className="w-full pt-safe-top md:px-4 shrink-0 landscape:hidden">
         <div className="flex items-center justify-between px-4">
-          {controls}
+          {themeSwitch}
+          {helpButton}
         </div>
       </div>
 
       <div className="w-full flex-1 flex flex-col items-center justify-center py-4">
-        <div className="w-full flex justify-center landscape:justify-between landscape:items-center mb-1 landscape:mb-3 landscape:max-w-4xl landscape:px-4">
+        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-3 landscape:max-w-4xl landscape:px-4">
+          <div className="hidden landscape:flex landscape:justify-start">
+            {themeSwitch}
+          </div>
           <Image
             src={isDark ? titleDark : titleLight}
             alt="Essais Continuité"
             width={300}
             height={75}
-            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none"
+            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none landscape:justify-self-center"
             draggable={false}
             priority
           />
-          <div className="hidden landscape:flex items-center gap-3">
-            {controls}
+          <div className="hidden landscape:flex landscape:justify-end">
+            {helpButton}
           </div>
         </div>
 
