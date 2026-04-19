@@ -39,7 +39,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       <button
         key={label}
         onClick={() => handleClick(stateIndex)}
-        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.625rem] font-bold !text-black dark:!text-black ${
+        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
@@ -61,7 +61,10 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
         cols.push(renderButton(idx, label));
       }
       rows.push(
-        <div key={r} className="grid grid-cols-15 gap-[0.1875rem] landscape:gap-[0.125rem]">
+        <div
+          key={r}
+          className={`grid grid-cols-15 gap-[0.1875rem] landscape:gap-[0.125rem] ${r > 0 ? "mt-[0.1875rem] landscape:mt-[0.125rem]" : ""}`}
+        >
           {cols}
         </div>
       );
