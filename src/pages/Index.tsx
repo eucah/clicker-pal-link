@@ -132,7 +132,7 @@ const Index = () => {
   };
 
   const handleSelect = (index: number) => {
-    setSelectedIndex((previousIndex) => (previousIndex === index ? null : index));
+    setSelectedIndex(index);
   };
 
   // Issue #5: Stop button must fully stop BT
@@ -326,10 +326,10 @@ const Index = () => {
         </div>
       )}
 
-      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x justify-between py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem] landscape:min-h-[1.5rem]">
-        {selectedIndex !== null && selectedInfo ? (
-          <>
-            <div className="flex items-center flex-wrap gap-x-2 landscape:gap-x-1.5 gap-y-1 landscape:gap-y-0.5 min-w-0 flex-1">
+      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 h-10 landscape:h-8">
+        <div className="min-w-0 flex-1 overflow-x-auto">
+          {selectedIndex !== null && selectedInfo ? (
+            <div className="flex items-center gap-x-2 landscape:gap-x-1.5 whitespace-nowrap">
               <span className="px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
               <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
                 Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
@@ -353,54 +353,33 @@ const Index = () => {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-1.5 ml-auto shrink-0">
-              <Button
-                onClick={handleExportReport}
-                variant="outline"
-                size="sm"
-                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/30 active:scale-95"
-              >
-                <FileChartColumn className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
-                Rapport
-              </Button>
-              <Button
-                onClick={() => setIsLegendOpen(true)}
-                variant="outline"
-                size="sm"
-                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
-              >
-                <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
-                Légende
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground mr-1 min-w-0 flex-1">
+          ) : (
+            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground whitespace-nowrap">
               Appuyez sur un bouton pour voir ses infos
             </span>
-            <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
-              <Button
-                onClick={handleExportReport}
-                variant="outline"
-                size="sm"
-                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/30 active:scale-95"
-              >
-                <FileChartColumn className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
-                Rapport
-              </Button>
-              <Button
-                onClick={() => setIsLegendOpen(true)}
-                variant="outline"
-                size="sm"
-                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
-              >
-                <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
-                Légende
-              </Button>
-            </div>
-          </>
-        )}
+          )}
+        </div>
+
+        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
+          <Button
+            onClick={handleExportReport}
+            variant="outline"
+            size="sm"
+            className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/30 active:scale-95"
+          >
+            <FileChartColumn className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
+            Rapport
+          </Button>
+          <Button
+            onClick={() => setIsLegendOpen(true)}
+            variant="outline"
+            size="sm"
+            className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
+          >
+            <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
+            Légende
+          </Button>
+        </div>
       </div>
 
       <div className="flex-1 px-2 sm:px-3 landscape:px-2 py-1 landscape:py-0.5 overflow-auto" ref={gridRef}>
