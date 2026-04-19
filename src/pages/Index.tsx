@@ -126,12 +126,13 @@ const Index = () => {
       }
 
       nextStates[index] = newState;
+      setSelectedIndex(newState === 0 ? null : index);
       sendBleUpdate(nextStates);
       return nextStates;
     });
   };
 
-  const handleSelect = (index: number) => {
+  const handleSelect = (index: number | null) => {
     setSelectedIndex(index);
   };
 
@@ -243,7 +244,7 @@ const Index = () => {
     return <HelpPage onBack={() => setScreen("home")} />;
   }
 
-  const selectedInfo = selectedIndex !== null ? buttonInfos[selectedIndex] : null;
+  const selectedInfo = selectedIndex !== null && states[selectedIndex] !== 0 ? buttonInfos[selectedIndex] : null;
   const selectedLabel = selectedIndex !== null ? getButtonLabel(selectedIndex) : null;
   const handleExportReport = async () => {
     if (!project) {

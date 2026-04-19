@@ -15,7 +15,7 @@ interface ButtonGridProps {
   buttonInfos: ButtonInfo[];
   selectedIndex: number | null;
   onToggle: (index: number) => void;
-  onSelect: (index: number) => void;
+  onSelect: (index: number | null) => void;
 }
 
 const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
@@ -25,8 +25,9 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     if (buttonInfos[stateIndex]?.locked) return;
     if (isMaster) {
       onToggle(stateIndex);
+      return;
     }
-    onSelect(stateIndex);
+    onSelect(states[stateIndex] === 0 ? null : stateIndex);
   };
 
   const renderButton = (stateIndex: number, label: number) => {
