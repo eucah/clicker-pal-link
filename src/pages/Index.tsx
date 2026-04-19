@@ -353,7 +353,7 @@ const Index = () => {
                 </Badge>
               )}
             </div>
-            <div className="flex items-center gap-1.5 ml-auto shrink-0">
+            <div className="flex items-center gap-1 landscape:gap-0.5 ml-auto shrink-0 pr-1 landscape:pr-2">
               <Button
                 onClick={handleExportReport}
                 variant="outline"
@@ -367,10 +367,10 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 landscape:h-5 px-1 landscape:px-0.5 text-sm landscape:text-xs gap-1 landscape:gap-0.5"
+                className="h-6 landscape:h-5 px-1 landscape:px-0.5 text-sm landscape:text-[0.6875rem] gap-1 landscape:gap-0.5 min-w-0 max-w-[5.5rem] landscape:max-w-[4.75rem]"
               >
                 <List className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
-                Légende
+                <span className="truncate">Légende</span>
               </Button>
             </div>
           </>
@@ -379,7 +379,7 @@ const Index = () => {
             <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground mr-1 min-w-0 flex-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
-            <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
+            <div className="flex items-center px-3 landscape:px-2 gap-1 landscape:gap-0.5 ml-auto shrink-0 pr-1 landscape:pr-2">
               <Button
                 onClick={handleExportReport}
                 variant="outline"
@@ -393,10 +393,10 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
+                className="h-6 landscape:h-5 px-1.5 landscape:px-1 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95 min-w-0 max-w-[5.5rem] landscape:max-w-[4.75rem]"
               >
                 <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
-                Légende
+                <span className="truncate">Légende</span>
               </Button>
             </div>
           </>
