@@ -326,7 +326,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x justify-between py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem] landscape:min-h-[1.5rem]">
+      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x justify-between py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem] landscape:min-h-[1.5rem]">
         {selectedIndex !== null && selectedInfo ? (
           <>
             <div className="flex items-center flex-wrap gap-x-2 landscape:gap-x-1.5 gap-y-1 landscape:gap-y-0.5 min-w-0 flex-1">
