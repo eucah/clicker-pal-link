@@ -151,7 +151,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           Sélectionnez votre rôle
         </p>
 
-        <div className="w-full max-w-xs landscape:max-w-3xl md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
+        <div className="w-full max-w-xs landscape:max-w-4xl md:max-w-2xl landscape:px-3 flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
             <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
