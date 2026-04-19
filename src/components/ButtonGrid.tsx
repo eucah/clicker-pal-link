@@ -73,14 +73,14 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
   };
 
   return (
-    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-2 p-2 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full max-w-[75rem] mx-auto">
+    <div className="flex flex-col landscape:flex-row items-center landscape:items-stretch gap-3 landscape:gap-1.5 p-2 landscape:py-1 landscape:px-[env(safe-area-inset-left,8px)] landscape:pr-[env(safe-area-inset-right,8px)] w-full h-full max-w-[75rem] mx-auto">
       <div className="flex flex-col gap-[0.1875rem] landscape:gap-[0.125rem] w-full landscape:w-1/2 landscape:justify-evenly">
-        <div className="text-xs sm:text-sm font-semibold text-muted-foreground text-center">GAUCHE</div>
+        <div className="text-xs sm:text-sm landscape:text-[0.6875rem] font-semibold text-muted-foreground text-center leading-tight">GAUCHE</div>
         {renderSide(0, 1, false)}
       </div>
       <div className="w-full landscape:w-px landscape:self-stretch border-t landscape:border-t-0 landscape:border-l border-border" />
       <div className="flex flex-col gap-[0.1875rem] landscape:gap-[0.125rem] w-full landscape:w-1/2 landscape:justify-evenly">
-        <div className="text-xs sm:text-sm font-semibold text-muted-foreground text-center">DROITE</div>
+        <div className="text-xs sm:text-sm landscape:text-[0.6875rem] font-semibold text-muted-foreground text-center leading-tight">DROITE</div>
         {renderSide(75, 101, true)}
       </div>
     </div>

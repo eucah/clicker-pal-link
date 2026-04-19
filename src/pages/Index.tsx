@@ -273,24 +273,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden safe-area-top safe-area-bottom">
-      <header className="flex items-center justify-between px-4 safe-area-x py-1 border-b border-border bg-card shrink-0">
-        <div className="flex items-center px-2 gap-1.5 min-w-0 flex-1">
+      <header className="flex items-center justify-between px-4 safe-area-x py-1 landscape:py-0.5 border-b border-border bg-card shrink-0">
+        <div className="flex items-center px-2 landscape:px-1.5 gap-1.5 landscape:gap-1 min-w-0 flex-1">
           <button
             onClick={requestGoHome}
-            className="p-1.5 px-2 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
+            className="p-1.5 landscape:p-1 px-2 landscape:px-1.5 rounded-md bg-secondary text-secondary-foreground shadow-xl shadow-gray-900/30 active:scale-95"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
           </button>
-          <h1 className="text-sm font-bold text-foreground tracking-tight truncate">
+          <h1 className="text-sm landscape:text-xs font-bold text-foreground tracking-tight truncate">
             {project?.name}
           </h1>
         </div>
 
-        <div className="flex items-center px-4 gap-1.5 shrink-0">
+        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 shrink-0">
           {isMaster && (
             <button
               onClick={handleShareBle}
-              className={`flex items-center gap-1 px-2 py-1 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-sm font-semibold transition-colors ${
+              className={`flex items-center gap-1 landscape:gap-0.5 px-2 landscape:px-1.5 py-1 landscape:py-0.5 shadow-xl shadow-gray-900/30 active:scale-95 rounded-md text-sm landscape:text-xs font-semibold transition-colors ${
                 isSharingActive
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
@@ -298,12 +298,12 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-4 h-4" text-sm />
+                  <BluetoothOff className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" text-sm />
                   Arrêter
                 </>
               ) : (
                 <>
-                  <Bluetooth className="w-4 h-4 text-blue-700" />
+                  <Bluetooth className="w-4 h-4 landscape:w-3.5 landscape:h-3.5 text-blue-700" />
                   Partager
                 </>
               )}
@@ -313,9 +313,9 @@ const Index = () => {
           <BleStatusBadge status={ble.status} />
 
        {isMaster ? (
-        <Crown className="w-4 h-4 text-purple-700 dark:text-purple-300" />
+        <Crown className="w-4 h-4 landscape:w-3.5 landscape:h-3.5 text-purple-700 dark:text-purple-300" />
         ) : (
-        <Eye className="w-4 h-4 text-green-700 dark:text-green-300" />
+        <Eye className="w-4 h-4 landscape:w-3.5 landscape:h-3.5 text-green-700 dark:text-green-300" />
         )}
         </div>
       </header>
@@ -326,29 +326,29 @@ const Index = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-2 pr-3 px-2 safe-area-x justify-between py-1 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem]">
+      <div className="flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x justify-between py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 min-h-[1.75rem] landscape:min-h-[1.5rem]">
         {selectedIndex !== null && selectedInfo ? (
           <>
-            <div className="flex items-center flex-wrap gap-x-2 gap-y-1 min-w-0 flex-1">
-              <span className="px-4 text-[0.6875rem] font-bold text-foreground">#{selectedLabel}</span>
-              <span className="text-[0.6875rem] text-field-fils font-semibold">
+            <div className="flex items-center flex-wrap gap-x-2 landscape:gap-x-1.5 gap-y-1 landscape:gap-y-0.5 min-w-0 flex-1">
+              <span className="px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
+              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
                 Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
               </span>
-              <span className="text-[0.6875rem] text-field-borne font-semibold">
+              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-borne font-semibold">
                 Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
               </span>
-              <span className="text-[0.6875rem] text-field-bornier font-semibold">
+              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-bornier font-semibold">
                 Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
               </span>
-              <span className="text-[0.6875rem] text-amber-700 font-semibold">
+              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-amber-700 font-semibold">
                 Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
               </span>
               {selectedInfo.locked && (
                 <Badge
                   variant="outline"
-                  className="text-[0.5625rem] px-1 py-0 border-state-locked text-muted-foreground"
+                  className="text-[0.5625rem] landscape:text-[0.5rem] px-1 py-0 border-state-locked text-muted-foreground"
                 >
-                  <Lock className="w-2.5 h-2.5 mr-0.5" />
+                  <Lock className="w-2.5 h-2.5 landscape:w-2 landscape:h-2 mr-0.5" />
                   Non Testé
                 </Badge>
               )}
@@ -358,44 +358,44 @@ const Index = () => {
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-6 px-1 text-sm gap-1"
+                className="h-6 landscape:h-5 px-1 landscape:px-0.5 text-sm landscape:text-xs gap-1 landscape:gap-0.5"
               >
-                <FileChartColumn className="w-4 h-4" />
+                <FileChartColumn className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
                 Rapport
               </Button>
               <Button
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-1 text-sm gap-1"
+                className="h-6 landscape:h-5 px-1 landscape:px-0.5 text-sm landscape:text-xs gap-1 landscape:gap-0.5"
               >
-                <List className="w-4 h-4" />
+                <List className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
                 Légende
               </Button>
             </div>
           </>
         ) : (
           <>
-            <span className="px-4 text-sm text-muted-foreground mr-1 min-w-0 flex-1">
+            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground mr-1 min-w-0 flex-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
-            <div className="flex items-center px-4 gap-1.5 ml-auto shrink-0">
+            <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
               <Button
                 onClick={handleExportReport}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[0.6875rem] gap-1 shadow-xl shadow-gray-900/30 active:scale-95"
+                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/30 active:scale-95"
               >
-                <FileChartColumn className="w-3 h-3" />
+                <FileChartColumn className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
                 Rapport
               </Button>
               <Button
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 px-2 text-[0.6875rem] gap-1 shadow-xl shadow-gray-900/20 active:scale-95"
+                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
               >
-                <List className="w-3 h-3" />
+                <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
                 Légende
               </Button>
             </div>
@@ -403,7 +403,7 @@ const Index = () => {
         )}
       </div>
 
-      <div className="flex-1 px-2 sm:px-3 py-1 overflow-auto" ref={gridRef}>
+      <div className="flex-1 px-2 sm:px-3 landscape:px-2 py-1 landscape:py-0.5 overflow-auto" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
           states={states}
