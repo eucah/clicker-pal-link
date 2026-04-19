@@ -43,6 +43,10 @@ const StatusBarThemeSync = (): null => {
     void applyStatusBarTheme(isDark);
   }, [isDark]);
 
+  useEffect(() => {
+    document.documentElement.dataset.platform = Capacitor.getPlatform();
+  }, []);
+
   return null;
 };
 
