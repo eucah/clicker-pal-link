@@ -332,10 +332,10 @@ const Index = () => {
         </div>
       )}
 
-      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 h-10 landscape:h-8">
-        <div className="min-w-0 flex-1 overflow-x-auto">
+      <div className="android-landscape-nav-safe-end flex flex-wrap landscape:flex-nowrap items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 min-h-10 h-auto landscape:h-8">
+        <div className="min-w-0 flex-1 basis-[14rem] landscape:basis-auto overflow-x-auto">
           {selectedIndex !== null && selectedInfo ? (
-            <div className="flex items-center gap-x-2 landscape:gap-x-1.5 whitespace-nowrap">
+            <div className="flex flex-wrap landscape:flex-nowrap items-center gap-x-2 landscape:gap-x-1.5 whitespace-normal landscape:whitespace-nowrap">
               <span className="px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
               <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
                 Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
@@ -360,13 +360,13 @@ const Index = () => {
               )}
             </div>
           ) : (
-            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground whitespace-nowrap">
+            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground whitespace-normal landscape:whitespace-nowrap">
               Appuyez sur un bouton pour voir ses infos
             </span>
           )}
         </div>
 
-        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
+        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0 flex-none whitespace-nowrap">
           <Button
             onClick={handleExportReport}
             variant="outline"
