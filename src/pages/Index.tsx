@@ -379,7 +379,7 @@ const Index = () => {
             <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground mr-1 min-w-0 flex-1">
               Appuyez sur un bouton pour voir ses infos
             </span>
-            <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto min-w-0">
+            <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
               <Button
                 onClick={handleExportReport}
                 variant="outline"
