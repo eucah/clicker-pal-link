@@ -114,6 +114,12 @@ const Index = () => {
 
   const handleToggle = (index: number) => {
     setStates((previousStates) => {
+      if (selectedIndex !== index) {
+        // Premier appui = sélection uniquement
+        return previousStates;
+      }
+
+      // Changement d'état autorisé uniquement sur un bouton déjà sélectionné
       const nextStates = [...previousStates];
       const newState = (nextStates[index] + 1) % 4;
 

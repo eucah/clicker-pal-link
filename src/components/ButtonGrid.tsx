@@ -23,10 +23,16 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
 
   const handleClick = (stateIndex: number) => {
     if (buttonInfos[stateIndex]?.locked) return;
-    if (isMaster) {
+    if (selectedIndex !== stateIndex) {
+      // Premier appui = sélection uniquement
+      onSelect(stateIndex);
+      return;
+    }
+
+    if (selectedIndex === stateIndex && isMaster) {
+      // Changement d'état autorisé uniquement sur un bouton déjà sélectionné
       onToggle(stateIndex);
     }
-    onSelect(stateIndex);
   };
 
   const renderButton = (stateIndex: number, label: number) => {
