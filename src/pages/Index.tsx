@@ -367,9 +367,9 @@ const Index = () => {
                 onClick={() => setIsLegendOpen(true)}
                 variant="outline"
                 size="sm"
-                className="h-6 landscape:h-5 px-1 landscape:px-0.5 text-sm landscape:text-xs gap-1 landscape:gap-0.5"
+                className="h-6 landscape:h-5 px-2 landscape:px-1.5 text-[0.6875rem] landscape:text-[0.625rem] gap-1 landscape:gap-0.5 shadow-xl shadow-gray-900/20 active:scale-95"
               >
-                <List className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
+                <List className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
                 Légende
               </Button>
             </div>
