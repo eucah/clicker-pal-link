@@ -332,10 +332,10 @@ const Index = () => {
         </div>
       )}
 
-      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 h-10 landscape:h-8">
-        <div className="min-w-0 flex-1 overflow-x-auto">
+      <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 h-10 landscape:h-8 [@media(orientation:portrait)_and_(max-width:430px)]:h-auto [@media(orientation:portrait)_and_(max-width:430px)]:items-start [@media(orientation:portrait)_and_(max-width:430px)]:py-1.5">
+        <div className="min-w-0 flex-1">
           {selectedIndex !== null && selectedInfo ? (
-            <div className="flex items-center gap-x-2 landscape:gap-x-1.5 whitespace-nowrap">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 landscape:gap-x-1.5">
               <span className="px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
               <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
                 Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
@@ -360,13 +360,14 @@ const Index = () => {
               )}
             </div>
           ) : (
-            <span className="px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground whitespace-nowrap">
+            <span className="block px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground [@media(orientation:portrait)_and_(max-width:430px)]:leading-tight">
               Appuyez sur un bouton pour voir ses infos
             </span>
           )}
         </div>
 
-        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0">
+        {/* En portrait étroit, empiler les actions pour éviter de masquer les infos */}
+        <div className="flex items-center px-4 landscape:px-2 gap-1.5 landscape:gap-1 ml-auto shrink-0 [@media(orientation:portrait)_and_(max-width:430px)]:flex-col [@media(orientation:portrait)_and_(max-width:430px)]:items-end">
           <Button
             onClick={handleExportReport}
             variant="outline"
