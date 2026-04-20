@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { buildPontIndexSet } from "@/lib/pont-utils";
+import { buildPontIndexSet, resolveAssociatedPontContactIndex } from "@/lib/pont-utils";
 import { ButtonInfo } from "@/types/project";
 
 const STATE_COLORS = [
@@ -20,6 +20,11 @@ interface ButtonGridProps {
 
 const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
   const pontIndexes = useMemo(() => buildPontIndexSet(buttonInfos), [buttonInfos]);
+  // Le contact pont associé est un effet temporaire lié à la sélection
+  const associatedPontContactIndex = useMemo(
+    () => resolveAssociatedPontContactIndex(buttonInfos, selectedIndex),
+    [buttonInfos, selectedIndex],
+  );
 
   const handleClick = (stateIndex: number) => {
     if (buttonInfos[stateIndex]?.locked) return;
@@ -40,6 +45,12 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
     const isPont = pontIndexes.has(stateIndex);
+    const isAssociatedPontContact = associatedPontContactIndex === stateIndex;
+    const pontVisualClass = isAssociatedPontContact
+      ? "border-2 border-yellow-400 animate-pulse-slow"
+      : isPont
+        ? "border-2 border-blue-600"
+        : "border border-transparent";
 
     return (
       <button
@@ -49,7 +60,7 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
-        } ${isPont ? "border-2 border-blue-600" : "border border-transparent"} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
+        } ${pontVisualClass} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}
       </button>

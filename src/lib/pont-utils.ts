@@ -34,16 +34,31 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
   buttonInfos.forEach((info, index) => {
     if (!info || typeof info.bornier !== "string") return;
     if (!PONT_PATTERN.test(info.bornier)) return;
-
+    // Un bouton Pont reste permanent uniquement via bornier = Pont
     pontIndexes.add(index);
-
-    const targetLabel = extractBorneLabel(info.borne);
-    if (targetLabel === null) return;
-
-    const targetIndex = getButtonIndexFromLabel(targetLabel);
-    if (targetIndex === null) return;
-    pontIndexes.add(targetIndex);
   });
 
   return pontIndexes;
+};
+
+export const resolveAssociatedPontContactIndex = (
+  buttonInfos: ButtonInfo[] | null | undefined,
+  selectedIndex: number | null,
+): number | null => {
+  if (!Array.isArray(buttonInfos) || selectedIndex === null) return null;
+  if (selectedIndex < 0 || selectedIndex >= buttonInfos.length) return null;
+
+  const selectedInfo = buttonInfos[selectedIndex];
+  if (!selectedInfo || typeof selectedInfo.bornier !== "string") return null;
+  if (!PONT_PATTERN.test(selectedInfo.bornier)) return null;
+
+  const targetLabel = extractBorneLabel(selectedInfo.borne);
+  if (targetLabel === null) return null;
+
+  const targetIndex = getButtonIndexFromLabel(targetLabel);
+  if (targetIndex === null) return null;
+  if (targetIndex < 0 || targetIndex >= buttonInfos.length) return null;
+  if (targetIndex === selectedIndex) return null;
+
+  return targetIndex;
 };

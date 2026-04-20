@@ -103,7 +103,11 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
-              <strong>Pont</strong> — Contact avec pont
+              <strong>Pont</strong> — Fonction permanente (bornier contient "Pont")
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block animate-pulse-slow" />
+              <strong>Contact pont associé</strong> — Cible temporaire (jaune clignotant lent)
             </p>
           </div>
         </section>
@@ -120,14 +124,17 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li>Le projet peut être sauvegardé en fichier TXT pour être rechargé ultérieurement.</li>
             <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
             <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
-            <li>Pour la création de contacts avec la fonction pont : numéro de contact à mettre dans la section Borne et mettre "Pont" dans la section bornier.</li>
+            <li>Un bouton a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient "Pont".</li>
+            <li>Le numéro inscrit dans <strong>borne</strong> d&apos;un bouton Pont désigne son <strong>contact pont associé</strong>.</li>
+            <li>Le contact pont associé n&apos;est visible que lorsque le bouton Pont source est sélectionné.</li>
+            <li>Si la cible est elle-même définie Pont, elle garde sa définition métier Pont, mais affiche temporairement uniquement le visuel <strong>contact pont associé</strong> pendant la sélection du premier.</li>
             <li>Exemple: 
               <ul className="list-['-'] pl-5">
                 <li>contact #1   fils: xxfd  borne: aaxx  bornier: ashs</li>
                 <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                 <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
               </ul>
-                (la fonction pont sera attribuée à la borne #140/10 ainsi qu'à la borne #1, cette methode permet d'avoir un aperçu si un ou plusieurs ponts existe pour un même fil).</li>
+                (#10 et #140 restent Pont en permanence. Quand #10 est sélectionné, #1 devient contact pont associé. Quand #140 est sélectionné, #10 affiche temporairement uniquement le visuel contact pont associé).</li>
           </ul>
         </section>
         </div>
