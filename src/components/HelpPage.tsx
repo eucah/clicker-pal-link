@@ -103,15 +103,15 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" />
-              <strong>Sélectionné</strong>
+              <strong>Sélectionné</strong> — Contact sélectionné
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
-              <strong>Pont</strong> — (bornier contient "Pont")
+              <strong>Pont</strong> — Contact avec pont
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />
-              <strong>Contact pont associé</strong> — Apparait lorsque que <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont est sélectionné (jaune clignotant lent)
+              <strong>Contact pont associé</strong> — Apparait lorsque que <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />Pont est sélectionné (jaune clignotant lent)
             </p>
           </div>
         </section>
@@ -139,7 +139,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                 <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
               </ul>
-                (#10 et #140 restent Pont en permanence. Quand #10 est sélectionné, #1 devient contact pont associé. Quand #140 est sélectionné, #10 affiche temporairement uniquement le visuel contact pont associé).</li>
+                (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" />sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" />sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />contact pont associé).</li>
           </ul>
         </section>
         </div>
