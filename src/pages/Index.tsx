@@ -430,6 +430,10 @@ const Index = () => {
               <strong>Non testé</strong>
             </p>
             <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border-2 border-black-600 inline-block" />
+              <strong>Sélectionné</strong>
+            </p>
+            <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
               <strong>Pont</strong>
             </p>
