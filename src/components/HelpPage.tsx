@@ -102,12 +102,16 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               <strong>Non Testé</strong> — Verrouillé / exclu
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
-              <strong>Pont</strong> — Fonction permanente (bornier contient "Pont")
+              <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" />
+              <strong>Sélectionné</strong>
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block animate-pulse-slow" />
-              <strong>Contact pont associé</strong> — Cible temporaire (jaune clignotant lent)
+              <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
+              <strong>Pont</strong> — (bornier contient "Pont")
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />
+              <strong>Contact pont associé</strong> — Apparait lorsque que <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont est sélectionné (jaune clignotant lent)
             </p>
           </div>
         </section>
@@ -119,14 +123,15 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           </p>
 
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-            <li>Appui court sur un bouton = changer son état et voir ses détails (fils, borne, bornier, Cf/Cm).</li>
-            <li>Il est possible de revenir à l'état en attente et de refaire l'essai.</li>
+            <li>Premier appuie selectionne le contact sans changer son état et voir ses détails (fils, borne, bornier, Cf/Cm).</li>
+            <li>Appui court sur un contact sélectionner = changer son état.</li>
+            <li>Il est possible de revenir à l'état en attente et de refaire l'essai après plusieurs appuie.</li>
             <li>Le projet peut être sauvegardé en fichier TXT pour être rechargé ultérieurement.</li>
             <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
             <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
-            <li>Un bouton a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient "Pont".</li>
-            <li>Le numéro inscrit dans <strong>borne</strong> d&apos;un bouton Pont désigne son <strong>contact pont associé</strong>.</li>
-            <li>Le contact pont associé n&apos;est visible que lorsque le bouton Pont source est sélectionné.</li>
+            <li>Un Contact a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient "Pont".</li>
+            <li>Le numéro inscrit dans <strong>borne</strong> d'un bouton Pont désigne son <strong>contact pont associé</strong>.</li>
+            <li>Le contact pont associé n'est visible que lorsque le bouton Pont source est sélectionné.</li>
             <li>Si la cible est elle-même définie Pont, elle garde sa définition métier Pont, mais affiche temporairement uniquement le visuel <strong>contact pont associé</strong> pendant la sélection du premier.</li>
             <li>Exemple: 
               <ul className="list-['-'] pl-5">
