@@ -56,7 +56,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
           <ul className="list-disc pl-5 text-muted-foreground space-y-1">
             <li>L'<strong>Observateur</strong> se connecte au Contrôleur pour visualiser l'état du projet en temps réel.</li>
             <li>Il ne peut pas modifier les états.</li>
-            <li>Il a la possibilité de sélectionner un bouton pour avoir les informations (fils, bornes, borniers, Cf/Cm).</li>
+            <li>Il a la possibilité de sélectionner un contact pour avoir les informations (fils, bornes, borniers, Cf/Cm).</li>
             <li>Comme le Contrôleur il a la possibilité d'éditer un Rapport.</li>
           </ul>
         </section>
@@ -77,7 +77,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
         <section className="space-y-2">
           <p className="flex items-center gap-2 text-base font-bold">
           <CircleDot className="w-4 h-4 text-yellow-900 dark:text-yellow-700" />
-          États des boutons
+          États des contacts
           </p>
           
         <div className="space-y-1.5 text-muted-foreground">
@@ -130,8 +130,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             <li>Il est possible d'éditer le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
             <li>La forme du fichier TXT permet édition simple sous forme de tableau. Le fichier doit garder cette forme pour permettre une lecture correcte pour l'application.</li>
             <li>Un Contact a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient "Pont".</li>
-            <li>Le numéro inscrit dans <strong>borne</strong> d'un bouton Pont désigne son <strong>contact pont associé</strong>.</li>
-            <li>Le contact pont associé n'est visible que lorsque le bouton Pont source est sélectionné.</li>
+            <li>Le numéro inscrit dans <strong>borne</strong> d'un contact Pont désigne son <strong>contact pont associé</strong>.</li>
+            <li>Le contact pont associé n'est visible que lorsque le contact Pont source est sélectionné.</li>
             <li>Si la cible est elle-même définie Pont, elle garde sa définition métier Pont, mais affiche temporairement uniquement le visuel <strong>contact pont associé</strong> pendant la sélection du premier.</li>
             <li>Exemple: 
               <ul className="list-['-'] pl-5">
