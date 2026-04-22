@@ -438,7 +438,7 @@ const Index = () => {
               <strong>Pont</strong>
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block animate-pulse-slow" />
+              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />
               <strong>Pont contact associé</strong>
             </p>
           </div>
