@@ -45,9 +45,10 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
     const isPont = pontIndexes.has(stateIndex);
-    const isAssociatedPontContact = associatedPontContactIndex === stateIndex;
+    const isAssociatedPontContact = !isLocked && associatedPontContactIndex === stateIndex;
+    const isInProgress = !isLocked && states[stateIndex] === 1;
     const pontVisualClass = isAssociatedPontContact
-      ? "border-2 border-yellow-400 animate-pulse-slow"
+      ? "border-2 border-yellow-400"
       : isPont
         ? "border-2 border-blue-600"
         : "border border-transparent";
@@ -56,13 +57,25 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       <button
         key={label}
         onClick={() => handleClick(stateIndex)}
-        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold !text-black dark:!text-black ${
+        className={`relative aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold !text-black dark:!text-black ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
-            : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
+            : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"}`
         } ${pontVisualClass} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
-        {label}
+        {isInProgress && (
+          <span
+            className="pointer-events-none absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full bg-state-warning animate-pulse-slow"
+            aria-hidden="true"
+          />
+        )}
+        {isAssociatedPontContact && (
+          <span
+            className="pointer-events-none absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-yellow-400 animate-pulse-slow"
+            aria-hidden="true"
+          />
+        )}
+        <span className="relative z-10">{label}</span>
       </button>
     );
   };

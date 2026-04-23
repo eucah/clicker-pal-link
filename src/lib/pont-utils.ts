@@ -32,6 +32,7 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
   if (!Array.isArray(buttonInfos)) return pontIndexes;
 
   buttonInfos.forEach((info, index) => {
+    if (info?.locked) return;
     if (!info || typeof info.bornier !== "string") return;
     if (!PONT_PATTERN.test(info.bornier)) return;
     // Un bouton Pont reste permanent uniquement via bornier = Pont
@@ -49,6 +50,7 @@ export const resolveAssociatedPontContactIndex = (
   if (selectedIndex < 0 || selectedIndex >= buttonInfos.length) return null;
 
   const selectedInfo = buttonInfos[selectedIndex];
+  if (selectedInfo?.locked) return null;
   if (!selectedInfo || typeof selectedInfo.bornier !== "string") return null;
   if (!PONT_PATTERN.test(selectedInfo.bornier)) return null;
 
@@ -58,6 +60,7 @@ export const resolveAssociatedPontContactIndex = (
   const targetIndex = getButtonIndexFromLabel(targetLabel);
   if (targetIndex === null) return null;
   if (targetIndex < 0 || targetIndex >= buttonInfos.length) return null;
+  if (buttonInfos[targetIndex]?.locked) return null;
   if (targetIndex === selectedIndex) return null;
 
   return targetIndex;
