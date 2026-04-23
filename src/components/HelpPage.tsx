@@ -75,7 +75,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
           <section className="space-y-2">
             <p className="flex items-center gap-2 text-base font-bold">
-              <CircleDot className="w-4 h-4 text-yellow-900 dark:text-yellow-700" />
+              <CircleDot className="w-4 h-4 text-purole-900 dark:text-purple-700" />
               États des contacts
             </p>
 
@@ -138,7 +138,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                   <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                   <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
                 </ul>
-                (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" /> contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" /> contact pont associé.)
+                (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-purple-400 inline-block" /> contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-purple-400 inline-block" /> contact pont associé.)
               </li>
             </ul>
           </section>
