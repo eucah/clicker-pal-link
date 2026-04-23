@@ -45,9 +45,9 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const isLocked = info?.locked;
     const isSelected = selectedIndex === stateIndex;
     const isPont = pontIndexes.has(stateIndex);
-    const isAssociatedPontContact = associatedPontContactIndex === stateIndex;
+    const isAssociatedPontContact = associatedPontContactIndex === stateIndex && !isLocked;
     const pontVisualClass = isAssociatedPontContact
-      ? "border-2 border-yellow-400 animate-pulse-slow"
+      ? "border-2 border-violet-500 animate-pulse-slow"
       : isPont
         ? "border-2 border-blue-600"
         : "border border-transparent";
