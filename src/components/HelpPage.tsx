@@ -110,7 +110,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               </p>
               <p className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full border-2 border-purple-500 inline-block" />
-                <strong>Pont associé (clignotant)</strong> — Apparaît si <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont est sélectionné.
+                <strong>Pont associé (clignotant)</strong> — fonctionne avec Pont
               </p>
             </div>
           </section>
