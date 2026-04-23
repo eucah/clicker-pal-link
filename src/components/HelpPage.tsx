@@ -1,5 +1,6 @@
 import { ArrowLeft, Crown, Eye, Bluetooth, CircleDot, Lightbulb, Presentation } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ASSOCIATED_PONT_CONTACT_BORDER_CLASS, PONT_BORDER_CLASS } from "@/lib/pont-utils";
 
 interface HelpPageProps {
   onBack: () => void;
@@ -105,12 +106,12 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 <strong>Sélectionné</strong> — Contact sélectionné
               </p>
               <p className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
+                <span className={`w-3 h-3 rounded-full inline-block ${PONT_BORDER_CLASS}`} />
                 <strong>Pont</strong> — Contact avec pont
               </p>
               <p className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />
-                <strong>Contact pont associé</strong> — Apparaît lorsque <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont est sélectionné (jaune clignotant lent)
+                <span className={`w-3 h-3 rounded-full inline-block ${ASSOCIATED_PONT_CONTACT_BORDER_CLASS}`} />
+                <strong>Pont contact associé</strong> — Apparaît lorsque <span className={`w-3 h-3 rounded-full inline-block ${PONT_BORDER_CLASS}`} /> Pont est sélectionné (bleu turquoise clignotant lent)
               </p>
             </div>
           </section>
@@ -138,7 +139,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                   <li>contact #10  fils: xxfd  borne: 1     bornier: Pont</li>
                   <li>contact #140 fils: xxfd  borne: 10    bornier: Pont</li>
                 </ul>
-                (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" /> contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" /> contact pont associé.)
+                (#10 et #140 sont <span className={`w-3 h-3 rounded-full inline-block ${PONT_BORDER_CLASS}`} /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className={`w-3 h-3 rounded-full inline-block ${ASSOCIATED_PONT_CONTACT_BORDER_CLASS}`} /> pont contact associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className={`w-3 h-3 rounded-full inline-block ${ASSOCIATED_PONT_CONTACT_BORDER_CLASS}`} /> pont contact associé.)
               </li>
             </ul>
           </section>

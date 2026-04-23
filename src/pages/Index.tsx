@@ -34,6 +34,7 @@ import {
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
 import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
+import { ASSOCIATED_PONT_CONTACT_BORDER_CLASS, PONT_BORDER_CLASS } from "@/lib/pont-utils";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
 
@@ -434,11 +435,11 @@ const Index = () => {
               <strong>Sélectionné</strong>
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" />
+              <span className={`w-3 h-3 rounded-full inline-block ${PONT_BORDER_CLASS}`} />
               <strong>Pont</strong>
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full border-2 border-yellow-400 inline-block" />
+              <span className={`w-3 h-3 rounded-full inline-block ${ASSOCIATED_PONT_CONTACT_BORDER_CLASS}`} />
               <strong>Pont contact associé</strong>
             </p>
           </div>

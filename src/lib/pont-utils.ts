@@ -2,6 +2,8 @@ import { ButtonInfo } from "@/types/project";
 
 const PONT_PATTERN = /\bpont\b/i;
 const NUMBER_PATTERN = /\d+/;
+export const PONT_BORDER_CLASS = "border-2 border-blue-600";
+export const ASSOCIATED_PONT_CONTACT_BORDER_CLASS = "border-2 border-[#22C7C7] animate-pulse-slow";
 
 const getButtonIndexFromLabel = (label: number): number | null => {
   if (label >= 1 && label <= 75) {
@@ -59,6 +61,7 @@ export const resolveAssociatedPontContactIndex = (
   if (targetIndex === null) return null;
   if (targetIndex < 0 || targetIndex >= buttonInfos.length) return null;
   if (targetIndex === selectedIndex) return null;
+  if (buttonInfos[targetIndex]?.locked) return null;
 
   return targetIndex;
 };

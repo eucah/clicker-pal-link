@@ -1,5 +1,10 @@
 import { useMemo } from "react";
-import { buildPontIndexSet, resolveAssociatedPontContactIndex } from "@/lib/pont-utils";
+import {
+  ASSOCIATED_PONT_CONTACT_BORDER_CLASS,
+  buildPontIndexSet,
+  PONT_BORDER_CLASS,
+  resolveAssociatedPontContactIndex,
+} from "@/lib/pont-utils";
 import { ButtonInfo } from "@/types/project";
 
 const STATE_COLORS = [
@@ -47,9 +52,9 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
     const isPont = pontIndexes.has(stateIndex);
     const isAssociatedPontContact = associatedPontContactIndex === stateIndex;
     const pontVisualClass = isAssociatedPontContact
-      ? "border-2 border-yellow-400 animate-pulse-slow"
+      ? ASSOCIATED_PONT_CONTACT_BORDER_CLASS
       : isPont
-        ? "border-2 border-blue-600"
+        ? PONT_BORDER_CLASS
         : "border border-transparent";
 
     return (
