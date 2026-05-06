@@ -129,7 +129,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       </div>
 
       <div className="w-full flex-1 flex flex-col items-center justify-center landscape:justify-start py-4 landscape:py-2">
-        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-2 landscape:max-w-4xl landscape:px-3">
+        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 flex flex-col">
+        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-2">
           <div className="hidden landscape:flex landscape:justify-start">
             {themeSwitch}
           </div>
@@ -151,7 +152,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
           Sélectionnez votre rôle
         </p>
 
-        <div className="w-full max-w-xs landscape:max-w-4xl md:max-w-2xl landscape:px-3 flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
+        <div className="w-full max-w-xs landscape:max-w-4xl md:max-w-2xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
         <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
           <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
             <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
@@ -202,6 +203,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
             <TriangleAlert className="w-10 h-10 landscape:w-7 landscape:h-7 text-red-600 dark:text-red-400 shrink-0" />
             Les deux appareils doivent être appairés avant de démarrer
           </p>
+        </div>
         </div>
         </div>
       </div>

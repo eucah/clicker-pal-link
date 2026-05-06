@@ -172,16 +172,16 @@ const Index = () => {
     setScreen("home");
   }, [hardStopSession, isMaster]);
 
-  const shouldConfirmMasterGridBack = isMaster && screen === "grid";
+  const shouldConfirmGridBack = screen === "grid";
 
   const requestGoHome = useCallback(() => {
-    if (shouldConfirmMasterGridBack) {
+    if (shouldConfirmGridBack) {
       setIsBackConfirmOpen(true);
       return;
     }
 
     void leaveGridAndGoHome();
-  }, [leaveGridAndGoHome, shouldConfirmMasterGridBack]);
+  }, [leaveGridAndGoHome, shouldConfirmGridBack]);
 
   useEffect(() => {
     if (screen === "home") {
@@ -190,7 +190,7 @@ const Index = () => {
 
     window.history.pushState({ clickerPalScreen: screen }, "");
     const onPopState = () => {
-      if (shouldConfirmMasterGridBack) {
+      if (shouldConfirmGridBack) {
         // Keep an internal history entry so Android back can re-open confirmation.
         window.history.pushState({ clickerPalScreen: screen }, "");
         setIsBackConfirmOpen(true);
@@ -204,7 +204,7 @@ const Index = () => {
     return () => {
       window.removeEventListener("popstate", onPopState);
     };
-  }, [screen, shouldConfirmMasterGridBack, leaveGridAndGoHome]);
+  }, [screen, shouldConfirmGridBack, leaveGridAndGoHome]);
 
   useEffect(() => {
     return () => {
@@ -450,9 +450,11 @@ const Index = () => {
       <AlertDialog open={isBackConfirmOpen} onOpenChange={setIsBackConfirmOpen}>
         <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>Quitter la grille&nbsp;?</AlertDialogTitle>
+            <AlertDialogTitle>{isMaster ? "Quitter la grille ?" : "Quitter la grille partagée ?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              Attention&nbsp;: revenir à l&apos;accueil arrêtera la session en cours. Voulez-vous continuer&nbsp;?
+              {isMaster
+                ? "Attention : revenir à l'accueil arrêtera la session en cours. Voulez-vous continuer ?"
+                : "Voulez-vous vraiment quitter la grille partagée ?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -463,7 +465,7 @@ const Index = () => {
                 void leaveGridAndGoHome();
               }}
             >
-              Confirmer
+              {isMaster ? "Confirmer" : "Quitter"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
