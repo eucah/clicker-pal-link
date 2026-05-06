@@ -335,29 +335,31 @@ const Index = () => {
       <div className="android-landscape-nav-safe-end flex items-center gap-2 landscape:gap-1.5 pr-3 landscape:pr-2 px-2 safe-area-x py-1 landscape:py-0.5 bg-muted/50 border-b border-border bg-card shrink-0 h-10 landscape:h-8 [@media(orientation:portrait)_and_(max-width:430px)]:h-auto [@media(orientation:portrait)_and_(max-width:430px)]:items-start [@media(orientation:portrait)_and_(max-width:430px)]:py-1.5">
         <div className="min-w-0 flex-1">
           {selectedIndex !== null && selectedInfo ? (
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 landscape:gap-x-1.5">
-              <span className="px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
-              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
-                Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
-              </span>
-              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-borne font-semibold">
-                Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
-              </span>
-              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-bornier font-semibold">
-                Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
-              </span>
-              <span className="text-[0.6875rem] landscape:text-[0.625rem] text-amber-700 font-semibold">
-                Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
-              </span>
-              {selectedInfo.locked && (
-                <Badge
-                  variant="outline"
-                  className="text-[0.5625rem] landscape:text-[0.5rem] px-1 py-0 border-state-locked text-muted-foreground"
-                >
-                  <Lock className="w-2.5 h-2.5 landscape:w-2 landscape:h-2 mr-0.5" />
-                  Non Testé
-                </Badge>
-              )}
+            <div className="flex items-start gap-x-2 landscape:gap-x-1.5">
+              <span className="shrink-0 px-4 landscape:px-2 text-[0.6875rem] landscape:text-[0.625rem] font-bold text-foreground">#{selectedLabel}</span>
+              <div className="min-w-0 flex flex-wrap items-center gap-x-2 gap-y-0.5 landscape:gap-x-1.5">
+                <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-fils font-semibold">
+                  Fils: <span className="font-medium">{selectedInfo.fils || "—"}</span>
+                </span>
+                <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-borne font-semibold">
+                  Borne: <span className="font-medium">{selectedInfo.borne || "—"}</span>
+                </span>
+                <span className="text-[0.6875rem] landscape:text-[0.625rem] text-field-bornier font-semibold">
+                  Bornier: <span className="font-medium">{selectedInfo.bornier || "—"}</span>
+                </span>
+                <span className="text-[0.6875rem] landscape:text-[0.625rem] text-amber-700 font-semibold">
+                  Cf/Cm: <span className="font-medium">{selectedInfo.cfCm || "—"}</span>
+                </span>
+                {selectedInfo.locked && (
+                  <Badge
+                    variant="outline"
+                    className="text-[0.5625rem] landscape:text-[0.5rem] px-1 py-0 border-state-locked text-muted-foreground"
+                  >
+                    <Lock className="w-2.5 h-2.5 landscape:w-2 landscape:h-2 mr-0.5" />
+                    Non Testé
+                  </Badge>
+                )}
+              </div>
             </div>
           ) : (
             <span className="block px-4 landscape:px-2 text-sm landscape:text-xs text-muted-foreground [@media(orientation:portrait)_and_(max-width:430px)]:leading-tight">
