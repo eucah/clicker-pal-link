@@ -1,5 +1,5 @@
 import { BUTTON_COUNT, ProjectData, getButtonLabel, normalizeButtonInfo } from "@/types/project";
-import { isTwinaxWire, TWINAX_LABEL, TWINAX_STATE } from "@/lib/twinax-utils";
+import { isTwinaxRow, TWINAX_LABEL, TWINAX_STATE } from "@/lib/twinax-utils";
 
 const TABLE_COLUMNS = ["N°", "Fils", "Borne", "Bornier", "Cf/Cm", "État", "Non Testé"] as const;
 const LEGACY_COLUMNS = ["Projet", "Date", ...TABLE_COLUMNS] as const;
@@ -115,7 +115,7 @@ export const buildContinuityCsv = ({ projectName, date, states, buttonInfos }: {
 
   for (let i = 0; i < BUTTON_COUNT; i += 1) {
     const info = normalizeButtonInfo(buttonInfos[i]);
-    const state = isTwinaxWire(info.fils) ? TWINAX_LABEL : (STATE_TO_LABEL[states[i]] ?? "Attente");
+    const state = isTwinaxRow(info) ? TWINAX_LABEL : (STATE_TO_LABEL[states[i]] ?? "Attente");
     const line = [
       String(getButtonLabel(i)),
       info.fils || "-",
@@ -160,7 +160,7 @@ export const parseContinuityCsv = (text: string): ProjectData => {
       if (!projectName) projectName = get("Projet");
       const filsValue = get("Fils") === "-" ? "" : get("Fils");
       const parsedState = LABEL_TO_STATE[normalize(get("État"))] ?? 0;
-      states.push(isTwinaxWire(filsValue) ? TWINAX_STATE : parsedState);
+      states.push(isTwinaxRow({ fils: filsValue, borne: get("Borne"), bornier: get("Bornier"), cfCm: get("Cf/Cm") }) ? TWINAX_STATE : parsedState);
       buttonInfos.push({
         fils: filsValue,
         borne: get("Borne") === "-" ? "" : get("Borne"),
@@ -194,7 +194,7 @@ export const parseContinuityCsv = (text: string): ProjectData => {
     const get = (colIndex: number) => (row[colIndex] ?? "").trim();
     const filsValue = get(1) === "-" ? "" : get(1);
     const parsedState = LABEL_TO_STATE[normalize(get(5))] ?? 0;
-    states.push(isTwinaxWire(filsValue) ? TWINAX_STATE : parsedState);
+    states.push(isTwinaxRow({ fils: filsValue, borne: get("Borne"), bornier: get("Bornier"), cfCm: get("Cf/Cm") }) ? TWINAX_STATE : parsedState);
     buttonInfos.push({
       fils: filsValue,
       borne: get(2) === "-" ? "" : get(2),

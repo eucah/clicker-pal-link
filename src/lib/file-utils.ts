@@ -1,6 +1,6 @@
 import { ButtonInfo, ProjectData, BUTTON_COUNT, normalizeButtonInfo } from "@/types/project";
 import { buildContinuityCsv, parseContinuityCsv } from "@/lib/csv-utils";
-import { isTwinaxWire, TWINAX_STATE } from "@/lib/twinax-utils";
+import { isTwinaxRow, TWINAX_STATE } from "@/lib/twinax-utils";
 
 const STATE_NAMES = ["Attente", "En cours", "Validé", "Défaut"] as const;
 const REPORT_STATE_BY_LINE: Record<number, string> = {
@@ -59,7 +59,7 @@ const parseLegacyTxtProjectFile = (content: string): ProjectData | null => {
     const nonTeste = isLatestFormat ? line.substring(84).trim() : isNewFormat ? line.substring(72).trim() : line.substring(58).trim();
 
     const normalizedFils = fils === "-" ? "" : fils;
-    states.push(isTwinaxWire(normalizedFils) ? TWINAX_STATE : (stateMap[etat] ?? 0));
+    states.push(isTwinaxRow({ fils: normalizedFils, borne, bornier, cfCm }) ? TWINAX_STATE : (stateMap[etat] ?? 0));
     buttonInfos.push({ fils: normalizedFils, borne: borne === "-" ? "" : borne, bornier: bornier === "-" ? "" : bornier, cfCm: cfCm === "-" ? "" : cfCm, locked: nonTeste === "Oui" });
   }
 
@@ -96,7 +96,7 @@ export const normalizeTwinaxProjectData = (project: ProjectData): ProjectData =>
   const buttonInfos = project.buttonInfos.map((info) => normalizeButtonInfo(info));
   const states = Array.from({ length: BUTTON_COUNT }, (_, index) => {
     const currentState = project.states[index] ?? 0;
-    return isTwinaxWire(buttonInfos[index]?.fils) ? TWINAX_STATE : currentState;
+    return isTwinaxRow(buttonInfos[index]) ? TWINAX_STATE : currentState;
   });
   return { ...project, states, buttonInfos };
 };
