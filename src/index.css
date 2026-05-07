@@ -23,6 +23,7 @@
     --state-warning: 30 95% 55%;
     --state-active: 142 70% 45%;
     --state-alert: 0 80% 55%;
+    --state-twinax: 48 96% 56%;
     --state-locked: 0 0% 15%;
 
     --field-fils: 210 80% 50%;
