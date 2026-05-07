@@ -3,6 +3,16 @@ import { useRef, useEffect, useState, type ChangeEvent } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { FolderOpen, Plus, Crown, Eye, Bluetooth, TriangleAlert, MessageCircleQuestion, Moon, Sun } from "lucide-react";
 import { ProjectData } from "@/types/project";
 import { parseProjectFile } from "@/lib/file-utils";
@@ -15,15 +25,18 @@ export type AppRole = "master" | "viewer";
 
 interface ProjectHomeProps {
   onLoadProject: (project: ProjectData, role: AppRole) => void;
+  onEditProject: (project: ProjectData) => void;
   onCreateProject: () => void;
   onViewerScan: () => void;
   onHelp: () => void;
 }
 
-const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: ProjectHomeProps) => {
+const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerScan, onHelp }: ProjectHomeProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [pendingProject, setPendingProject] = useState<ProjectData | null>(null);
+  const [isOpenChoice, setIsOpenChoice] = useState(false);
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -78,7 +91,8 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       try {
         const data = parseProjectFile(result);
         if (data) {
-          onLoadProject(data, "master");
+          setPendingProject(data);
+          setIsOpenChoice(true);
         } else {
           alert("Format de fichier invalide");
         }
@@ -168,7 +182,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
               className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
               size="lg"
             >
-              <FolderOpen className="w-8 h-8 landscape:w-6 landscape:h-6" /> Ouvrir un projet
+              <FolderOpen className="w-8 h-8 landscape:w-6 landscape:h-6" /> Ouvrir/Modifier projet
             </Button>
           </div>
         </div>
@@ -215,6 +229,50 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
         className="hidden"
         onChange={handleFileChange}
       />
+
+      <AlertDialog
+        open={isOpenChoice}
+        onOpenChange={(open) => {
+          setIsOpenChoice(open);
+          if (!open) {
+            setPendingProject(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Que voulez-vous faire ?</AlertDialogTitle>
+            <AlertDialogDescription>Choisissez comment ouvrir ce fichier projet.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-blue-100 text-blue-900 border border-blue-200 hover:bg-blue-200"
+              onClick={() => {
+                if (pendingProject) {
+                  onLoadProject(pendingProject, "master");
+                }
+                setPendingProject(null);
+                setIsOpenChoice(false);
+              }}
+            >
+              Accéder
+            </AlertDialogAction>
+            <AlertDialogAction
+              className="bg-red-100 text-red-900 border border-red-200 hover:bg-red-200"
+              onClick={() => {
+                if (pendingProject) {
+                  onEditProject(pendingProject);
+                }
+                setPendingProject(null);
+                setIsOpenChoice(false);
+              }}
+            >
+              Modifier
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

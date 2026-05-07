@@ -17,6 +17,7 @@ import { type ButtonInfo, normalizeButtonInfo } from "@/types/project";
 export interface ReceivedProjectData {
   states: number[];
   buttonInfos: ButtonInfo[];
+  paused?: boolean;
 }
 
 export const useBluetooth = (role: "master" | "viewer") => {
@@ -32,13 +33,13 @@ export const useBluetooth = (role: "master" | "viewer") => {
   }, []);
 
   useEffect(() => {
-    if (role !== "viewer") {
-      return;
-    }
-
     const unsubscribe = onDataReceived((data) => {
       try {
         const parsed = JSON.parse(data);
+        if (parsed && parsed.type === "pause-state" && typeof parsed.paused === "boolean") {
+          setReceivedData({ states: [], buttonInfos: [], paused: parsed.paused });
+          return;
+        }
         // New format: { states: [...], buttonInfos: [...] }
         if (parsed && Array.isArray(parsed.states)) {
           setReceivedData({
