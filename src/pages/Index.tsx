@@ -33,6 +33,8 @@ import {
 } from "@/types/project";
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
+import { normalizeTwinaxProjectData } from "@/lib/file-utils";
+import { isTwinaxWire, TWINAX_STATE } from "@/lib/twinax-utils";
 import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
@@ -66,12 +68,17 @@ const Index = () => {
   // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
     if (ble.receivedData && role === "viewer") {
-      setStates(ble.receivedData.states);
-      if (ble.receivedData.buttonInfos.length > 0) {
-        setButtonInfos(ble.receivedData.buttonInfos.map((info) => normalizeButtonInfo(info)));
+      const normalized = normalizeTwinaxProjectData({
+        name: project?.name ?? "Session Observateur",
+        states: ble.receivedData.states,
+        buttonInfos: ble.receivedData.buttonInfos,
+      });
+      setStates(normalized.states);
+      if (normalized.buttonInfos.length > 0) {
+        setButtonInfos(normalized.buttonInfos.map((info) => normalizeButtonInfo(info)));
       }
     }
-  }, [ble.receivedData, role]);
+  }, [ble.receivedData, role, project?.name]);
 
   const sendBleUpdate = useCallback(
     (newStates: number[]) => {
@@ -83,9 +90,10 @@ const Index = () => {
   );
 
   const loadProject = (loadedProject: ProjectData, selectedRole?: AppRole) => {
-    setProject(loadedProject);
-    setStates(loadedProject.states);
-    setButtonInfos(loadedProject.buttonInfos.map((info) => normalizeButtonInfo(info)));
+    const normalized = normalizeTwinaxProjectData(loadedProject);
+    setProject(normalized);
+    setStates(normalized.states);
+    setButtonInfos(normalized.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
 
     if (selectedRole) {
@@ -120,6 +128,9 @@ const Index = () => {
       }
 
       // Changement d'état autorisé uniquement sur un bouton déjà sélectionné
+      if (isTwinaxWire(buttonInfos[index]?.fils) || previousStates[index] === TWINAX_STATE) {
+        return previousStates;
+      }
       const nextStates = [...previousStates];
       const newState = (nextStates[index] + 1) % 4;
 
@@ -426,6 +437,10 @@ const Index = () => {
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-alert inline-block" />
               <strong>Défaut</strong>
+            </p>
+            <p className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm bg-state-twinax inline-block" />
+              <strong>Twinax</strong>
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />

@@ -42,4 +42,23 @@ describe("csv-utils continuity format", () => {
     expect(parsed.buttonInfos[0].bornier).toBe("02");
     expect(parsed.buttonInfos[1].borne).toBe("01");
   });
+
+  it("forces Twinax state on import and export when Fils starts with #", () => {
+    const states = makeStates();
+    states[0] = 0;
+    const infos = makeInfos();
+    infos[0].fils = "#LA118DX";
+    const csv = buildContinuityCsv({
+      projectName: "Duplex Ertms",
+      date: "07/05/2026 07:23:41",
+      states,
+      buttonInfos: infos,
+    });
+
+    expect(csv).toContain("1;#LA118DX;6;02;CF/CM-03-Twin;Twinax;Oui");
+
+    const imported = csv.replace("1;#LA118DX;6;02;CF/CM-03-Twin;Twinax;Oui", "1;#LA118DX;6;02;CF/CM-03-Twin;Attente;Oui");
+    const parsed = parseContinuityCsv(imported);
+    expect(parsed.states[0]).toBe(4);
+  });
 });

@@ -55,6 +55,7 @@ export default {
         "state-warning": "hsl(var(--state-warning))",
         "state-active": "hsl(var(--state-active))",
         "state-alert": "hsl(var(--state-alert))",
+        "state-twinax": "hsl(var(--state-twinax))",
         "state-locked": "hsl(var(--state-locked))",
         "field-fils": "hsl(var(--field-fils))",
         "field-borne": "hsl(var(--field-borne))",

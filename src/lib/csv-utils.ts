@@ -1,4 +1,5 @@
 import { BUTTON_COUNT, ProjectData, getButtonLabel, normalizeButtonInfo } from "@/types/project";
+import { isTwinaxWire, TWINAX_LABEL, TWINAX_STATE } from "@/lib/twinax-utils";
 
 const TABLE_COLUMNS = ["N°", "Fils", "Borne", "Bornier", "Cf/Cm", "État", "Non Testé"] as const;
 const LEGACY_COLUMNS = ["Projet", "Date", ...TABLE_COLUMNS] as const;
@@ -10,6 +11,7 @@ const STATE_TO_LABEL: Record<number, string> = {
   1: "En cours",
   2: "Validé",
   3: "Défaut",
+  [TWINAX_STATE]: TWINAX_LABEL,
 };
 
 const LABEL_TO_STATE: Record<string, number> = {
@@ -18,6 +20,7 @@ const LABEL_TO_STATE: Record<string, number> = {
   "validé": 2,
   "defaut": 3,
   "défaut": 3,
+  "twinax": TWINAX_STATE,
 };
 
 const normalize = (value: string): string => value.trim().toLowerCase();
@@ -112,7 +115,7 @@ export const buildContinuityCsv = ({ projectName, date, states, buttonInfos }: {
 
   for (let i = 0; i < BUTTON_COUNT; i += 1) {
     const info = normalizeButtonInfo(buttonInfos[i]);
-    const state = STATE_TO_LABEL[states[i]] ?? "Attente";
+    const state = isTwinaxWire(info.fils) ? TWINAX_LABEL : (STATE_TO_LABEL[states[i]] ?? "Attente");
     const line = [
       String(getButtonLabel(i)),
       info.fils || "-",
@@ -155,9 +158,11 @@ export const parseContinuityCsv = (text: string): ProjectData => {
       const row = normalizedRows[i];
       const get = (col: (typeof LEGACY_COLUMNS)[number]) => (row[index[col]] ?? "").trim();
       if (!projectName) projectName = get("Projet");
-      states.push(LABEL_TO_STATE[normalize(get("État"))] ?? 0);
+      const filsValue = get("Fils") === "-" ? "" : get("Fils");
+      const parsedState = LABEL_TO_STATE[normalize(get("État"))] ?? 0;
+      states.push(isTwinaxWire(filsValue) ? TWINAX_STATE : parsedState);
       buttonInfos.push({
-        fils: get("Fils") === "-" ? "" : get("Fils"),
+        fils: filsValue,
         borne: get("Borne") === "-" ? "" : get("Borne"),
         bornier: get("Bornier") === "-" ? "" : get("Bornier"),
         cfCm: get("Cf/Cm") === "-" ? "" : get("Cf/Cm"),
@@ -187,9 +192,11 @@ export const parseContinuityCsv = (text: string): ProjectData => {
     if (row.every((value) => value === "")) continue;
 
     const get = (colIndex: number) => (row[colIndex] ?? "").trim();
-    states.push(LABEL_TO_STATE[normalize(get(5))] ?? 0);
+    const filsValue = get(1) === "-" ? "" : get(1);
+    const parsedState = LABEL_TO_STATE[normalize(get(5))] ?? 0;
+    states.push(isTwinaxWire(filsValue) ? TWINAX_STATE : parsedState);
     buttonInfos.push({
-      fils: get(1) === "-" ? "" : get(1),
+      fils: filsValue,
       borne: get(2) === "-" ? "" : get(2),
       bornier: get(3) === "-" ? "" : get(3),
       cfCm: get(4) === "-" ? "" : get(4),
