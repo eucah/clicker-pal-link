@@ -256,7 +256,7 @@ const Index = () => {
       return;
     }
 
-    const enteredName = window.prompt("Nom du rapport (.txt ajouté si nécessaire)", `${project.name}-rapport`);
+    const enteredName = window.prompt("Nom du rapport (.csv ajouté si nécessaire)", `${project.name}-rapport`);
     if (enteredName === null) {
       return;
     }
@@ -269,7 +269,7 @@ const Index = () => {
 
     const success = await saveReportFile(
       { name: project.name, states, buttonInfos },
-      trimmed.endsWith(".txt") ? trimmed : `${trimmed}.txt`,
+      trimmed.endsWith(".csv") ? trimmed : `${trimmed}.csv`,
     );
 
     if (!success) {
