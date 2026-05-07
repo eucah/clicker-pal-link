@@ -506,7 +506,7 @@ const Index = () => {
       <AlertDialog open={isBackConfirmOpen} onOpenChange={setIsBackConfirmOpen}>
         <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>{isMaster ? "Quitter la grille ?" : "Quitter la grille partagée ?"}</AlertDialogTitle>
+            <AlertDialogTitle>Quitter le projet en cours ?</AlertDialogTitle>
             <AlertDialogDescription>
               {isMaster
                 ? "Attention : revenir à l'accueil arrêtera la session en cours. Voulez-vous continuer ?"
@@ -514,14 +514,15 @@ const Index = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel className="active:scale-95">Annuler</AlertDialogCancel>
             <AlertDialogAction
+              className="active:scale-95"
               onClick={() => {
                 setIsBackConfirmOpen(false);
                 void leaveGridAndGoHome();
               }}
             >
-              {isMaster ? "Confirmer" : "Quitter"}
+              Confirmer
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
