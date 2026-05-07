@@ -240,11 +240,11 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
       >
         <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
-            <AlertDialogTitle>Que voulez-vous faire ?</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">Que voulez-vous faire ?</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
             <AlertDialogAction
-              className="bg-blue-100 text-blue-900 border border-blue-200 hover:bg-blue-200"
+              className="bg-blue-100 text-blue-900 border border-blue-200 hover:bg-blue-200 active:scale-95"
               onClick={() => {
                 if (pendingProject) {
                   onLoadProject(pendingProject, "master");
@@ -256,7 +256,7 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
               Accéder
             </AlertDialogAction>
             <AlertDialogAction
-              className="bg-red-100 text-red-900 border border-red-200 hover:bg-red-200"
+              className="bg-red-100 text-red-900 border border-red-200 hover:bg-red-200 active:scale-95"
               onClick={() => {
                 if (pendingProject) {
                   onEditProject(pendingProject);
@@ -267,7 +267,7 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
             >
               Modifier
             </AlertDialogAction>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogCancel className="active:scale-95">Annuler</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
