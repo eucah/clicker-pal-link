@@ -448,10 +448,10 @@ const Index = () => {
           setIsPaused(nextPaused);
           void ble.sendRawMessage(JSON.stringify({ type: "pause-state", paused: nextPaused }));
         }}
-        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-14 h-14 rounded-full shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 hover:bg-red-700 animate-pulse" : "bg-green-600 hover:bg-green-700"}`}
+        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-10 h-10 rounded-full shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 hover:bg-red-700 animate-pulse" : "bg-green-600 hover:bg-green-700"}`}
         aria-label={isPaused ? "Désactiver pause" : "Activer pause"}
       >
-        <Pause className="w-6 h-6 text-white" />
+        <Pause className="w-4 h-4 text-white" />
       </button>
 
       <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
