@@ -56,9 +56,9 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
     }
 
     const lowerName = file.name.toLowerCase();
-    const allowedMimeTypes = ["application/json", "text/plain"];
+    const allowedMimeTypes = ["application/json", "text/plain", "text/csv", "application/vnd.ms-excel"];
     const hasSupportedMimeType = file.type ? allowedMimeTypes.includes(file.type) : false;
-    const hasSupportedExtension = lowerName.endsWith(".json") || lowerName.endsWith(".txt");
+    const hasSupportedExtension = lowerName.endsWith(".json") || lowerName.endsWith(".txt") || lowerName.endsWith(".csv");
 
     if (!hasSupportedMimeType && !hasSupportedExtension) {
       alert("Type de fichier non supporté");
@@ -211,7 +211,7 @@ const ProjectHome = ({ onLoadProject, onCreateProject, onViewerScan, onHelp }: P
       <input
         ref={fileInputRef}
         type="file"
-        accept=".json,.txt"
+        accept=".json,.txt,.csv"
         className="hidden"
         onChange={handleFileChange}
       />

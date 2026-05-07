@@ -39,10 +39,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <ul className="list-disc pl-5 text-muted-foreground space-y-1">
               <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers, Cf/Cm).</li>
-              <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier TXT.</li>
+              <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier CSV.</li>
               <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
               <li><strong>Changer l'état des contacts</strong> — Appui court pour faire défiler les états.</li>
-              <li><strong>Éditer un rapport</strong> — Création d'un rapport au format TXT reprenant les informations du projet par borne, avec l'état Validé/Défaut, ou vide si non testé.</li>
+              <li><strong>Éditer un rapport</strong> — Création d'un rapport au format CSV reprenant les informations du projet par borne, avec l'état Validé/Défaut, ou vide si non testé.</li>
             </ul>
           </section>
 
@@ -125,9 +125,9 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               <li>Premier appui : sélectionne le contact sans changer son état et permet de voir ses détails (fils, borne, bornier, Cf/Cm).</li>
               <li>Appui court sur un contact sélectionné = change son état.</li>
               <li>Il est possible de revenir à l'état en attente et de refaire l'essai après plusieurs appuis.</li>
-              <li>Le projet peut être sauvegardé en fichier TXT pour être rechargé ultérieurement.</li>
-              <li>Il est possible de modifier le fichier TXT en dehors de l'application (vierge ou déjà rempli).</li>
-              <li>Le format du fichier TXT permet une édition simple sous forme de tableau. Le fichier doit conserver cette forme pour permettre une lecture correcte par l'application.</li>
+              <li>Le projet peut être sauvegardé en fichier CSV pour être rechargé ultérieurement.</li>
+              <li>Il est possible de modifier le fichier CSV en dehors de l'application (vierge ou déjà rempli).</li>
+              <li>Le format du fichier CSV permet une édition simple sous forme de tableau. Le fichier doit conserver cette forme pour permettre une lecture correcte par l'application.</li>
               <li>Un contact a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient « Pont ».</li>
               <li>Le numéro inscrit dans <strong>borne</strong> d'un contact Pont désigne son <strong>contact pont associé</strong>.</li>
               <li>Le contact pont associé n'est visible que lorsque le contact Pont source est sélectionné.</li>
