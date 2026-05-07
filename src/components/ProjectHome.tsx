@@ -8,7 +8,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -242,10 +241,8 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
         <AlertDialogContent className="max-w-sm">
           <AlertDialogHeader>
             <AlertDialogTitle>Que voulez-vous faire ?</AlertDialogTitle>
-            <AlertDialogDescription>Choisissez comment ouvrir ce fichier projet.</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
             <AlertDialogAction
               className="bg-blue-100 text-blue-900 border border-blue-200 hover:bg-blue-200"
               onClick={() => {
@@ -270,6 +267,7 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
             >
               Modifier
             </AlertDialogAction>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
