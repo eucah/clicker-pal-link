@@ -13,6 +13,7 @@ const STATE_COLORS = [
 
 interface ButtonGridProps {
   isMaster: boolean;
+  isDark: boolean;
   states: number[];
   buttonInfos: ButtonInfo[];
   selectedIndex: number | null;
@@ -20,7 +21,7 @@ interface ButtonGridProps {
   onSelect: (index: number) => void;
 }
 
-const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
+const ButtonGrid = ({ isMaster, isDark, states, buttonInfos, selectedIndex, onToggle, onSelect }: ButtonGridProps) => {
   const pontIndexes = useMemo(() => buildPontIndexSet(buttonInfos), [buttonInfos]);
   // Le contact pont associé est un effet temporaire lié à la sélection
   const associatedPontContactIndex = useMemo(
@@ -57,12 +58,13 @@ const ButtonGrid = ({ isMaster, states, buttonInfos, selectedIndex, onToggle, on
       : isPont
         ? "border-2 border-blue-600"
         : "border border-transparent";
+    const labelColorClass = !isDark && isLocked ? "!text-white" : "!text-black dark:!text-black";
 
     return (
       <button
         key={label}
         onClick={() => handleClick(stateIndex)}
-        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold !text-black dark:!text-black ${
+        className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold ${labelColorClass} ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
             : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`

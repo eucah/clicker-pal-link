@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTheme } from "next-themes";
+import { Switch } from "@/components/ui/switch";
 import ButtonGrid from "@/components/ButtonGrid";
 import ProjectHome, { type AppRole } from "@/components/ProjectHome";
 import ProjectEditor from "@/components/ProjectEditor";
@@ -23,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, Bluetooth, BluetoothOff, Crown, Eye, FileChartColumn, List, Lock } from "lucide-react";
+import { ArrowLeft, Bluetooth, BluetoothOff, Crown, Eye, FileChartColumn, List, Lock, Moon, Pause, Sun } from "lucide-react";
 import {
   ProjectData,
   BUTTON_COUNT,
@@ -48,6 +50,10 @@ const Index = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isBackConfirmOpen, setIsBackConfirmOpen] = useState(false);
+  const [editorProject, setEditorProject] = useState<ProjectData | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   const isMaster = role === "master";
   const ble = useBluetooth(role);
@@ -67,7 +73,10 @@ const Index = () => {
 
   // Issue #1 & #2: Viewer now receives BOTH states AND buttonInfos from master
   useEffect(() => {
-    if (ble.receivedData && role === "viewer") {
+    if (ble.receivedData?.paused !== undefined) {
+      setIsPaused(ble.receivedData.paused);
+    }
+    if (ble.receivedData && role === "viewer" && ble.receivedData.states.length > 0) {
       const normalized = normalizeTwinaxProjectData({
         name: project?.name ?? "Session Observateur",
         states: ble.receivedData.states,
@@ -95,6 +104,7 @@ const Index = () => {
     setStates(normalized.states);
     setButtonInfos(normalized.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
+    setIsPaused(false);
 
     if (selectedRole) {
       setRole(selectedRole);
@@ -227,8 +237,14 @@ const Index = () => {
     return (
       <ProjectHome
         onLoadProject={loadProject}
+        onEditProject={(loadedProject) => {
+          setRole("master");
+          setEditorProject(loadedProject);
+          setScreen("editor");
+        }}
         onCreateProject={() => {
           setRole("master");
+          setEditorProject(null);
           setScreen("editor");
         }}
         onViewerScan={handleViewerScan}
@@ -243,6 +259,7 @@ const Index = () => {
         onSave={(savedProject) => loadProject(savedProject, "master")}
         onAccess={(savedProject) => loadProject(savedProject, "master")}
         onCancel={() => setScreen("home")}
+        initialProject={editorProject}
       />
     );
   }
@@ -405,6 +422,7 @@ const Index = () => {
       <div className="flex-1 px-2 sm:px-3 landscape:px-2 py-1 landscape:py-0.5 overflow-auto" ref={gridRef}>
         <ButtonGrid
           isMaster={isMaster}
+          isDark={isDark}
           states={states}
           buttonInfos={buttonInfos}
           selectedIndex={selectedIndex}
@@ -412,6 +430,29 @@ const Index = () => {
           onSelect={handleSelect}
         />
       </div>
+
+      <div className="fixed left-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50">
+        <div className="flex items-center gap-2 rounded-full shadow-xl shadow-gray-900/30 border border-border bg-card/90 px-3 py-2 landscape:px-2.5 landscape:py-1.5 backdrop-blur-sm">
+          {isDark ? <Sun className="h-4 w-4 text-yellow-400" /> : <Moon className="h-4 w-4 text-muted-foreground" />}
+          <Switch
+            aria-label="Activer le mode sombre"
+            checked={isDark}
+            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={() => {
+          const nextPaused = !isPaused;
+          setIsPaused(nextPaused);
+          void ble.sendRawMessage(JSON.stringify({ type: "pause-state", paused: nextPaused }));
+        }}
+        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-14 h-14 rounded-full shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 hover:bg-red-700 animate-pulse" : "bg-green-600 hover:bg-green-700"}`}
+        aria-label={isPaused ? "Désactiver pause" : "Activer pause"}
+      >
+        <Pause className="w-6 h-6 text-white" />
+      </button>
 
       <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
         <DialogContent

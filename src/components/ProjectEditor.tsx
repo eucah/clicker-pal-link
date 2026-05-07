@@ -11,11 +11,12 @@ interface ProjectEditorProps {
   onSave: (project: ProjectData) => void;
   onAccess: (project: ProjectData) => void;
   onCancel: () => void;
+  initialProject?: ProjectData | null;
 }
 
-const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
-  const [projectName, setProjectName] = useState("");
-  const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(createDefaultInfos());
+const ProjectEditor = ({ onSave, onAccess, onCancel, initialProject }: ProjectEditorProps) => {
+  const [projectName, setProjectName] = useState(initialProject?.name ?? "");
+  const [buttonInfos, setButtonInfos] = useState<ButtonInfo[]>(initialProject?.buttonInfos ?? createDefaultInfos());
 
   const updateButton = useCallback((index: number, field: keyof ButtonInfo, value: string | boolean) => {
     setButtonInfos((prev) => {
@@ -56,7 +57,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel }: ProjectEditorProps) => {
         <button onClick={onCancel} className="p-1 landscape:p-0.5 rounded-md bg-secondary text-secondary-foreground active:scale-95">
           <ArrowLeft className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
         </button>
-        <h1 className="text-l landscape:text-sm font-bold text-foreground">Nouveau projet</h1>
+        <h1 className="text-l landscape:text-sm font-bold text-foreground">{initialProject ? "Modifier projet" : "Nouveau projet"}</h1>
         <div className="flex ml-auto gap-2 landscape:gap-1.5">
           <Button onClick={handleAccess} disabled={!projectName.trim()} variant="outline" className="gap-2 landscape:gap-1 h-8 landscape:h-7 text-sm landscape:text-xs shadow-xl shadow-gray-900/30 active:scale-95" size="sm">
             <Play className="w-3.5 h-3.5 landscape:w-3 landscape:h-3" /> Accéder
