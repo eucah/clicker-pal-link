@@ -242,7 +242,7 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
           <AlertDialogHeader>
             <AlertDialogTitle className="text-center">Que voulez-vous faire ?</AlertDialogTitle>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
+          <AlertDialogFooter className="flex flex-col sm:flex-row justify-center sm:justify-center gap-2">
             <AlertDialogAction
               className="bg-blue-100 text-blue-900 border border-blue-200 hover:bg-blue-200 active:scale-95"
               onClick={() => {
