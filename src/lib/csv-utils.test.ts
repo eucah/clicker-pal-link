@@ -43,11 +43,12 @@ describe("csv-utils continuity format", () => {
     expect(parsed.buttonInfos[1].borne).toBe("01");
   });
 
-  it("forces Twinax state on import and export when Fils starts with #", () => {
+  it("forces Twinax state on import and export when twin appears in any tracked field", () => {
     const states = makeStates();
     states[0] = 0;
     const infos = makeInfos();
-    infos[0].fils = "#LA118DX";
+    infos[0].fils = "LA118DX";
+    infos[0].bornier = "CF/CM-03-Twin";
     const csv = buildContinuityCsv({
       projectName: "Duplex Ertms",
       date: "07/05/2026 07:23:41",
@@ -55,9 +56,9 @@ describe("csv-utils continuity format", () => {
       buttonInfos: infos,
     });
 
-    expect(csv).toContain("1;#LA118DX;6;02;CF/CM-03-Twin;Twinax;Oui");
+    expect(csv).toContain(";Twinax;");
 
-    const imported = csv.replace("1;#LA118DX;6;02;CF/CM-03-Twin;Twinax;Oui", "1;#LA118DX;6;02;CF/CM-03-Twin;Attente;Oui");
+    const imported = csv.replace(";Twinax;", ";Attente;");
     const parsed = parseContinuityCsv(imported);
     expect(parsed.states[0]).toBe(4);
   });

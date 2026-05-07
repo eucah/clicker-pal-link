@@ -36,7 +36,7 @@ import {
 import { useBluetooth } from "@/hooks/use-bluetooth";
 import { saveReportFile } from "@/lib/file-utils";
 import { normalizeTwinaxProjectData } from "@/lib/file-utils";
-import { isTwinaxWire, TWINAX_STATE } from "@/lib/twinax-utils";
+import { isTwinaxRow, TWINAX_STATE, TWINAX_PAIR_COLOR_CLASSES } from "@/lib/twinax-utils";
 import { useSessionKeepAwake } from "@/hooks/use-session-keep-awake";
 
 type Screen = "home" | "editor" | "grid" | "viewer-scan" | "help";
@@ -138,7 +138,7 @@ const Index = () => {
       }
 
       // Changement d'état autorisé uniquement sur un bouton déjà sélectionné
-      if (isTwinaxWire(buttonInfos[index]?.fils) || previousStates[index] === TWINAX_STATE) {
+      if (isTwinaxRow(buttonInfos[index]) || previousStates[index] === TWINAX_STATE) {
         return previousStates;
       }
       const nextStates = [...previousStates];
@@ -480,8 +480,8 @@ const Index = () => {
               <strong>Défaut</strong>
             </p>
             <p className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-sm bg-state-twinax inline-block" />
-              <strong>Twinax</strong>
+              <span className="inline-flex items-center gap-1">{TWINAX_PAIR_COLOR_CLASSES.map((colorClass, idx) => (<span key={idx} className={`w-3 h-3 rounded-sm border inline-block ${colorClass}`} />))}</span>
+              <strong>Twinax par paires</strong>
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { buildPontIndexSet, resolveAssociatedPontContactIndex } from "@/lib/pont-utils";
 import { ButtonInfo } from "@/types/project";
-import { isTwinaxWire, TWINAX_STATE } from "@/lib/twinax-utils";
+import { buildTwinaxPairColorMap, getTwinaxColorForRow, isTwinaxRow, TWINAX_STATE } from "@/lib/twinax-utils";
 
 const STATE_COLORS = [
   "bg-state-idle",
@@ -29,9 +29,11 @@ const ButtonGrid = ({ isMaster, isDark, states, buttonInfos, selectedIndex, onTo
     [buttonInfos, selectedIndex],
   );
 
+  const twinaxColorMap = useMemo(() => buildTwinaxPairColorMap(buttonInfos), [buttonInfos]);
+
   const handleClick = (stateIndex: number) => {
     if (buttonInfos[stateIndex]?.locked) return;
-    if (isTwinaxWire(buttonInfos[stateIndex]?.fils) || states[stateIndex] === TWINAX_STATE) {
+    if (isTwinaxRow(buttonInfos[stateIndex]) || states[stateIndex] === TWINAX_STATE) {
       onSelect(stateIndex);
       return;
     }
@@ -67,7 +69,7 @@ const ButtonGrid = ({ isMaster, isDark, states, buttonInfos, selectedIndex, onTo
         className={`aspect-square rounded-full flex items-center shadow-xl shadow-gray-900/30 justify-center flex-shrink-0 transition-colors duration-150 text-[0.625rem] sm:text-[0.6875rem] landscape:text-[0.5625rem] landscape:scale-[0.94] font-bold ${labelColorClass} ${
           isLocked
             ? "bg-state-locked cursor-not-allowed"
-            : `${STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
+            : `${states[stateIndex] === TWINAX_STATE ? getTwinaxColorForRow(info, stateIndex, twinaxColorMap) : STATE_COLORS[states[stateIndex]]} !text-black dark:!text-black ${isMaster ? "active:scale-90 cursor-pointer" : "cursor-default"} ${states[stateIndex] === 1 ? "animate-pulse-slow" : ""}`
         } ${pontVisualClass} ${isSelected ? "ring-2 ring-primary ring-offset-1" : ""}`}
       >
         {label}
