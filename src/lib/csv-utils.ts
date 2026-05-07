@@ -1,7 +1,8 @@
 import { BUTTON_COUNT, ProjectData, getButtonLabel, normalizeButtonInfo } from "@/types/project";
 
-const CSV_COLUMNS = ["Projet", "Date", "N°", "Fils", "Borne", "Bornier", "Cf/Cm", "État", "Non Testé"] as const;
-const CSV_HEADER = CSV_COLUMNS.join(";");
+const TABLE_COLUMNS = ["N°", "Fils", "Borne", "Bornier", "Cf/Cm", "État", "Non Testé"] as const;
+const LEGACY_COLUMNS = ["Projet", "Date", ...TABLE_COLUMNS] as const;
+const TABLE_HEADER = TABLE_COLUMNS.join(";");
 const UTF8_BOM = "\uFEFF";
 
 const STATE_TO_LABEL: Record<number, string> = {
@@ -102,13 +103,17 @@ export const parseCsvRows = (text: string): string[][] => {
 };
 
 export const buildContinuityCsv = ({ projectName, date, states, buttonInfos }: { projectName: string; date: string; states: number[]; buttonInfos: ProjectData["buttonInfos"] }): string => {
-  const lines = [CSV_HEADER];
+  const lines = [
+    ["Projet", projectName].map(escapeCsvValue).join(";"),
+    ["Date", date].map(escapeCsvValue).join(";"),
+    "",
+    TABLE_HEADER,
+  ];
+
   for (let i = 0; i < BUTTON_COUNT; i += 1) {
     const info = normalizeButtonInfo(buttonInfos[i]);
     const state = STATE_TO_LABEL[states[i]] ?? "Attente";
     const line = [
-      projectName,
-      date,
       String(getButtonLabel(i)),
       info.fils || "-",
       info.borne || "-",
@@ -129,40 +134,67 @@ export const parseContinuityCsv = (text: string): ProjectData => {
     throw new Error("Le fichier CSV est vide.");
   }
 
-  const header = rows[0].map((v) => v.trim());
-  const required = [...CSV_COLUMNS];
-  const missing = required.filter((col) => !header.includes(col));
-  if (missing.length > 0) {
-    throw new Error(`Colonnes CSV manquantes : ${missing.join(", ")}.`);
+  const normalizedRows = rows.map((row) => row.map((v) => v.trim()));
+  const findRowValue = (label: string): string => {
+    const found = normalizedRows.find((row) => normalize(row[0] ?? "") === normalize(label));
+    return (found?.[1] ?? "").trim();
+  };
+
+  const headerIndex = normalizedRows.findIndex((row) =>
+    TABLE_COLUMNS.every((column, idx) => (row[idx] ?? "") === column),
+  );
+
+  const isLegacyFlat = headerIndex === 0 && LEGACY_COLUMNS.every((column, idx) => (normalizedRows[0]?.[idx] ?? "") === column);
+  if (isLegacyFlat) {
+    const index = Object.fromEntries(LEGACY_COLUMNS.map((col) => [col, normalizedRows[0].indexOf(col)])) as Record<(typeof LEGACY_COLUMNS)[number], number>;
+    const states: number[] = [];
+    const buttonInfos: ProjectData["buttonInfos"] = [];
+    let projectName = "";
+
+    for (let i = 1; i < normalizedRows.length; i += 1) {
+      const row = normalizedRows[i];
+      const get = (col: (typeof LEGACY_COLUMNS)[number]) => (row[index[col]] ?? "").trim();
+      if (!projectName) projectName = get("Projet");
+      states.push(LABEL_TO_STATE[normalize(get("État"))] ?? 0);
+      buttonInfos.push({
+        fils: get("Fils") === "-" ? "" : get("Fils"),
+        borne: get("Borne") === "-" ? "" : get("Borne"),
+        bornier: get("Bornier") === "-" ? "" : get("Bornier"),
+        cfCm: get("Cf/Cm") === "-" ? "" : get("Cf/Cm"),
+        locked: parseNonTeste(get("Non Testé")),
+      });
+    }
+
+    if (!projectName) throw new Error("Colonne Projet invalide : nom de projet manquant.");
+    if (states.length !== BUTTON_COUNT) throw new Error(`Le fichier CSV doit contenir ${BUTTON_COUNT} lignes d'essais.`);
+    return { name: projectName, states, buttonInfos };
   }
 
-  const index = Object.fromEntries(required.map((col) => [col, header.indexOf(col)])) as Record<(typeof CSV_COLUMNS)[number], number>;
+  const projectName = findRowValue("Projet");
+  const projectDate = findRowValue("Date");
+  if (!projectName) throw new Error("CSV invalide : ligne Projet manquante ou vide.");
+  if (!projectDate) throw new Error("CSV invalide : ligne Date manquante ou vide.");
+
+  if (headerIndex === -1) {
+    throw new Error(`En-tête CSV introuvable. Colonnes attendues : ${TABLE_COLUMNS.join(", ")}.`);
+  }
 
   const states: number[] = [];
   const buttonInfos: ProjectData["buttonInfos"] = [];
-  let projectName = "";
 
-  for (let i = 1; i < rows.length; i += 1) {
-    const row = rows[i];
-    const get = (col: (typeof CSV_COLUMNS)[number]) => (row[index[col]] ?? "").trim();
+  for (let i = headerIndex + 1; i < normalizedRows.length; i += 1) {
+    const row = normalizedRows[i];
+    if (row.every((value) => value === "")) continue;
 
-    if (!projectName) {
-      projectName = get("Projet");
-    }
-
-    const stateLabel = normalize(get("État"));
-    states.push(LABEL_TO_STATE[stateLabel] ?? 0);
+    const get = (colIndex: number) => (row[colIndex] ?? "").trim();
+    states.push(LABEL_TO_STATE[normalize(get(5))] ?? 0);
     buttonInfos.push({
-      fils: get("Fils") === "-" ? "" : get("Fils"),
-      borne: get("Borne") === "-" ? "" : get("Borne"),
-      bornier: get("Bornier") === "-" ? "" : get("Bornier"),
-      cfCm: get("Cf/Cm") === "-" ? "" : get("Cf/Cm"),
-      locked: parseNonTeste(get("Non Testé")),
+      fils: get(1) === "-" ? "" : get(1),
+      borne: get(2) === "-" ? "" : get(2),
+      bornier: get(3) === "-" ? "" : get(3),
+      cfCm: get(4) === "-" ? "" : get(4),
+      locked: parseNonTeste(get(6)),
     });
-  }
-
-  if (!projectName) {
-    throw new Error("Colonne Projet invalide : nom de projet manquant.");
   }
 
   if (states.length !== BUTTON_COUNT) {
