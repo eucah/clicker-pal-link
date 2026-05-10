@@ -160,7 +160,7 @@ export const parseContinuityCsv = (text: string): ProjectData => {
       if (!projectName) projectName = get("Projet");
       const filsValue = get("Fils") === "-" ? "" : get("Fils");
       const parsedState = LABEL_TO_STATE[normalize(get("État"))] ?? 0;
-      states.push(isTwinaxRow({ fils: filsValue, borne: get("Borne"), bornier: get("Bornier"), cfCm: get("Cf/Cm") }) ? TWINAX_STATE : parsedState);
+      states.push(isTwinaxRow({ fils: filsValue, borne: get(2), bornier: get(3), cfCm: get(4) }) ? TWINAX_STATE : parsedState);
       buttonInfos.push({
         fils: filsValue,
         borne: get("Borne") === "-" ? "" : get("Borne"),
@@ -194,7 +194,7 @@ export const parseContinuityCsv = (text: string): ProjectData => {
     const get = (colIndex: number) => (row[colIndex] ?? "").trim();
     const filsValue = get(1) === "-" ? "" : get(1);
     const parsedState = LABEL_TO_STATE[normalize(get(5))] ?? 0;
-    states.push(isTwinaxRow({ fils: filsValue, borne: get("Borne"), bornier: get("Bornier"), cfCm: get("Cf/Cm") }) ? TWINAX_STATE : parsedState);
+    states.push(isTwinaxRow({ fils: filsValue, borne: get(2), bornier: get(3), cfCm: get(4) }) ? TWINAX_STATE : parsedState);
     buttonInfos.push({
       fils: filsValue,
       borne: get(2) === "-" ? "" : get(2),
