@@ -96,7 +96,8 @@ export const normalizeTwinaxProjectData = (project: ProjectData): ProjectData =>
   const buttonInfos = project.buttonInfos.map((info) => normalizeButtonInfo(info));
   const states = Array.from({ length: BUTTON_COUNT }, (_, index) => {
     const currentState = project.states[index] ?? 0;
-    return isTwinaxRow(buttonInfos[index]) ? TWINAX_STATE : currentState;
+    const info = buttonInfos[index];
+    return info && isTwinaxRow(info) ? TWINAX_STATE : currentState;
   });
   return { ...project, states, buttonInfos };
 };
