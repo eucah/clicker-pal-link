@@ -52,7 +52,6 @@ const Index = () => {
   const [isBackConfirmOpen, setIsBackConfirmOpen] = useState(false);
   const [editorProject, setEditorProject] = useState<ProjectData | null>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [hasPauseBeenPressed, setHasPauseBeenPressed] = useState(false);
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -106,7 +105,6 @@ const Index = () => {
     setButtonInfos(normalized.buttonInfos.map((info) => normalizeButtonInfo(info)));
     setSelectedIndex(null);
     setIsPaused(false);
-    setHasPauseBeenPressed(false);
 
     if (selectedRole) {
       setRole(selectedRole);
@@ -446,15 +444,14 @@ const Index = () => {
 
       <button
         onClick={() => {
-          setHasPauseBeenPressed(true);
           const nextPaused = !isPaused;
           setIsPaused(nextPaused);
           void ble.sendRawMessage(JSON.stringify({ type: "pause-state", paused: nextPaused }));
         }}
-        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-10 h-10 rounded-full border shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${hasPauseBeenPressed ? "bg-red-600 border-red-600 text-white animate-pulse" : "bg-white border-blue-600 text-blue-600"}`}
+        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-10 h-10 rounded-full border shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 border-red-600 text-white animate-pulse" : "bg-white border-blue-600 text-blue-600"}`}
         aria-label={isPaused ? "Désactiver pause" : "Activer pause"}
       >
-        {hasPauseBeenPressed ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        {isPaused ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
       </button>
 
       <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
