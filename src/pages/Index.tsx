@@ -457,12 +457,12 @@ const Index = () => {
       <Dialog open={isLegendOpen} onOpenChange={setIsLegendOpen}>
         <DialogContent
           overlayClassName="bg-black/20 backdrop-blur-sm"
-          className="max-w-sm bg-background/90 backdrop-blur-md"
+          className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-sm md:max-w-md max-h-[calc(100dvh-1rem)] landscape:max-h-[calc(100dvh-0.75rem)] overflow-hidden bg-background/90 backdrop-blur-md"
         >
           <DialogHeader>
             <DialogTitle>Légende</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2 text-sm">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm landscape:grid-cols-2 landscape:gap-y-2">
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-idle inline-block" />
               <strong>Attente</strong>
