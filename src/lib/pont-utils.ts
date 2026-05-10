@@ -34,8 +34,18 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
   buttonInfos.forEach((info, index) => {
     if (!info || typeof info.bornier !== "string") return;
     if (!PONT_PATTERN.test(info.bornier)) return;
-    // Un bouton Pont reste permanent uniquement via bornier = Pont
+
     pontIndexes.add(index);
+
+    const targetLabel = extractBorneLabel(info.borne);
+    if (targetLabel === null) return;
+
+    const targetIndex = getButtonIndexFromLabel(targetLabel);
+    if (targetIndex === null) return;
+    if (targetIndex < 0 || targetIndex >= buttonInfos.length) return;
+    if (targetIndex === index) return;
+
+    pontIndexes.add(targetIndex);
   });
 
   return pontIndexes;
