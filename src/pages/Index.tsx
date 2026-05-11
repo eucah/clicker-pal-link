@@ -481,7 +481,7 @@ const Index = () => {
             </p>
             <p className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1">{TWINAX_PAIR_COLOR_CLASSES.map((colorClass, idx) => (<span key={idx} className={`w-3 h-3 rounded-sm border inline-block ${colorClass}`} />))}</span>
-              <strong>Twinax par paires</strong>
+              <strong>Twinax</strong>
             </p>
             <p className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />
