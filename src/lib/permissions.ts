@@ -7,6 +7,17 @@ export const checkAndRequestPermissions = async () => {
   }
 
   try {
+    // On Android, this Capacitor plugin is responsible for triggering runtime
+    // permission prompts through the native `bluetooth` alias when needed.
+    const pluginWithPermissions = BluetoothClassic as unknown as {
+      checkPermissions?: () => Promise<Record<string, string>>;
+      requestPermissions?: () => Promise<Record<string, string>>;
+    };
+    const permissionState = await pluginWithPermissions.checkPermissions?.();
+    if (permissionState?.bluetooth && permissionState.bluetooth !== "granted") {
+      await pluginWithPermissions.requestPermissions?.();
+    }
+
     await BluetoothClassic.isBluetoothAvailable();
     await BluetoothClassic.isBluetoothEnabled();
   } catch (error) {

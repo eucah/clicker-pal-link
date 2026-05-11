@@ -143,81 +143,81 @@ const ProjectHome = ({ onLoadProject, onEditProject, onCreateProject, onViewerSc
 
       <div className="w-full flex-1 flex flex-col items-center justify-center landscape:justify-start py-4 landscape:py-2">
         <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 flex flex-col">
-        <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-2">
-          <div className="hidden landscape:flex landscape:justify-start">
-            {themeSwitch}
+          <div className="w-full flex justify-center landscape:grid landscape:grid-cols-[1fr_auto_1fr] landscape:items-center mb-1 landscape:mb-2">
+            <div className="hidden landscape:flex landscape:justify-start">
+              {themeSwitch}
+            </div>
+            <Image
+              src={isDark ? titleDark : titleLight}
+              alt="Essais Continuité"
+              width={300}
+              height={75}
+              className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none landscape:w-[min(15.5rem,52vw)] landscape:justify-self-center"
+              draggable={false}
+              priority
+            />
+            <div className="hidden landscape:flex landscape:justify-end">
+              {helpButton}
+            </div>
           </div>
-          <Image
-            src={isDark ? titleDark : titleLight}
-            alt="Essais Continuité"
-            width={300}
-            height={75}
-            className="w-[min(18.75rem,82vw)] sm:w-[18.75rem] max-w-full h-auto object-contain select-none landscape:w-[min(15.5rem,52vw)] landscape:justify-self-center"
-            draggable={false}
-            priority
-          />
-          <div className="hidden landscape:flex landscape:justify-end">
-            {helpButton}
-          </div>
-        </div>
 
-        <p className="text-sm landscape:text-xs text-muted-foreground text-center mb-4 landscape:mb-1.5">
-          Sélectionnez votre rôle
-        </p>
-
-        <div className="w-full md:max-w-2xl landscape:max-w-4xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
-        <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
-            <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
-            <span>Contrôleur</span>
-          </div>
-          <div className="flex flex-col gap-2 landscape:gap-1.5">
-            <Button onClick={onCreateProject} className="w-full gap-2 landscape:gap-1.5 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95 landscape:h-10 landscape:px-4" size="lg">
-              <Plus className="w-8 h-8 landscape:w-6 landscape:h-6" /> Nouveau projet
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleOpenFilePicker}
-              className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
-              size="lg"
-            >
-              <FolderOpen className="w-8 h-8 landscape:w-6 landscape:h-6" /> Ouvrir/Modifier projet
-            </Button>
-          </div>
-        </div>
-
-        <div className="w-full landscape:w-px landscape:self-stretch flex landscape:flex-col items-center gap-3 landscape:gap-2">
-          <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
-          <span className="text-sm landscape:text-xs text-muted-foreground">ou</span>
-          <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
-        </div>
-
-        <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
-            <Eye className="w-5 h-5 text-green-700 dark:text-green-300" />
-            <span>Observateur</span>
-          </div>
-          <Button
-            variant="outline"
-            onClick={async () => {
-              try {
-                await stopScanning();
-              } catch (error) {
-                console.warn("stopScanning a échoué", error);
-              }
-              onViewerScan();
-            }}
-            className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
-            size="lg"
-          >
-            <Bluetooth className="w-8 h-8 landscape:w-6 landscape:h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
-          </Button>
-          <p className="flex items-center justify-center gap-1 text-sm landscape:text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center leading-tight">
-            <TriangleAlert className="w-10 h-10 landscape:w-7 landscape:h-7 text-red-600 dark:text-red-400 shrink-0" />
-            Les deux appareils doivent être appairés avant de démarrer
+          <p className="text-sm landscape:text-xs text-muted-foreground text-center mb-4 landscape:mb-1.5">
+            Sélectionnez votre rôle
           </p>
-        </div>
-        </div>
+
+          <div className="w-full md:max-w-2xl landscape:max-w-4xl flex flex-col landscape:flex-row landscape:items-start gap-4 landscape:gap-4 md:gap-8">
+            <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
+                <Crown className="w-5 h-5 text-purple-700 dark:text-purple-300" />
+                <span>Contrôleur</span>
+              </div>
+              <div className="flex flex-col gap-2 landscape:gap-1.5">
+                <Button onClick={onCreateProject} className="w-full gap-2 landscape:gap-1.5 rounded-full shadow-xl shadow-gray-900/30 transition-all active:scale-95 landscape:h-10 landscape:px-4" size="lg">
+                  <Plus className="w-8 h-8 landscape:w-6 landscape:h-6" /> Nouveau projet
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleOpenFilePicker}
+                  className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
+                  size="lg"
+                >
+                  <FolderOpen className="w-8 h-8 landscape:w-6 landscape:h-6" /> Ouvrir/Modifier projet
+                </Button>
+              </div>
+            </div>
+
+            <div className="w-full landscape:w-px landscape:self-stretch flex landscape:flex-col items-center gap-3 landscape:gap-2">
+              <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
+              <span className="text-sm landscape:text-xs text-muted-foreground">ou</span>
+              <div className="flex-1 border-t landscape:border-t-0 landscape:border-l border-border" />
+            </div>
+
+            <div className="w-full landscape:w-1/2 space-y-2 landscape:space-y-1.5">
+              <div className="flex items-center gap-2 text-sm font-semibold text-green-700 dark:text-green-300">
+                <Eye className="w-5 h-5 text-green-700 dark:text-green-300" />
+                <span>Observateur</span>
+              </div>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    await stopScanning();
+                  } catch (error) {
+                    console.warn("stopScanning a échoué", error);
+                  }
+                  onViewerScan();
+                }}
+                className="w-full shadow-xl shadow-gray-900/30 rounded-full gap-2 landscape:gap-1.5 active:scale-95 landscape:h-10 landscape:px-4"
+                size="lg"
+              >
+                <Bluetooth className="w-8 h-8 landscape:w-6 landscape:h-6 text-blue-600 dark:text-blue-400" /> Connexion projet partagé
+              </Button>
+              <p className="flex items-center justify-center gap-1 text-sm landscape:text-xs md:text-sm text-red-600 dark:text-red-400 font-semibold text-center leading-tight">
+                <TriangleAlert className="w-10 h-10 landscape:w-7 landscape:h-7 text-red-600 dark:text-red-400 shrink-0" />
+                Les deux appareils doivent être appairés avant de démarrer
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
