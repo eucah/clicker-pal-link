@@ -52,7 +52,7 @@ const ProjectEditor = ({ onSave, onAccess, onCancel, initialProject }: ProjectEd
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden safe-area-all">
+    <div className="min-h-screen h-[100dvh] bg-background flex flex-col overflow-hidden safe-area-all">
       <header className="flex items-center gap-2 px-4 py-1.5 landscape:py-0.5 border-b border-border bg-card shrink-0">
         <button onClick={onCancel} className="p-1 landscape:p-0.5 rounded-md bg-secondary text-secondary-foreground active:scale-95">
           <ArrowLeft className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />

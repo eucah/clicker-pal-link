@@ -86,7 +86,7 @@ const ViewerSessionList = ({ onConnected, onCancel }: ViewerSessionListProps) =>
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col px-4 py-4 safe-area-all">
+    <div className="min-h-screen h-[100dvh] bg-background flex flex-col px-4 py-4 safe-area-all">
       <div className="flex items-center pl-4 justify-between mb-4 mt-6">
         <button
           onClick={handleCancel}

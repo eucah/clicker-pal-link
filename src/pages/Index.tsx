@@ -332,7 +332,7 @@ const Index = () => {
             >
               {isSharingActive ? (
                 <>
-                  <BluetoothOff className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" text-sm />
+                  <BluetoothOff className="w-4 h-4 landscape:w-3.5 landscape:h-3.5" />
                   Arrêter
                 </>
               ) : (
@@ -448,7 +448,7 @@ const Index = () => {
           setIsPaused(nextPaused);
           void ble.sendRawMessage(JSON.stringify({ type: "pause-state", paused: nextPaused }));
         }}
-        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-10 h-10 rounded-full border shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 border-red-600 text-white animate-pulse" : "bg-white border-blue-600 text-blue-600"}`}
+        className={`fixed right-6 bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-50 w-10 h-10 rounded-full border shadow-xl shadow-gray-900/30 flex items-center justify-center active:scale-95 ${isPaused ? "bg-red-600 border-red-600 text-white animate-pulse" : "bg-card border-blue-600 text-blue-600 dark:text-blue-400"}`}
         aria-label={isPaused ? "Désactiver pause" : "Activer pause"}
       >
         {isPaused ? <Square className="w-4 h-4" /> : <Play className="w-4 h-4" />}
