@@ -40,7 +40,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <ul className="list-disc pl-5 text-muted-foreground space-y-1">
               <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers, Cf/Cm).</li>
-              <li><strong>Ouvrir/Mofifier un projet</strong> — Accéder et/ou Modifier un projet existant depuis un fichier CSV.</li>
+              <li><strong>Ouvrir/Modifier un projet</strong> — Accéder à un projet existant ou le modifier depuis un fichier CSV.</li>
               <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
               <li><strong>Changer l'état des contacts</strong> — Appui court pour faire défiler les états.</li>
               <li><strong>Éditer un rapport</strong> — Création d'un rapport au format CSV reprenant les informations du projet par borne, avec l'état Validé/Défaut, ou vide si non testé.</li>
@@ -76,7 +76,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
 
           <section className="space-y-2">
             <p className="flex items-center gap-2 text-base font-bold">
-              <CircleDot className="w-4 h-4 text-purole-900 dark:text-purple-700" />
+              <CircleDot className="w-4 h-4 text-purple-900 dark:text-purple-700" />
               États des contacts
             </p>
 
@@ -97,10 +97,10 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 <span className="w-3 h-3 rounded-sm bg-state-alert inline-block" />
                 <strong>Défaut</strong> — Problème détecté
               </p>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <p className="flex items-center gap-2 text-muted-foreground">
                   <span className="inline-flex items-center gap-1">{TWINAX_PAIR_COLOR_CLASSES.map((colorClass, idx) => (<span key={idx} className={`w-3 h-3 rounded-sm border inline-block ${colorClass}`} />))}</span>
                   <strong>Twinax</strong>
-              </div>
+              </p>
               <p className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />
                 <strong>Non testé</strong> — Verrouillé / exclu
@@ -130,7 +130,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
               <li>Premier appui : sélectionne le contact sans changer son état et permet de voir ses détails (fils, borne, bornier, Cf/Cm).</li>
               <li>Appui court sur un contact sélectionné = change son état.</li>
               <li>Il est possible de revenir à l'état en attente et de refaire l'essai après plusieurs appuis.</li>
-              <li>Le projet peut être sauvegardé en fichier CSV pour être rechargé ultérieurement.</li>
+              <li>Le projet peut être sauvegardé en fichier CSV pour être rechargé ou modifier ultérieurement.</li>
               <li>Il est possible de modifier le fichier CSV en dehors de l'application (vierge ou déjà rempli).</li>
               <li>Le format du fichier CSV permet une édition simple sous forme de tableau. Le fichier doit conserver cette forme pour permettre une lecture correcte par l'application.</li>
               <li>Un contact a la fonction <strong>Pont</strong> uniquement si son champ <strong>bornier</strong> contient « Pont ».</li>
