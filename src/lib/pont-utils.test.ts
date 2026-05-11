@@ -11,7 +11,7 @@ describe("buildPontIndexSet", () => {
     const indexes = buildPontIndexSet(infos);
 
     expect(indexes.has(0)).toBe(true);
-    expect(indexes.has(1)).toBe(true);
+    expect(indexes.has(1)).toBe(false);
   });
 
   it("ignore le mot pont présent dans fils", () => {
@@ -24,7 +24,7 @@ describe("buildPontIndexSet", () => {
     expect(indexes.size).toBe(0);
   });
 
-  it("détecte correctement la borne miroir côté droit", () => {
+  it("reste insensible à la casse sur bornier", () => {
     const infos = createDefaultInfos();
     infos[0].bornier = "PONT";
     infos[0].borne = "101";
@@ -32,6 +32,6 @@ describe("buildPontIndexSet", () => {
     const indexes = buildPontIndexSet(infos);
 
     expect(indexes.has(0)).toBe(true);
-    expect(indexes.has(89)).toBe(true);
+    expect(indexes.has(89)).toBe(false);
   });
 });

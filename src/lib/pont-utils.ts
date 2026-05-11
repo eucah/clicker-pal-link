@@ -37,15 +37,6 @@ export const buildPontIndexSet = (buttonInfos: ButtonInfo[] | null | undefined):
 
     pontIndexes.add(index);
 
-    const targetLabel = extractBorneLabel(info.borne);
-    if (targetLabel === null) return;
-
-    const targetIndex = getButtonIndexFromLabel(targetLabel);
-    if (targetIndex === null) return;
-    if (targetIndex < 0 || targetIndex >= buttonInfos.length) return;
-    if (targetIndex === index) return;
-
-    pontIndexes.add(targetIndex);
   });
 
   return pontIndexes;
