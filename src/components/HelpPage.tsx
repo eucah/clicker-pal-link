@@ -40,7 +40,7 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
             </p>
             <ul className="list-disc pl-5 text-muted-foreground space-y-1">
               <li><strong>Nouveau projet</strong> — Créer un projet avec les informations de câblage (fils, bornes, borniers, Cf/Cm).</li>
-              <li><strong>Ouvrir un projet</strong> — Charger un projet existant depuis un fichier CSV.</li>
+              <li><strong>Ouvrir/Mofifier un projet</strong> — Accéder et/ou Modifier un projet existant depuis un fichier CSV.</li>
               <li><strong>Partager le projet</strong> — Diffuser l'état du projet en temps réel via Bluetooth.</li>
               <li><strong>Changer l'état des contacts</strong> — Appui court pour faire défiler les états.</li>
               <li><strong>Éditer un rapport</strong> — Création d'un rapport au format CSV reprenant les informations du projet par borne, avec l'état Validé/Défaut, ou vide si non testé.</li>
@@ -145,6 +145,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 </ul>
                 (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-purple-500 inline-block" /> contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-purple-500 inline-block" /> contact pont associé.)
               </li>
+              <li>Condition pour créer des contacts <strong>Twinax</strong>, "twin" ou "twinax" utilisé dans une information de contact + 2 contacts avec la même dénomination de fil alors la paires de bornes twinax auront la même couleur. 4 couleurs de paires se succèdent les unes après les autres.</li>
+              <li>Il est possible pour le contrôleur ou l'observateur d'avertir pour stopper et mettre en pause l'intervention.</li>
             </ul>
           </section>
         </div>
