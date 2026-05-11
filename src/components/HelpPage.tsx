@@ -145,8 +145,8 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 </ul>
                 (#10 et #140 sont <span className="w-3 h-3 rounded-full border-2 border-blue-600 inline-block" /> Pont en permanence. Quand #10 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #1 devient <span className="w-3 h-3 rounded-full border-2 border-purple-500 inline-block" /> contact pont associé. Quand #140 est <span className="w-3 h-3 rounded-full border-2 border-foreground inline-block" /> sélectionné, #10 prend le visuel <span className="w-3 h-3 rounded-full border-2 border-purple-500 inline-block" /> contact pont associé.)
               </li>
-              <li>Condition pour créer des contacts <strong>Twinax</strong>, "twin" ou "twinax" utilisé dans une information de contact + 2 contacts avec la même dénomination de fil alors la paires de bornes twinax auront la même couleur. 4 couleurs de paires se succèdent les unes après les autres.</li>
-              <li>Il est possible pour le <strong>contrôleur</strong> ou <strong>l'observateur</strong> d'avertir pour stopper et mettre en pause l'intervention.</li>
+              <li>Condition pour créer des contacts <strong>Twinax</strong> : le mot « twin » ou « twinax » doit être utilisé dans une information de contact. Si deux contacts ont la même dénomination de fil, alors la paire de bornes Twinax aura la même couleur. Quatre couleurs de paires se succèdent les unes après les autres.</li>
+              <li>Le <strong>contrôleur</strong> ou <strong>l'observateur</strong> peut envoyer une alerte pour stopper et mettre en pause l'intervention.</li>
             </ul>
           </section>
         </div>
