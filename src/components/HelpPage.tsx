@@ -97,12 +97,9 @@ const HelpPage = ({ onBack }: HelpPageProps) => {
                 <span className="w-3 h-3 rounded-sm bg-state-alert inline-block" />
                 <strong>Défaut</strong> — Problème détecté
               </p>
-              <div className="mt-1 rounded-lg border border-border bg-card p-3 text-foreground">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Légende Twinax</p>
-                <p className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-muted-foreground">
                   <span className="inline-flex items-center gap-1">{TWINAX_PAIR_COLOR_CLASSES.map((colorClass, idx) => (<span key={idx} className={`w-3 h-3 rounded-sm border inline-block ${colorClass}`} />))}</span>
                   <strong className="text-foreground">Twinax</strong>
-                </p>
               </div>
               <p className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-sm bg-state-locked inline-block" />
