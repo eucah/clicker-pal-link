@@ -1,4 +1,4 @@
-package com.eucah.clickerpal
+package com.sncf.androidenterprise.internal.essaiscontinuite
 
 import android.view.WindowManager
 import com.getcapacitor.Plugin
