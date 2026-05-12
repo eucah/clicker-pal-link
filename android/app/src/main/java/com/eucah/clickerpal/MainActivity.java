@@ -1,4 +1,4 @@
-package com.eucah.clickerpal;
+package com.sncf.androidenterprise.internal.essaiscontinuite;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
