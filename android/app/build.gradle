@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace = "com.eucah.clickerpal"
+    namespace = "com.sncf.androidenterprise.internal.essaiscontinuite"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.sncf.androidenterprise.internal.essaiscontinuite"
