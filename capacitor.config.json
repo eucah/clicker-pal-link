@@ -1,5 +1,5 @@
 {
-  "appId": "com.eucah.clickerpal",
+  "appId": "com.sncf.androidenterprise.internal.essaiscontinuite",
   "appName": "Essais Continuité",
   "webDir": "dist",
   "bundledWebRuntime": false
