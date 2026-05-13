@@ -1,4 +1,4 @@
-package com.eucah.clickerpal
+package com.sncf.androidenterprise.internal.essaiscontinuite
 
 import android.Manifest
 import android.annotation.SuppressLint
