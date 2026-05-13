@@ -89,4 +89,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: essais-continuite
-          path: android/app/build/outputs/apk/debug/essais-continuite.apk
+          path: android/apk-output/essais-continuite.apk
